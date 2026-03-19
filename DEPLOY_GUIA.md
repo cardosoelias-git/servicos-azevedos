@@ -1,38 +1,29 @@
 # Guia de Deploy: Serviços Azevedo 🚗
 
-Este arquivo contém o passo a passo para realizar deploys futuros do projeto de forma rápida e segura.
+Este arquivo contém o comando definitivo para realizar deploys do projeto de forma rápida, segura e automática.
 
-## 🚀 1. Sincronização com GitHub
-Sempre que fizer alterações no código, use os comandos abaixo para enviar ao servidor:
+## 🚀 1. Comando Único de Deploy
+Sempre que fizer alterações no código, basta abrir o terminal e digitar:
 
 ```bash
-# OPÇÃO RÁPIDA:
 npm run deploy
-
-# OU MANUALMENTE:
-# 1. Adicionar todas as mudanças
-git add .
-...
-
-# 2. Criar uma nota sobre o que foi mudado
-git commit -m "SUA MENSAGEM AQUI"
-
-# 3. Enviar para o GitHub
-git push origin main
 ```
 
-## 🌐 2. Configuração no Painel (Vercel / Netlify)
-Após o envio para o GitHub, o build será iniciado automaticamente. Certifique-se de que as **Environment Variables (Variáveis de Ambiente)** estão configuradas no painel:
+**O que este comando faz:**
+- Limpa arquivos inválidos do Windows automaticamente.
+- Prepara todos os seus arquivos (Layout, Temas, Supabase) para envio.
+- Cria um registro (commit) e envia tudo para o GitHub.
+- Dispara o build automático no seu painel (Vercel ou Netlify).
 
-| Variável | Valor Exemplo |
-| :--- | :--- |
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://vfbcboddmqcgzpyyscjs.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `SUA_CHAVE_ANON_DO_SUPABASE` |
-| `NEXT_PUBLIC_APP_URL` | `https://servicos-azevedos.vercel.app` |
+## 🌐 2. Configuração no Painel
+Certifique-se de que as **Variáveis de Ambiente** estão configuradas no seu serviço de hospedagem:
+
+- `NEXT_PUBLIC_SUPABASE_URL`: `https://vfbcboddmqcgzpyyscjs.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: (Sua chave Anon)
 
 ## 🗄️ 3. Banco de Dados
-O banco de dados está no Supabase. Se precisar restaurar as tabelas ou políticas em um novo projeto, o script oficial está em:
+Lembre-se: o banco de dados oficial está integrado ao projeto. Se precisar mexer no esquema, use o arquivo:
 `supabase/schema.sql`
 
 ---
-*Gerado automaticamente para facilitar o crescimento do projeto Serviços Azevedo.*
+*Gerado para garantir um fluxo de trabalho profissional e sem erros.*
