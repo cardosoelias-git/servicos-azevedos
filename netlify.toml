@@ -1,0 +1,40 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  NEXT_PUBLIC_SUPABASE_URL = "@supabase_url"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "@supabase_anon_key"
+
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_SUPABASE_URL = "@supabase_url"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "@supabase_anon_key"
+
+[context.branch-deploy.environment]
+  NEXT_PUBLIC_SUPABASE_URL = "@supabase_url"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "@supabase_anon_key"
