@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EA580C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Left side accent -->
+  <rect x="0" y="0" width="8" height="630" fill="url(#accent)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="1100" cy="100" r="200" fill="#FFF7ED" opacity="0.5"/>
+  <circle cx="1050" cy="150" r="150" fill="#FED7AA" opacity="0.3"/>
+  
+  <!-- Logo circle -->
+  <circle cx="200" cy="315" r="100" fill="url(#accent)"/>
+  <text x="200" y="345" dominant-baseline="middle" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="900" font-size="100">A</text>
+  
+  <!-- Title -->
+  <text x="380" y="270" fill="#0f172a" font-family="Arial, sans-serif" font-weight="900" font-size="64">SERVIÇOS</text>
+  <text x="380" y="360" fill="#F97316" font-family="Arial, sans-serif" font-weight="900" font-size="64">AZEVEDO</text>
+  
+  <!-- Subtitle -->
+  <text x="380" y="430" fill="#64748b" font-family="Arial, sans-serif" font-weight="400" font-size="28">Sistema de Gestão para Habilitação</text>
+  
+  <!-- Bottom bar -->
+  <rect x="0" y="580" width="1200" height="50" fill="#f1f5f9"/>
+  <text x="50" y="612" fill="#94a3b8" font-family="Arial, sans-serif" font-weight="400" font-size="18">servicos-azevedo.com</text>
+</svg>
