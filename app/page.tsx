@@ -1,0 +1,249 @@
+"use client"
+
+import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Car, DollarSign, Users, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp } from "lucide-react"
+import { motion } from "motion/react"
+import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react"
+import { getStorageData } from "@/lib/storage"
+
+export default function Dashboard() {
+  const [dashboardStats, setDashboardStats] = useState([
+    {
+      title: "Serviços Ativos",
+      value: "0",
+      description: "Processos em andamento",
+      icon: Car,
+      color: "text-orange-500",
+      bg: "bg-orange-50 dark:bg-orange-500/20",
+      gradient: "from-orange-500 to-orange-600"
+    },
+    {
+      title: "Total de Clientes",
+      value: "0",
+      description: "Clientes cadastrados",
+      icon: Users,
+      color: "text-slate-800 dark:text-slate-200",
+      bg: "bg-slate-100 dark:bg-slate-800/50",
+      gradient: "from-slate-800 to-slate-900"
+    },
+    {
+      title: "Valores a Receber",
+      value: "R$ 0,00",
+      description: "De serviços ativos",
+      icon: DollarSign,
+      color: "text-orange-600",
+      bg: "bg-orange-100 dark:bg-orange-500/20",
+      gradient: "from-orange-600 to-orange-700"
+    }
+  ])
+
+  const [activities, setActivities] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const servicos = getStorageData("servicos", [])
+    const clientes = getStorageData("clientes", [])
+    const transacoes = getStorageData("transacoes", [])
+
+    const servicosAtivos = servicos.filter((s: any) => s.status === "Em Andamento").length
+    const totalReceber = servicos.reduce((acc: number, curr: any) => acc + (curr.valor_receber || 0), 0)
+    
+    setDashboardStats([
+      {
+        title: "Serviços Ativos",
+        value: servicosAtivos.toString(),
+        description: "Processos em andamento",
+        icon: Car,
+        color: "text-orange-500",
+        bg: "bg-orange-50 dark:bg-orange-500/20",
+        gradient: "from-orange-500 to-orange-600"
+      },
+      {
+        title: "Total de Clientes",
+        value: clientes.length.toString(),
+        description: "Clientes cadastrados",
+        icon: Users,
+        color: "text-slate-800 dark:text-slate-200",
+        bg: "bg-slate-100 dark:bg-slate-800/50",
+        gradient: "from-slate-800 to-slate-900"
+      },
+      {
+        title: "Valores a Receber",
+        value: `R$ ${totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        description: "De serviços ativos",
+        icon: DollarSign,
+        color: "text-orange-600",
+        bg: "bg-orange-100 dark:bg-orange-500/20",
+        gradient: "from-orange-600 to-orange-700"
+      }
+    ])
+
+    if (servicos.length > 0) {
+      const recent = servicos.slice(0, 4).map((s: any, i: number) => ({
+        id: s.id,
+        user: s.cliente_nome,
+        action: `Processo de ${s.tipo_servico}`,
+        time: s.created_at ? new Date(s.created_at).toLocaleDateString('pt-BR') : "Recentemente",
+        status: s.status === "Concluído" ? "success" : s.status === "Cancelado" ? "warning" : "info"
+      }))
+      setActivities(recent)
+    } else {
+      setActivities([
+        { id: 1, user: "Bem-vindo", action: "Comece adicionando clientes e serviços", time: "Hoje", status: "info" },
+      ])
+    }
+    setLoading(false)
+  }, [])
+
+  return (
+    <div className="space-y-10">
+      <div className="flex flex-col gap-2 relative">
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-orange-500/10 to-orange-600/5 dark:from-orange-500/20 dark:to-orange-600/10 rounded-full blur-3xl"></div>
+        <motion.h1 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-5xl font-black tracking-tight text-slate-900 dark:text-white"
+        >
+          Olá, <span className="text-gradient">Admin</span> 👋
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-slate-500 dark:text-slate-400 text-lg font-medium"
+        >
+          Aqui está o resumo da <span className="font-bold text-slate-700 dark:text-slate-300">SERVICOS AZEVEDO</span> hoje.
+        </motion.p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {dashboardStats.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 + 0.2 }}
+            className="group"
+          >
+            <Card className="bento-card card-hover relative overflow-hidden transition-theme">
+              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.gradient} opacity-5 dark:opacity-10 rounded-full blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                <CardTitle className="font-bold text-slate-600 dark:text-slate-400 text-sm uppercase tracking-wider">{stat.title}</CardTitle>
+                <div className={cn(stat.bg, "p-3 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
+                  <stat.icon className={cn(stat.color, "h-6 w-6")} />
+                </div>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="flex items-baseline gap-3">
+                  <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</div>
+                </div>
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-2 font-medium">{stat.description}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="lg:col-span-2 space-y-6"
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Atividades Recentes</h2>
+            <Link href="/servicos" className="text-sm font-bold text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1">
+              Ver tudo <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
+          
+          <div className="space-y-4">
+            {activities.map((activity, index) => (
+              <motion.div 
+                key={activity.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + index * 0.1 }}
+                className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm hover:shadow-lg hover:border-orange-200/50 dark:hover:border-orange-500/30 transition-all duration-300 group"
+              >
+                <div className={cn(
+                  "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300",
+                  activity.status === 'success' ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white' : 
+                  activity.status === 'warning' ? 'bg-amber-50 dark:bg-amber-500/20 text-amber-500 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white' : 
+                  'bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-500/20 dark:to-orange-500/10 text-orange-500 dark:text-orange-400 group-hover:from-orange-500 group-hover:to-orange-600 group-hover:text-white'
+                )}>
+                  {activity.status === 'success' ? <CheckCircle2 className="w-7 h-7" /> : 
+                   activity.status === 'warning' ? <AlertCircle className="w-7 h-7" /> : 
+                   <Clock className="w-7 h-7" />}
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-lg">{activity.user}</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{activity.action}</p>
+                </div>
+                <div className="text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                  {activity.time}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="space-y-6"
+        >
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Ações Rápidas</h2>
+          <div className="space-y-4">
+            <Link href="/servicos" className="group flex items-center justify-between p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all duration-300 font-bold">
+              <span className="text-lg">Novo Serviço</span>
+              <div className="bg-white/20 p-3 rounded-xl group-hover:bg-white/30 transition-colors">
+                <Car className="w-6 h-6" />
+              </div>
+            </Link>
+            <Link href="/clientes" className="group flex items-center justify-between p-6 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white rounded-2xl shadow-lg shadow-slate-800/30 hover:shadow-slate-800/50 hover:scale-[1.02] transition-all duration-300 font-bold">
+              <span className="text-lg">Cadastrar Cliente</span>
+              <div className="bg-white/20 p-3 rounded-xl group-hover:bg-white/30 transition-colors">
+                <Users className="w-6 h-6" />
+              </div>
+            </Link>
+            <Link href="/financeiro" className="group flex items-center justify-between p-6 bg-white dark:bg-slate-900/80 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl shadow-sm hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-500/30 hover:scale-[1.02] transition-all duration-300 font-bold">
+              <span className="text-lg">Relatório Financeiro</span>
+              <div className="bg-orange-50 dark:bg-orange-500/20 p-3 rounded-xl group-hover:bg-orange-500 transition-colors group-hover:text-white">
+                <DollarSign className="w-6 h-6 text-orange-500 dark:text-orange-400 group-hover:text-white transition-colors" />
+              </div>
+            </Link>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 text-white shadow-xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-orange-500 p-2 rounded-xl">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <span className="font-bold text-lg">Visão Geral</span>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 text-sm">Crescimento</span>
+                <span className="font-bold text-emerald-400">+15%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: "75%" }}
+                  transition={{ delay: 0.8, duration: 1 }}
+                  className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
+                />
+              </div>
+              <p className="text-xs text-slate-400">Comparado ao mês anterior</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
