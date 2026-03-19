@@ -6,8 +6,13 @@ Este arquivo contém o passo a passo para realizar deploys futuros do projeto de
 Sempre que fizer alterações no código, use os comandos abaixo para enviar ao servidor:
 
 ```bash
+# OPÇÃO RÁPIDA:
+npm run deploy
+
+# OU MANUALMENTE:
 # 1. Adicionar todas as mudanças
 git add .
+...
 
 # 2. Criar uma nota sobre o que foi mudado
 git commit -m "SUA MENSAGEM AQUI"
