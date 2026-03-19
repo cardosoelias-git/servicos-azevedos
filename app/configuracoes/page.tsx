@@ -128,33 +128,34 @@ export default function ConfiguracoesPage() {
   ]
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-lg">Gerencie as preferências do sistema e sua conta.</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base lg:text-lg">Gerencie as preferências do sistema e sua conta.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1">
-          <nav className="flex flex-col gap-1 bg-white dark:bg-slate-900/80 rounded-2xl p-2 border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-theme">
+      <div className="flex flex-col lg:grid lg:grid-cols-4 gap-6 md:gap-8">
+        <nav className="lg:col-span-1">
+          <div className="flex overflow-x-auto pb-2 lg:pb-0 gap-1 bg-white dark:bg-slate-900/80 rounded-xl p-1.5 lg:flex-col lg:p-2 border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-theme -mx-4 px-4 lg:mx-0 lg:px-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setTabAtiva(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all shrink-0 lg:w-full ${
                   tabAtiva === tab.id 
                     ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md" 
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 }`}
               >
-                <tab.icon className="w-5 h-5" />
-                {tab.label}
+                <tab.icon className="w-5 h-5 shrink-0" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.id === "perfil" ? "Perfil" : tab.id === "notificacoes" ? "Alertas" : tab.id === "seguranca" ? "Seg." : "Dados"}</span>
               </button>
             ))}
-          </nav>
-        </div>
+          </div>
+        </nav>
 
-        <div className="lg:col-span-3 space-y-8">
+        <div className="lg:col-span-3 space-y-6 md:space-y-8">
           {tabAtiva === "perfil" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}

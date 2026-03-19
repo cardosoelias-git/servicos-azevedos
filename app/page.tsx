@@ -98,13 +98,14 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col gap-2 relative">
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-orange-500/10 to-orange-600/5 dark:from-orange-500/20 dark:to-orange-600/10 rounded-full blur-3xl"></div>
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+      {/* Header */}
+      <div className="flex flex-col gap-1 sm:gap-2 relative">
+        <div className="absolute -top-10 sm:-top-16 -right-10 sm:-right-20 w-40 h-40 sm:w-64 sm:h-64 bg-gradient-to-br from-orange-500/10 to-orange-600/5 dark:from-orange-500/20 dark:to-orange-600/10 rounded-full blur-2xl sm:blur-3xl"></div>
         <motion.h1 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-5xl font-black tracking-tight text-slate-900 dark:text-white"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white"
         >
           Olá, <span className="text-gradient">Admin</span> 👋
         </motion.h1>
@@ -112,13 +113,14 @@ export default function Dashboard() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-slate-500 dark:text-slate-400 text-lg font-medium"
+          className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-medium"
         >
           Aqui está o resumo da <span className="font-bold text-slate-700 dark:text-slate-300">SERVICOS AZEVEDO</span> hoje.
         </motion.p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {dashboardStats.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -127,63 +129,65 @@ export default function Dashboard() {
             transition={{ delay: index * 0.1 + 0.2 }}
             className="group"
           >
-            <Card className="bento-card card-hover relative overflow-hidden transition-theme">
-              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.gradient} opacity-5 dark:opacity-10 rounded-full blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
-              <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-                <CardTitle className="font-bold text-slate-600 dark:text-slate-400 text-sm uppercase tracking-wider">{stat.title}</CardTitle>
-                <div className={cn(stat.bg, "p-3 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
-                  <stat.icon className={cn(stat.color, "h-6 w-6")} />
+            <Card className="bento-card card-hover relative overflow-hidden transition-theme h-full">
+              <div className={`absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br ${stat.gradient} opacity-5 dark:opacity-10 rounded-full blur-xl sm:blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10 p-4 sm:p-6">
+                <CardTitle className="font-bold text-slate-600 dark:text-slate-400 text-xs sm:text-sm uppercase tracking-wider">{stat.title}</CardTitle>
+                <div className={cn(stat.bg, "p-2 sm:p-3 rounded-lg sm:rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
+                  <stat.icon className={cn(stat.color, "w-4 h-4 sm:w-6 sm:h-6")} />
                 </div>
               </CardHeader>
-              <CardContent className="relative z-10">
-                <div className="flex items-baseline gap-3">
-                  <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</div>
+              <CardContent className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="flex items-baseline gap-2 sm:gap-3">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</div>
                 </div>
-                <p className="text-sm text-slate-400 dark:text-slate-500 mt-2 font-medium">{stat.description}</p>
+                <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 mt-1 sm:mt-2 font-medium">{stat.description}</p>
               </CardContent>
             </Card>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        {/* Activities */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="lg:col-span-2 space-y-6"
+          className="xl:col-span-2 space-y-4 sm:space-y-6"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Atividades Recentes</h2>
-            <Link href="/servicos" className="text-sm font-bold text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1">
-              Ver tudo <ArrowUpRight className="w-4 h-4" />
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">Atividades Recentes</h2>
+            <Link href="/servicos" className="text-xs sm:text-sm font-bold text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1">
+              Ver tudo <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Link>
           </div>
           
-          <div className="space-y-4">
+          <div className="grid gap-2 sm:gap-3 lg:gap-4">
             {activities.map((activity, index) => (
               <motion.div 
                 key={activity.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
-                className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm hover:shadow-lg hover:border-orange-200/50 dark:hover:border-orange-500/30 transition-all duration-300 group"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 lg:p-5 bg-white dark:bg-slate-900/80 rounded-xl lg:rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm hover:shadow-lg hover:border-orange-200/50 dark:hover:border-orange-500/30 transition-all duration-300 group"
               >
                 <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300",
+                  "w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
                   activity.status === 'success' ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white' : 
                   activity.status === 'warning' ? 'bg-amber-50 dark:bg-amber-500/20 text-amber-500 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white' : 
                   'bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-500/20 dark:to-orange-500/10 text-orange-500 dark:text-orange-400 group-hover:from-orange-500 group-hover:to-orange-600 group-hover:text-white'
                 )}>
-                  {activity.status === 'success' ? <CheckCircle2 className="w-7 h-7" /> : 
-                   activity.status === 'warning' ? <AlertCircle className="w-7 h-7" /> : 
-                   <Clock className="w-7 h-7" />}
+                  {activity.status === 'success' ? <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" /> : 
+                   activity.status === 'warning' ? <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" /> : 
+                   <Clock className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />}
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-lg">{activity.user}</h4>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{activity.action}</p>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg truncate">{activity.user}</h4>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium truncate">{activity.action}</p>
                 </div>
-                <div className="text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <div className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg shrink-0 hidden xs:block">
                   {activity.time}
                 </div>
               </motion.div>
@@ -191,47 +195,49 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
+        {/* Quick Actions */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
         >
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Ações Rápidas</h2>
-          <div className="space-y-4">
-            <Link href="/servicos" className="group flex items-center justify-between p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all duration-300 font-bold">
-              <span className="text-lg">Novo Serviço</span>
-              <div className="bg-white/20 p-3 rounded-xl group-hover:bg-white/30 transition-colors">
-                <Car className="w-6 h-6" />
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">Ações Rápidas</h2>
+          <div className="grid gap-3 sm:gap-4">
+            <Link href="/servicos" className="group flex items-center justify-between p-4 sm:p-5 lg:p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl lg:rounded-2xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all duration-300 font-bold">
+              <span className="text-base sm:text-lg">Novo Serviço</span>
+              <div className="bg-white/20 p-2 sm:p-3 rounded-lg group-hover:bg-white/30 transition-colors">
+                <Car className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
             </Link>
-            <Link href="/clientes" className="group flex items-center justify-between p-6 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white rounded-2xl shadow-lg shadow-slate-800/30 hover:shadow-slate-800/50 hover:scale-[1.02] transition-all duration-300 font-bold">
-              <span className="text-lg">Cadastrar Cliente</span>
-              <div className="bg-white/20 p-3 rounded-xl group-hover:bg-white/30 transition-colors">
-                <Users className="w-6 h-6" />
+            <Link href="/clientes" className="group flex items-center justify-between p-4 sm:p-5 lg:p-6 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white rounded-xl lg:rounded-2xl shadow-lg shadow-slate-800/30 hover:shadow-slate-800/50 hover:scale-[1.02] transition-all duration-300 font-bold">
+              <span className="text-base sm:text-lg">Cadastrar Cliente</span>
+              <div className="bg-white/20 p-2 sm:p-3 rounded-lg group-hover:bg-white/30 transition-colors">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
             </Link>
-            <Link href="/financeiro" className="group flex items-center justify-between p-6 bg-white dark:bg-slate-900/80 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl shadow-sm hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-500/30 hover:scale-[1.02] transition-all duration-300 font-bold">
-              <span className="text-lg">Relatório Financeiro</span>
-              <div className="bg-orange-50 dark:bg-orange-500/20 p-3 rounded-xl group-hover:bg-orange-500 transition-colors group-hover:text-white">
-                <DollarSign className="w-6 h-6 text-orange-500 dark:text-orange-400 group-hover:text-white transition-colors" />
+            <Link href="/financeiro" className="group flex items-center justify-between p-4 sm:p-5 lg:p-6 bg-white dark:bg-slate-900/80 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-700/50 rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-500/30 hover:scale-[1.02] transition-all duration-300 font-bold">
+              <span className="text-base sm:text-lg">Relatório Financeiro</span>
+              <div className="bg-orange-50 dark:bg-orange-500/20 p-2 sm:p-3 rounded-lg group-hover:bg-orange-500 transition-colors group-hover:text-white">
+                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 group-hover:text-white transition-colors" />
               </div>
             </Link>
           </div>
 
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 text-white shadow-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-orange-500 p-2 rounded-xl">
-                <TrendingUp className="w-5 h-5" />
+          {/* Overview Card */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-xl">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="bg-orange-500 p-1.5 sm:p-2 rounded-lg">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <span className="font-bold text-lg">Visão Geral</span>
+              <span className="font-bold text-sm sm:text-base lg:text-lg">Visão Geral</span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 text-sm">Crescimento</span>
-                <span className="font-bold text-emerald-400">+15%</span>
+                <span className="text-slate-400 text-xs sm:text-sm">Crescimento</span>
+                <span className="font-bold text-emerald-400 text-sm sm:text-base">+15%</span>
               </div>
-              <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 sm:h-2 bg-slate-700 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: "75%" }}
@@ -239,7 +245,7 @@ export default function Dashboard() {
                   className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
                 />
               </div>
-              <p className="text-xs text-slate-400">Comparado ao mês anterior</p>
+              <p className="text-[10px] sm:text-xs text-slate-400">Comparado ao mês anterior</p>
             </div>
           </div>
         </motion.div>

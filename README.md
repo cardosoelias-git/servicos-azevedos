@@ -57,8 +57,8 @@ Sistema completo para gerenciamento de serviços de habilitação de veículos, 
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/servicos-azevedo.git
-cd servicos-azevedo
+git clone https://github.com/cardosoelias-git/servicos-azevedos.git
+cd servicos-azevedos
 
 # Instale as dependências
 npm install

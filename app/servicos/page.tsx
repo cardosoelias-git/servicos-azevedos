@@ -204,17 +204,17 @@ export default function ServicosPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+    <div className="space-y-6 md:space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 md:gap-6">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Serviços</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Acompanhe o progresso de cada processo de habilitação.</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Serviços</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium text-sm sm:text-base">Acompanhe o progresso de cada processo de habilitação.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-8 py-6 rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
-              <Plus className="mr-2 h-5 w-5" /> Novo Serviço
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-4 sm:px-8 sm:py-6 rounded-xl sm:rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
+              <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-sm sm:text-base">Novo Serviço</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[450px] rounded-3xl">
@@ -287,23 +287,23 @@ export default function ServicosPage() {
         </Dialog>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 bg-white dark:bg-slate-900/80 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-theme">
-        <div className="relative w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 bg-white dark:bg-slate-900/80 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-theme">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
           <Input 
             type="search" 
-            placeholder="Pesquisar por cliente ou serviço..." 
-            className="pl-12 h-12 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-xl transition-all text-slate-900 dark:text-white"
+            placeholder="Pesquisar..." 
+            className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-xl transition-all text-sm sm:text-base text-slate-900 dark:text-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="h-12 px-6 rounded-xl border-slate-200 font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0">
-          <Filter className="mr-2 h-4 w-4" /> Filtros
+        <Button variant="outline" className="h-11 sm:h-12 px-4 sm:px-6 rounded-xl font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-sm">
+          <Filter className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Filtros</span>
         </Button>
       </div>
 
-      <div className="bg-white dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/50 overflow-hidden transition-theme">
+      <div className="hidden md:block bg-white dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/50 overflow-hidden transition-theme">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
@@ -432,6 +432,98 @@ export default function ServicosPage() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50">
+              <Skeleton className="h-6 w-48 rounded-lg mb-4" />
+              <Skeleton className="h-20 w-full rounded-lg" />
+            </div>
+          ))
+        ) : filteredServicos.length === 0 ? (
+          <div className="bg-white dark:bg-slate-900/80 rounded-xl p-8 border border-slate-200/60 dark:border-slate-700/50 text-center">
+            <p className="text-slate-400 dark:text-slate-500 font-medium">Nenhum serviço em andamento no momento.</p>
+          </div>
+        ) : (
+          filteredServicos.map((servico, index) => {
+            const progress = Math.round(((servico.etapas_completas || 0) / (servico.total_etapas || 9)) * 100);
+            return (
+              <motion.div
+                key={servico.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50 shadow-sm"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-white">{servico.clientes?.nome || servico.cliente_nome}</h3>
+                    <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
+                      <ClipboardList className="w-3 h-3" /> {servico.tipo_servico}
+                    </p>
+                  </div>
+                  <span className={cn(
+                    "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold",
+                    servico.status === 'Concluído' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 
+                    servico.status === 'Cancelado' ? 'bg-red-50 text-red-600 border border-red-100' : 
+                    'bg-orange-50 text-orange-600 border border-orange-100'
+                  )}>
+                    <div className={cn(
+                      "w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse",
+                      servico.status === 'Concluído' ? 'bg-emerald-500' : 
+                      servico.status === 'Cancelado' ? 'bg-red-500' : 
+                      'bg-orange-500'
+                    )} />
+                    {servico.status || 'Em Andamento'}
+                  </span>
+                </div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-xs font-black text-slate-500 uppercase">
+                    <span>Progresso</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.8 }}
+                      className={cn(
+                        "h-full rounded-full",
+                        progress === 100 ? "bg-gradient-to-r from-emerald-500 to-emerald-400" : "bg-gradient-to-r from-orange-500 to-orange-400"
+                      )}
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500">{servico.etapas_completas || 0} de {servico.total_etapas || 9} etapas concluídas</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg">
+                    <p className="text-[10px] text-emerald-600 font-medium uppercase">Pago</p>
+                    <p className="font-bold text-emerald-600 text-sm">R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                  </div>
+                  <div className="p-3 bg-orange-50 dark:bg-orange-500/10 rounded-lg">
+                    <p className="text-[10px] text-orange-600 font-medium uppercase">A Receber</p>
+                    <p className="font-bold text-orange-600 text-sm">R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button variant="outline" asChild className="flex-1 h-10 text-xs rounded-lg">
+                    <Link href={`/servicos/${servico.id}`}>
+                      <Eye className="w-3.5 h-3.5 mr-1.5" /> Ver
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleDeleteServico(servico.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )
+          })
+        )}
       </div>
     </div>
   )

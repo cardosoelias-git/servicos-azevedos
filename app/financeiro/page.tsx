@@ -128,17 +128,17 @@ export default function FinanceiroPage() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Financeiro</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-lg mt-1 font-medium">Acompanhe o fluxo de caixa e as pendências financeiras.</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Financeiro</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base lg:text-lg mt-1 font-medium">Acompanhe o fluxo de caixa e as pendências financeiras.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-8 py-6 rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
-              <Plus className="mr-2 h-5 w-5" /> Nova Transação
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-4 sm:px-8 sm:py-6 rounded-xl sm:rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
+              <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-sm sm:text-base">Nova Transação</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[450px] rounded-3xl">
@@ -221,7 +221,7 @@ export default function FinanceiroPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -229,20 +229,20 @@ export default function FinanceiroPage() {
         >
           <Card className="bento-card card-hover group relative overflow-hidden border-0">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600"></div>
-            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
-              <TrendingUp className="w-32 h-32 text-white" />
+            <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
+              <TrendingUp className="w-16 h-16 md:w-32 md:h-32 text-white" />
             </div>
             <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-              <CardTitle className="font-black text-white/80 text-sm uppercase tracking-wider">Total Recebido</CardTitle>
-              <div className="bg-white/20 p-3 rounded-2xl">
-                <ArrowUpRight className="h-6 w-6 text-white" />
+              <CardTitle className="font-black text-white/80 text-xs md:text-sm uppercase tracking-wider">Total Recebido</CardTitle>
+              <div className="bg-white/20 p-2 md:p-3 rounded-xl md:rounded-2xl">
+                <ArrowUpRight className="h-4 w-4 md:h-6 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-5xl font-black text-white tracking-tight mb-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">
                 R$ {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
-              <p className="text-white/70 text-sm font-medium">{transacoes.filter(t => t.tipo === "Entrada" && t.status === "Pago").length} transações pagas</p>
+              <p className="text-white/70 text-xs md:text-sm font-medium">{transacoes.filter(t => t.tipo === "Entrada" && t.status === "Pago").length} transações pagas</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -254,39 +254,39 @@ export default function FinanceiroPage() {
         >
           <Card className="bento-card card-hover group relative overflow-hidden border-0">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600"></div>
-            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
-              <Wallet className="w-32 h-32 text-white" />
+            <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
+              <Wallet className="w-16 h-16 md:w-32 md:h-32 text-white" />
             </div>
             <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-              <CardTitle className="font-black text-white/80 text-sm uppercase tracking-wider">Total a Receber</CardTitle>
-              <div className="bg-white/20 p-3 rounded-2xl">
-                <ArrowDownRight className="h-6 w-6 text-white" />
+              <CardTitle className="font-black text-white/80 text-xs md:text-sm uppercase tracking-wider">Total a Receber</CardTitle>
+              <div className="bg-white/20 p-2 md:p-3 rounded-xl md:rounded-2xl">
+                <ArrowDownRight className="h-4 w-4 md:h-6 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-5xl font-black text-white tracking-tight mb-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">
                 R$ {totalReceber.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
-              <p className="text-white/70 text-sm font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
+              <p className="text-white/70 text-xs md:text-sm font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4 justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-slate-200/60">
-        <div className="relative w-full lg:max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+      <div className="flex flex-col lg:flex-row gap-3 md:gap-4 justify-between items-stretch lg:items-center bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/60 dark:bg-slate-900/80 dark:border-slate-700/50">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
           <Input 
             type="search" 
-            placeholder="Pesquisar por cliente ou serviço..." 
-            className="pl-12 h-12 bg-slate-50 border-transparent focus:bg-white focus:border-orange-500 rounded-xl transition-all"
+            placeholder="Pesquisar..." 
+            className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-xl transition-all text-sm sm:text-base"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full lg:w-auto">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-full sm:w-[180px] h-12 rounded-xl border-slate-200 bg-white font-medium">
+            <SelectTrigger className="w-full sm:w-[150px] md:w-[180px] h-11 sm:h-12 rounded-xl border-slate-200 bg-white font-medium text-sm">
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-slate-400" />
                 <SelectValue placeholder="Tipo" />
@@ -299,7 +299,7 @@ export default function FinanceiroPage() {
             </SelectContent>
           </Select>
           <Select defaultValue="mes_atual">
-            <SelectTrigger className="w-full sm:w-[180px] h-12 rounded-xl border-slate-200 bg-white font-medium">
+            <SelectTrigger className="w-full sm:w-[150px] md:w-[180px] h-11 sm:h-12 rounded-xl border-slate-200 bg-white font-medium text-sm">
               <SelectValue placeholder="Período" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
@@ -313,7 +313,7 @@ export default function FinanceiroPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/50 overflow-hidden transition-theme">
+      <div className="hidden md:block bg-white dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/50 overflow-hidden transition-theme">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
@@ -401,6 +401,72 @@ export default function FinanceiroPage() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50">
+              <Skeleton className="h-20 w-full rounded-lg" />
+            </div>
+          ))
+        ) : filteredTransacoes.length === 0 ? (
+          <div className="bg-white dark:bg-slate-900/80 rounded-xl p-8 border border-slate-200/60 dark:border-slate-700/50 text-center">
+            <p className="text-slate-400 dark:text-slate-500 font-medium">Nenhuma transação registrada no período.</p>
+          </div>
+        ) : (
+          filteredTransacoes.map((transacao, index) => (
+            <motion.div
+              key={transacao.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50 shadow-sm"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white">{transacao.cliente}</h3>
+                  <p className="text-sm text-slate-500">{transacao.servico}</p>
+                </div>
+                <span className={cn(
+                  "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase",
+                  transacao.tipo === "Entrada" ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'
+                )}>
+                  {transacao.tipo === "Entrada" ? (
+                    <ArrowUpRight className="w-3 h-3" />
+                  ) : (
+                    <ArrowDownRight className="w-3 h-3" />
+                  )}
+                  {transacao.tipo}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-sm text-slate-500">
+                  {new Date(transacao.data).toLocaleDateString("pt-BR")}
+                </div>
+                <div className={cn(
+                  "text-xl font-black",
+                  transacao.tipo === "Entrada" ? 'text-emerald-600' : 'text-orange-600'
+                )}>
+                  R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className={cn(
+                  "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                  transacao.status === "Pago" ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'
+                )}>
+                  {transacao.status}
+                </span>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleExcluirTransacao(transacao.id)}>
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
     </div>
   )
