@@ -46,7 +46,7 @@ export async function checkSupabaseConnection(): Promise<boolean> {
 
 // Função para verificar se deve usar localStorage ou Supabase
 export function useSupabase(): boolean {
-  return isConfigured;
+  return Boolean(isConfigured);
 }
 
 export { isConfigured };
