@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, DollarSign, Users, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp } from "lucide-react"
+import { Car, DollarSign, Users, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
@@ -42,7 +42,10 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
+  const [mounted, setMounted] = useState(false)
+  
   useEffect(() => {
+    setMounted(true)
     const servicos = getStorageData("servicos", [])
     const clientes = getStorageData("clientes", [])
     const transacoes = getStorageData("transacoes", [])
@@ -97,6 +100,8 @@ export default function Dashboard() {
     setLoading(false)
   }, [])
 
+  if (!mounted) return null
+
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Header */}
@@ -113,11 +118,89 @@ export default function Dashboard() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-medium"
+          className="text-slate-600 dark:text-slate-400 text-sm sm:text-base lg:text-lg animate-in fade-in slide-in-from-left-4 duration-1000 delay-300"
         >
-          Aqui está o resumo da <span className="font-bold text-slate-700 dark:text-slate-300">SERVICOS AZEVEDO</span> hoje.
+          Aqui está o resumo da <span className="font-bold text-slate-900 dark:text-slate-200">SERVICOS AZEVEDO</span> hoje.
         </motion.p>
       </div>
+
+      {/* Serviços H e V - Topo */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
+      >
+        {/* Card Serviços H - Habilitação */}
+        <Link href="/servicos?tipo=habilitacao" className="group">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-6 sm:p-8 h-full min-h-[160px] sm:min-h-[180px] shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-[1.02] transition-all duration-300">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full blur-2xl"></div>
+            </div>
+            
+            {/* Content */}
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div className="flex items-start justify-between">
+                <div className="bg-white/20 backdrop-blur-sm p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+                  <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                </div>
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <Star className="w-4 h-4 text-white" />
+                  <span className="text-white text-xs sm:text-sm font-bold">Popular</span>
+                </div>
+              </div>
+              
+              <div className="mt-4 sm:mt-6">
+                <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Serviços H</h3>
+                <p className="text-blue-100 text-sm sm:text-base font-medium mt-1 sm:mt-2">
+                  Habilitação de Primeira CNH, Adição e Mudança de Categoria
+                </p>
+                <div className="flex items-center gap-2 mt-3 sm:mt-4 text-white/80 text-xs sm:text-sm font-semibold">
+                  <span>Ver serviços</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Card Serviços V - Veículos */}
+        <Link href="/servicos?tipo=veiculos" className="group">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 p-6 sm:p-8 h-full min-h-[160px] sm:min-h-[180px] shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] transition-all duration-300">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full blur-2xl"></div>
+            </div>
+            
+            {/* Content */}
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div className="flex items-start justify-between">
+                <div className="bg-white/20 backdrop-blur-sm p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+                  <Truck className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                </div>
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <Award className="w-4 h-4 text-white" />
+                  <span className="text-white text-xs sm:text-sm font-bold">Novo</span>
+                </div>
+              </div>
+              
+              <div className="mt-4 sm:mt-6">
+                <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Serviços V</h3>
+                <p className="text-emerald-100 text-sm sm:text-base font-medium mt-1 sm:mt-2">
+                  Transferência, Licenciamento e Vistoria de Veículos
+                </p>
+                <div className="flex items-center gap-2 mt-3 sm:mt-4 text-white/80 text-xs sm:text-sm font-semibold">
+                  <span>Ver serviços</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
@@ -126,7 +209,7 @@ export default function Dashboard() {
             key={stat.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.2 }}
+            transition={{ delay: index * 0.1 + 0.3 }}
             className="group"
           >
             <Card className="bento-card card-hover relative overflow-hidden transition-theme h-full">
@@ -154,7 +237,7 @@ export default function Dashboard() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.6 }}
           className="xl:col-span-2 space-y-4 sm:space-y-6"
         >
           <div className="flex items-center justify-between">
@@ -170,8 +253,8 @@ export default function Dashboard() {
                 key={activity.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + index * 0.1 }}
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 lg:p-5 bg-white dark:bg-slate-900/80 rounded-xl lg:rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm hover:shadow-lg hover:border-orange-200/50 dark:hover:border-orange-500/30 transition-all duration-300 group"
+                transition={{ delay: 0.7 + index * 0.1 }}
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 lg:p-5 bg-card rounded-xl lg:rounded-2xl border border-border shadow-sm hover:shadow-lg hover:border-orange-200/50 dark:hover:border-orange-500/30 transition-all duration-300 group"
               >
                 <div className={cn(
                   "w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
@@ -199,7 +282,7 @@ export default function Dashboard() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.7 }}
           className="space-y-4 sm:space-y-6"
         >
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">Ações Rápidas</h2>
@@ -241,7 +324,7 @@ export default function Dashboard() {
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: "75%" }}
-                  transition={{ delay: 0.8, duration: 1 }}
+                  transition={{ delay: 0.9, duration: 1 }}
                   className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
                 />
               </div>

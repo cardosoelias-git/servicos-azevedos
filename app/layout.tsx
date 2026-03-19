@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import ClientLayout from '@/components/ClientLayout';
 import { siteConfig } from '@/lib/seo';
+import '@/app/globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: siteConfig.openGraph,
   twitter: siteConfig.twitter,
   verification: {
-    google: 'SEU_GOOGLE_VERIFICATION_TOKEN', // Google Search Console
+    google: 'SEU_GOOGLE_VERIFICATION_TOKEN',
   },
   category: 'Business',
   classification: 'Sistema de Gestão',
@@ -62,25 +63,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  itunes: {
-    appId: 'SEU_APPLE_APP_ID',
-    appArgument: siteConfig.url,
-  },
   appLinks: {
-    ios: {
-      url: siteConfig.url,
-      app_store_id: 'SEU_APP_STORE_ID',
-    },
     android: {
       package: 'com.servicosazevedo.app',
       app_name: 'Serviços Azevedo',
     },
-  },
-  other: {
-    'mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'theme-color': '#F97316',
   },
 }
 
@@ -105,7 +92,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         
-        {/* Structured Data - Organization */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -131,7 +117,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         
-        {/* Structured Data - WebSite */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

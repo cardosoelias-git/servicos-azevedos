@@ -11,7 +11,6 @@ export default function robots(): MetadataRoute.Robots {
           '/api/',
           '/_next/',
           '/configuracoes',
-          '/servicos/*/[a-zA-Z0-9]*', // Dynamic routes with IDs
         ],
       },
       {
@@ -37,5 +36,3 @@ export default function robots(): MetadataRoute.Robots {
     host: siteConfig.url,
   };
 }
-
-export const dynamic = 'force-dynamic';

@@ -28,18 +28,22 @@ CREATE TABLE IF NOT EXISTS clientes (
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
 
 -- Política para permitir leitura
+DROP POLICY IF EXISTS "Permitir leitura clientes" ON clientes;
 CREATE POLICY "Permitir leitura clientes" ON clientes
   FOR SELECT USING (true);
 
 -- Política para permitir inserção
+DROP POLICY IF EXISTS "Permitir inserção clientes" ON clientes;
 CREATE POLICY "Permitir inserção clientes" ON clientes
   FOR INSERT WITH CHECK (true);
 
 -- Política para permitir atualização
+DROP POLICY IF EXISTS "Permitir atualização clientes" ON clientes;
 CREATE POLICY "Permitir atualização clientes" ON clientes
   FOR UPDATE USING (true);
 
 -- Política para permitir exclusão
+DROP POLICY IF EXISTS "Permitir exclusão clientes" ON clientes;
 CREATE POLICY "Permitir exclusão clientes" ON clientes
   FOR DELETE USING (true);
 
@@ -68,15 +72,19 @@ CREATE TABLE IF NOT EXISTS servicos (
 ALTER TABLE servicos ENABLE ROW LEVEL SECURITY;
 
 -- Políticas
+DROP POLICY IF EXISTS "Permitir leitura servicos" ON servicos;
 CREATE POLICY "Permitir leitura servicos" ON servicos
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Permitir inserção servicos" ON servicos;
 CREATE POLICY "Permitir inserção servicos" ON servicos
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Permitir atualização servicos" ON servicos;
 CREATE POLICY "Permitir atualização servicos" ON servicos
   FOR UPDATE USING (true);
 
+DROP POLICY IF EXISTS "Permitir exclusão servicos" ON servicos;
 CREATE POLICY "Permitir exclusão servicos" ON servicos
   FOR DELETE USING (true);
 
@@ -103,15 +111,19 @@ CREATE TABLE IF NOT EXISTS transacoes (
 ALTER TABLE transacoes ENABLE ROW LEVEL SECURITY;
 
 -- Políticas
+DROP POLICY IF EXISTS "Permitir leitura transacoes" ON transacoes;
 CREATE POLICY "Permitir leitura transacoes" ON transacoes
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Permitir inserção transacoes" ON transacoes;
 CREATE POLICY "Permitir inserção transacoes" ON transacoes
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Permitir atualização transacoes" ON transacoes;
 CREATE POLICY "Permitir atualização transacoes" ON transacoes
   FOR UPDATE USING (true);
 
+DROP POLICY IF EXISTS "Permitir exclusão transacoes" ON transacoes;
 CREATE POLICY "Permitir exclusão transacoes" ON transacoes
   FOR DELETE USING (true);
 
@@ -138,9 +150,11 @@ ON CONFLICT (chave) DO NOTHING;
 ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
 
 -- Políticas
+DROP POLICY IF EXISTS "Permitir leitura configuracoes" ON configuracoes;
 CREATE POLICY "Permitir leitura configuracoes" ON configuracoes
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Permitir atualização configuracoes" ON configuracoes;
 CREATE POLICY "Permitir atualização configuracoes" ON configuracoes
   FOR UPDATE USING (true);
 

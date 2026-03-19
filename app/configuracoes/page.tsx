@@ -136,7 +136,7 @@ export default function ConfiguracoesPage() {
 
       <div className="flex flex-col lg:grid lg:grid-cols-4 gap-6 md:gap-8">
         <nav className="lg:col-span-1">
-          <div className="flex overflow-x-auto pb-2 lg:pb-0 gap-1 bg-white dark:bg-slate-900/80 rounded-xl p-1.5 lg:flex-col lg:p-2 border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-theme -mx-4 px-4 lg:mx-0 lg:px-0">
+          <div className="flex overflow-x-auto pb-2 lg:pb-0 gap-1 bg-card rounded-xl p-1.5 lg:flex-col lg:p-2 border border-border shadow-sm transition-theme -mx-4 px-4 lg:mx-0 lg:px-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -144,7 +144,7 @@ export default function ConfiguracoesPage() {
                 className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all shrink-0 lg:w-full ${
                   tabAtiva === tab.id 
                     ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md" 
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                    : "text-muted-foreground hover:bg-muted"
                 }`}
               >
                 <tab.icon className="w-5 h-5 shrink-0" />

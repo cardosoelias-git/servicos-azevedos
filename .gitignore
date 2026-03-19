@@ -50,3 +50,5 @@ next-env.d.ts
 # Testing
 jest/
 __tests__/
+
+.vercel

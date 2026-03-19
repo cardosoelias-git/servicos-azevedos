@@ -287,7 +287,7 @@ export default function ServicosPage() {
         </Dialog>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 bg-white dark:bg-slate-900/80 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-theme">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 bg-card p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border shadow-sm transition-theme">
         <div className="relative flex-1">
           <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
           <Input 
@@ -303,16 +303,16 @@ export default function ServicosPage() {
         </Button>
       </div>
 
-      <div className="hidden md:block bg-white dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/50 overflow-hidden transition-theme">
+      <div className="hidden md:block bg-card rounded-2xl shadow-sm border border-border overflow-hidden transition-theme">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-              <TableHead className="font-black text-slate-600 dark:text-slate-400 h-14">Cliente</TableHead>
-              <TableHead className="font-black text-slate-600 dark:text-slate-400 h-14">Serviço</TableHead>
-              <TableHead className="font-black text-slate-600 dark:text-slate-400 h-14">Progresso</TableHead>
-              <TableHead className="text-right font-black text-slate-600 h-14">Financeiro</TableHead>
-              <TableHead className="font-black text-slate-600 dark:text-slate-400 h-14">Status</TableHead>
-              <TableHead className="w-[80px] font-black text-slate-600 h-14">Ações</TableHead>
+              <TableHead className="font-black text-muted-foreground h-14">Cliente</TableHead>
+              <TableHead className="font-black text-muted-foreground h-14">Serviço</TableHead>
+              <TableHead className="font-black text-muted-foreground h-14">Progresso</TableHead>
+              <TableHead className="text-right font-black text-muted-foreground h-14">Financeiro</TableHead>
+              <TableHead className="font-black text-muted-foreground h-14">Status</TableHead>
+              <TableHead className="w-[80px] font-black text-muted-foreground h-14 text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -455,7 +455,7 @@ export default function ServicosPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50 shadow-sm"
+                className="bg-card rounded-xl p-4 border border-border shadow-sm"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>

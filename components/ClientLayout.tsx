@@ -1,12 +1,11 @@
 "use client"
 
 import { Inter } from 'next/font/google';
-import '@/app/globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { LayoutDashboard, Users, Car, CreditCard, Settings, Bell, User, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Car, CreditCard, Settings, User, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
@@ -97,7 +96,6 @@ function HeaderContent() {
           </div>
         </div>
         
-        {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -129,7 +127,6 @@ function HeaderContent() {
         </AnimatePresence>
       </header>
 
-      {/* Bottom Navigation for Mobile */}
       {!isDesktop && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-800/50 safe-area-inset-bottom">
           <div className="flex items-center justify-around px-2 py-2">
@@ -161,7 +158,7 @@ function HeaderContent() {
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <body className={`${inter.className} bg-white dark:bg-slate-950 min-h-screen flex flex-col text-slate-900 dark:text-slate-100 transition-colors duration-300`} suppressHydrationWarning>
+      <div className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col transition-colors duration-300`}>
         <HeaderContent />
 
         <main className="flex-1 w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 pb-24 lg:pb-8">
@@ -201,7 +198,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </footer>
         
         <Toaster />
-      </body>
+      </div>
     </ThemeProvider>
   );
 }
