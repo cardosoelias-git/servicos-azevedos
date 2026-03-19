@@ -107,7 +107,7 @@ export default function Dashboard() {
           animate={{ opacity: 1, x: 0 }}
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white"
         >
-          Olá, <span className="text-gradient">Admin</span> 👋
+          Seja <span className="text-gradient">Bem-vindo</span>
         </motion.h1>
         <motion.p 
           initial={{ opacity: 0, x: -20 }}

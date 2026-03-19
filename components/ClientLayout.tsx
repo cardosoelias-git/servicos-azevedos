@@ -81,16 +81,12 @@ function HeaderContent() {
 
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
             <ThemeToggle />
-            <button className="p-2 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-orange-500 dark:hover:text-orange-400 rounded-xl transition-all relative">
-              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="absolute top-2 sm:top-3 right-2 sm:right-3 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-orange-500 rounded-full border border-white dark:border-slate-950 animate-pulse"></span>
-            </button>
             <div className="h-4 sm:h-6 w-px bg-slate-200 dark:bg-slate-700 mx-0.5 sm:mx-1 hidden xs:block"></div>
             <button className="hidden xs:flex items-center gap-2 p-1.5 pl-2 sm:pl-3 pr-3 sm:pr-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all border border-slate-200/80 dark:border-slate-700/50 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md">
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg sm:rounded-xl flex items-center justify-center text-white font-bold shadow-md">
                 <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
-              <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hidden md:block">Admin</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hidden md:block">Bem-vindo</span>
             </button>
             <button 
               className="lg:hidden p-2 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-orange-500 dark:hover:text-orange-400 rounded-xl transition-all"
