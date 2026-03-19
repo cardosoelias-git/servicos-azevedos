@@ -204,17 +204,17 @@ export default function ServicosPage() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 md:gap-6">
+    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Serviços</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium text-sm sm:text-base">Acompanhe o progresso de cada processo de habilitação.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Serviços</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o progresso de cada processo de habilitação.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-4 sm:px-8 sm:py-6 rounded-xl sm:rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
-              <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-sm sm:text-base">Novo Serviço</span>
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+              <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Serviço</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[450px] rounded-3xl">
@@ -287,19 +287,19 @@ export default function ServicosPage() {
         </Dialog>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 bg-card p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border shadow-sm transition-theme">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 bg-card p-2 sm:p-3 rounded-xl border border-border shadow-sm transition-theme">
         <div className="relative flex-1">
-          <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input 
             type="search" 
             placeholder="Pesquisar..." 
-            className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-xl transition-all text-sm sm:text-base text-slate-900 dark:text-white"
+            className="pl-9 h-10 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-lg transition-all text-xs sm:text-sm text-slate-900 dark:text-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="h-11 sm:h-12 px-4 sm:px-6 rounded-xl font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-sm">
-          <Filter className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Filtros</span>
+        <Button variant="outline" className="h-10 px-3 rounded-lg font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-xs text-slate-700 dark:text-slate-400">
+          <Filter className="mr-1.5 h-3.5 w-3.5" /> <span className="hidden sm:inline">Filtros</span>
         </Button>
       </div>
 
@@ -307,12 +307,12 @@ export default function ServicosPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-              <TableHead className="font-black text-muted-foreground h-14">Cliente</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Serviço</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Progresso</TableHead>
-              <TableHead className="text-right font-black text-muted-foreground h-14">Financeiro</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Status</TableHead>
-              <TableHead className="w-[80px] font-black text-muted-foreground h-14 text-right">Ações</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Cliente</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Serviço</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Progresso</TableHead>
+              <TableHead className="text-right font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Financeiro</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Status</TableHead>
+              <TableHead className="w-[80px] font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -344,22 +344,22 @@ export default function ServicosPage() {
                     transition={{ delay: index * 0.05 }}
                     className="group hover:bg-orange-50/30 dark:hover:bg-orange-500/10 transition-colors border-b last:border-0"
                   >
-                    <TableCell className="font-bold text-slate-900 py-5">
+                    <TableCell className="font-bold text-slate-900 py-3 text-sm">
                       {servico.clientes?.nome || servico.cliente_nome}
                     </TableCell>
-                    <TableCell className="py-5">
+                    <TableCell className="py-3">
                       <div className="flex items-center gap-2">
-                        <ClipboardList className="w-4 h-4 text-orange-400" />
-                        <span className="text-slate-600 font-medium">{servico.tipo_servico}</span>
+                        <ClipboardList className="w-3.5 h-3.5 text-orange-400" />
+                        <span className="text-slate-700 dark:text-slate-300 font-medium text-xs">{servico.tipo_servico}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="py-5">
-                      <div className="w-full max-w-[160px] space-y-1.5">
-                        <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <TableCell className="py-3">
+                      <div className="w-full max-w-[140px] space-y-1">
+                        <div className="flex justify-between text-[9px] font-black text-slate-500 uppercase tracking-wider">
                           <span>{servico.etapas_completas || 0} / {servico.total_etapas || 9} ETAPAS</span>
                           <span>{progress}%</span>
                         </div>
-                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <motion.div 
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
@@ -372,25 +372,25 @@ export default function ServicosPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right py-5">
+                    <TableCell className="text-right py-3">
                       <div className="space-y-0.5">
-                        <div className="text-emerald-600 font-bold text-sm">
+                        <div className="text-emerald-700 dark:text-emerald-500 font-bold text-xs">
                           R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
-                        <div className="text-orange-500 font-medium text-[11px]">
+                        <div className="text-orange-600 dark:text-orange-400 font-medium text-[10px]">
                           Faltam R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-5">
+                    <TableCell className="py-3">
                       <span className={cn(
-                        "inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold",
-                        servico.status === 'Concluído' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 
-                        servico.status === 'Cancelado' ? 'bg-red-50 text-red-600 border border-red-100' : 
-                        'bg-orange-50 text-orange-600 border border-orange-100'
+                        "inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold",
+                        servico.status === 'Concluído' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 
+                        servico.status === 'Cancelado' ? 'bg-red-50 text-red-700 border border-red-100' : 
+                        'bg-orange-50 text-orange-700 border border-orange-100'
                       )}>
                         <div className={cn(
-                          "w-1.5 h-1.5 rounded-full mr-2 animate-pulse",
+                          "w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse",
                           servico.status === 'Concluído' ? 'bg-emerald-500' : 
                           servico.status === 'Cancelado' ? 'bg-red-500' : 
                           'bg-orange-500'
@@ -398,12 +398,12 @@ export default function ServicosPage() {
                         {servico.status || 'Em Andamento'}
                       </span>
                     </TableCell>
-                    <TableCell className="py-5">
+                    <TableCell className="py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-10 w-10 p-0 rounded-xl hover:bg-orange-50 hover:text-orange-500 transition-all">
+                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-orange-50 hover:text-orange-500 transition-all">
                             <span className="sr-only">Abrir menu</span>
-                            <MoreHorizontal className="h-5 w-5 text-slate-400" />
+                            <MoreHorizontal className="h-4 w-4 text-slate-400" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="rounded-xl p-2 shadow-xl border-slate-200/60">

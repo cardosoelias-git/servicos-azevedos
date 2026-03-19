@@ -160,17 +160,17 @@ export default function ClientesPage() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 md:gap-6">
+    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Clientes</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium text-sm sm:text-base">Gerencie e visualize todos os clientes cadastrados.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Clientes</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-0.5 font-medium text-xs sm:text-sm">Gerencie e visualize todos os clientes cadastrados.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-4 sm:px-8 sm:py-6 rounded-xl sm:rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
-              <UserPlus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-sm sm:text-base">Novo Cliente</span>
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+              <UserPlus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Cliente</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[450px] rounded-3xl">
@@ -240,19 +240,19 @@ export default function ClientesPage() {
         </Dialog>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 bg-card p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border shadow-sm">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 bg-card p-2 sm:p-3 rounded-xl border border-border shadow-sm">
         <div className="relative flex-1">
-          <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input 
             type="search" 
             placeholder="Pesquisar..." 
-            className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-xl transition-all text-sm sm:text-base"
+            className="pl-9 h-10 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-lg transition-all text-xs sm:text-sm text-slate-900 dark:text-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="h-11 sm:h-12 px-4 sm:px-6 rounded-xl border-slate-200 font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-sm">
-          <Filter className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Filtros</span>
+        <Button variant="outline" className="h-10 px-3 rounded-lg border-slate-200 font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-xs">
+          <Filter className="mr-1.5 h-3.5 w-3.5" /> <span className="hidden sm:inline">Filtros</span>
         </Button>
       </div>
 
@@ -260,11 +260,11 @@ export default function ClientesPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-              <TableHead className="font-black text-muted-foreground h-14">Nome</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">CPF</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Telefone</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Data de Nascimento</TableHead>
-              <TableHead className="w-[80px] font-black text-muted-foreground h-14 text-right">Ações</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Nome</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">CPF</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Telefone</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Data de Nascimento</TableHead>
+              <TableHead className="w-[80px] font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -293,33 +293,33 @@ export default function ClientesPage() {
                   transition={{ delay: index * 0.05 }}
                   className="group hover:bg-orange-50/30 dark:hover:bg-orange-500/10 transition-colors border-b last:border-0"
                 >
-                  <TableCell className="font-bold text-slate-900 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
+                  <TableCell className="font-bold text-slate-900 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-bold shadow-sm text-xs">
                         {cliente.nome.charAt(0).toUpperCase()}
                       </div>
-                      {cliente.nome}
+                      <span className="text-sm">{cliente.nome}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-slate-600 py-5 font-mono text-sm">{cliente.cpf}</TableCell>
-                  <TableCell className="text-slate-600 py-5">
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-orange-400" />
+                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5 font-mono text-xs">{cliente.cpf}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5">
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <Phone className="w-3.5 h-3.5 text-orange-400" />
                       {cliente.telefone}
                     </div>
                   </TableCell>
-                  <TableCell className="text-slate-600 py-5">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-slate-400" />
+                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5">
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       {cliente.data_nascimento ? new Date(cliente.data_nascimento).toLocaleDateString('pt-BR') : '-'}
                     </div>
                   </TableCell>
-                  <TableCell className="py-5">
+                  <TableCell className="py-3.5 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-10 w-10 p-0 rounded-xl hover:bg-orange-50 hover:text-orange-500 transition-all">
+                        <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-orange-50 hover:text-orange-500 transition-all">
                           <span className="sr-only">Abrir menu</span>
-                          <MoreHorizontal className="h-5 w-5 text-slate-400" />
+                          <MoreHorizontal className="h-4 w-4 text-slate-400" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="rounded-xl p-2 shadow-xl border-slate-200/60">

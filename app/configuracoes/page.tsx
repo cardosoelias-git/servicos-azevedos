@@ -128,26 +128,26 @@ export default function ConfiguracoesPage() {
   ]
 
   return (
-    <div className="space-y-6 md:space-y-10">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl sm:text-3xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base lg:text-lg">Gerencie as preferências do sistema e sua conta.</p>
+    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm lg:text-base">Gerencie as preferências do sistema e sua conta.</p>
       </div>
 
-      <div className="flex flex-col lg:grid lg:grid-cols-4 gap-6 md:gap-8">
+      <div className="flex flex-col lg:grid lg:grid-cols-4 gap-4 md:gap-6">
         <nav className="lg:col-span-1">
-          <div className="flex overflow-x-auto pb-2 lg:pb-0 gap-1 bg-card rounded-xl p-1.5 lg:flex-col lg:p-2 border border-border shadow-sm transition-theme -mx-4 px-4 lg:mx-0 lg:px-0">
+          <div className="flex overflow-x-auto pb-2 lg:pb-0 gap-1 bg-card rounded-xl p-1 lg:flex-col lg:p-1.5 border border-border shadow-sm transition-theme -mx-4 px-4 lg:mx-0 lg:px-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setTabAtiva(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all shrink-0 lg:w-full ${
+                className={`flex items-center gap-2.5 px-3 py-2.5 text-xs font-medium rounded-lg transition-all shrink-0 lg:w-full ${
                   tabAtiva === tab.id 
-                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md" 
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md font-bold" 
                     : "text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <tab.icon className="w-5 h-5 shrink-0" />
+                <tab.icon className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">{tab.label}</span>
                 <span className="sm:hidden">{tab.id === "perfil" ? "Perfil" : tab.id === "notificacoes" ? "Alertas" : tab.id === "seguranca" ? "Seg." : "Dados"}</span>
               </button>
@@ -155,34 +155,34 @@ export default function ConfiguracoesPage() {
           </div>
         </nav>
 
-        <div className="lg:col-span-3 space-y-6 md:space-y-8">
+        <div className="lg:col-span-3 space-y-4 md:space-y-6">
           {tabAtiva === "perfil" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <Card className="bento-card">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Informações do Perfil</CardTitle>
-                  <CardDescription className="text-slate-500 dark:text-slate-400">Atualize seu nome e e-mail.</CardDescription>
+                <CardHeader className="p-4 sm:p-5">
+                  <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Informações do Perfil</CardTitle>
+                  <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Atualize seu nome e e-mail.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="font-semibold text-slate-700 dark:text-slate-300">Nome Completo</Label>
+                <CardContent className="space-y-4 p-4 sm:pt-0 sm:p-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="name" className="font-semibold text-slate-800 dark:text-slate-300 text-xs">Nome Completo</Label>
                       <Input 
                         id="name" 
-                        className="rounded-xl h-12 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white" 
+                        className="rounded-lg h-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm" 
                         value={config.nome}
                         onChange={(e) => setConfig({ ...config, nome: e.target.value })}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="font-semibold text-slate-700 dark:text-slate-300">E-mail</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email" className="font-semibold text-slate-800 dark:text-slate-300 text-xs">E-mail</Label>
                       <Input 
                         id="email" 
                         type="email"
-                        className="rounded-xl h-12 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white" 
+                        className="rounded-lg h-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm" 
                         value={config.email}
                         onChange={(e) => setConfig({ ...config, email: e.target.value })}
                       />

@@ -128,17 +128,17 @@ export default function FinanceiroPage() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-10">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Financeiro</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base lg:text-lg mt-1 font-medium">Acompanhe o fluxo de caixa e as pendências financeiras.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Financeiro</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o fluxo de caixa e as pendências financeiras.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-4 sm:px-8 sm:py-6 rounded-xl sm:rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300">
-              <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-sm sm:text-base">Nova Transação</span>
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+              <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Nova Transação</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[450px] rounded-3xl">
@@ -232,17 +232,17 @@ export default function FinanceiroPage() {
             <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
               <TrendingUp className="w-16 h-16 md:w-32 md:h-32 text-white" />
             </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-              <CardTitle className="font-black text-white/80 text-xs md:text-sm uppercase tracking-wider">Total Recebido</CardTitle>
-              <div className="bg-white/20 p-2 md:p-3 rounded-xl md:rounded-2xl">
-                <ArrowUpRight className="h-4 w-4 md:h-6 md:w-6 text-white" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-4 pt-4">
+              <CardTitle className="font-black text-white/80 text-[10px] md:text-xs uppercase tracking-wider">Total Recebido</CardTitle>
+              <div className="bg-white/20 p-1.5 md:p-2 rounded-lg">
+                <ArrowUpRight className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">
+            <CardContent className="relative z-10 px-4 pb-4">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-1">
                 R$ {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
-              <p className="text-white/70 text-xs md:text-sm font-medium">{transacoes.filter(t => t.tipo === "Entrada" && t.status === "Pago").length} transações pagas</p>
+              <p className="text-white/70 text-[10px] md:text-xs font-medium">{transacoes.filter(t => t.tipo === "Entrada" && t.status === "Pago").length} transações pagas</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -257,38 +257,38 @@ export default function FinanceiroPage() {
             <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
               <Wallet className="w-16 h-16 md:w-32 md:h-32 text-white" />
             </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-              <CardTitle className="font-black text-white/80 text-xs md:text-sm uppercase tracking-wider">Total a Receber</CardTitle>
-              <div className="bg-white/20 p-2 md:p-3 rounded-xl md:rounded-2xl">
-                <ArrowDownRight className="h-4 w-4 md:h-6 md:w-6 text-white" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-4 pt-4">
+              <CardTitle className="font-black text-white/80 text-[10px] md:text-xs uppercase tracking-wider">Total a Receber</CardTitle>
+              <div className="bg-white/20 p-1.5 md:p-2 rounded-lg">
+                <ArrowDownRight className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">
+            <CardContent className="relative z-10 px-4 pb-4">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-1">
                 R$ {totalReceber.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
-              <p className="text-white/70 text-xs md:text-sm font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
+              <p className="text-white/70 text-[10px] md:text-xs font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-3 md:gap-4 justify-between items-stretch lg:items-center bg-card p-3 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm border border-border">
+      <div className="flex flex-col lg:flex-row gap-2 md:gap-3 justify-between items-stretch lg:items-center bg-card p-2 sm:p-3 rounded-xl shadow-sm border border-border">
         <div className="relative flex-1">
-          <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
           <Input 
             type="search" 
             placeholder="Pesquisar..." 
-            className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-xl transition-all text-sm sm:text-base"
+            className="pl-9 h-10 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-lg transition-all text-xs"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full lg:w-auto">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-full sm:w-[150px] md:w-[180px] h-11 sm:h-12 rounded-xl border-slate-200 bg-white font-medium text-sm">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-[160px] h-10 rounded-lg border-slate-200 bg-white font-medium text-xs">
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-slate-400" />
+                <Filter className="h-3.5 w-3.5 text-slate-400" />
                 <SelectValue placeholder="Tipo" />
               </div>
             </SelectTrigger>
@@ -299,7 +299,7 @@ export default function FinanceiroPage() {
             </SelectContent>
           </Select>
           <Select defaultValue="mes_atual">
-            <SelectTrigger className="w-full sm:w-[150px] md:w-[180px] h-11 sm:h-12 rounded-xl border-slate-200 bg-white font-medium text-sm">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-[160px] h-10 rounded-lg border-slate-200 bg-white font-medium text-xs">
               <SelectValue placeholder="Período" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
@@ -317,14 +317,13 @@ export default function FinanceiroPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-              <TableHead className="font-black text-slate-600 dark:text-slate-400 h-14">Data</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Data</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Cliente</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Serviço</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Tipo</TableHead>
-              <TableHead className="text-right font-black text-muted-foreground h-14">Valor</TableHead>
-              <TableHead className="font-black text-muted-foreground h-14">Status</TableHead>
-              <TableHead className="w-[80px] font-black text-muted-foreground h-14 text-right">Ações</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Data</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Cliente</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Serviço</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Tipo</TableHead>
+              <TableHead className="text-right font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Valor</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Status</TableHead>
+              <TableHead className="w-[80px] font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -355,46 +354,46 @@ export default function FinanceiroPage() {
                   transition={{ delay: index * 0.05 }}
                   className="group hover:bg-orange-50/30 dark:hover:bg-orange-500/10 transition-colors border-b last:border-0"
                 >
-                  <TableCell className="text-slate-500 py-5 font-medium">
+                  <TableCell className="text-slate-500 py-3.5 text-xs font-medium">
                     {new Date(transacao.data).toLocaleDateString("pt-BR")}
                   </TableCell>
-                  <TableCell className="font-bold text-slate-900 py-5">{transacao.cliente}</TableCell>
-                  <TableCell className="text-slate-600 py-5 font-medium">{transacao.servico}</TableCell>
-                  <TableCell className="py-5">
+                  <TableCell className="font-bold text-slate-900 py-3.5 text-sm">{transacao.cliente}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5 font-medium text-xs">{transacao.servico}</TableCell>
+                  <TableCell className="py-3.5">
                     <span className={cn(
-                      "inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider",
-                      transacao.tipo === "Entrada" ? 'text-emerald-600' : 'text-orange-600'
+                      "inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider",
+                      transacao.tipo === "Entrada" ? 'text-emerald-700 dark:text-emerald-500' : 'text-orange-700 dark:text-orange-500'
                     )}>
                       {transacao.tipo === "Entrada" ? (
-                        <ArrowUpRight className="h-4 w-4" />
+                        <ArrowUpRight className="h-3.5 w-3.5" />
                       ) : (
-                        <ArrowDownRight className="h-4 w-4" />
+                        <ArrowDownRight className="h-3.5 w-3.5" />
                       )}
                       {transacao.tipo}
                     </span>
                   </TableCell>
                   <TableCell className={cn(
-                    "text-right font-black py-5 text-lg",
-                    transacao.tipo === "Entrada" ? 'text-emerald-600' : 'text-orange-600'
+                    "text-right font-black py-3.5 text-base",
+                    transacao.tipo === "Entrada" ? 'text-emerald-700 dark:text-emerald-500' : 'text-orange-700 dark:text-orange-500'
                   )}>
                     R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </TableCell>
-                  <TableCell className="py-5">
+                  <TableCell className="py-3.5">
                     <span className={cn(
-                      "inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest",
-                      transacao.status === "Pago" ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-orange-50 text-orange-600 border border-orange-100'
+                      "inline-flex items-center px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
+                      transacao.status === "Pago" ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-orange-50 text-orange-700 border border-orange-100'
                     )}>
                       {transacao.status}
                     </span>
                   </TableCell>
-                  <TableCell className="py-5">
+                  <TableCell className="py-3.5 text-right">
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      className="h-10 w-10 p-0 rounded-xl hover:bg-red-50 hover:text-red-500 transition-all"
+                      className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 hover:text-red-500 transition-all font-bold"
                       onClick={() => handleExcluirTransacao(transacao.id)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </TableCell>
                 </motion.tr>
