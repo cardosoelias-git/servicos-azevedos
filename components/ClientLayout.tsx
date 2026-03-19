@@ -169,7 +169,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="max-w-[1920px] mx-auto"
+              className="max-w-[1440px] mx-auto"
             >
               {children}
             </motion.div>
@@ -178,7 +178,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
         <footer className="hidden lg:block border-t border-slate-200/50 dark:border-slate-800/50 bg-white dark:bg-slate-950 py-6 sm:py-8 transition-colors duration-300">
           <div className="w-full px-4 md:px-6 lg:px-8">
-            <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-black text-xs sm:text-sm shadow-md">
                   A

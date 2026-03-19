@@ -43,23 +43,23 @@
   /* Light Mode - Cores com ALTO CONTRASTE para melhor legibilidade */
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 222 47% 11%;
     --primary: 24.6 95% 53.1%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 35%; /* Escurecido para melhor contraste */
+    --muted-foreground: 215 16% 30%; /* Darkened for better contrast */
     --accent: 24.6 95% 53.1%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214.3 31.8% 85%;
-    --input: 214.3 31.8% 85%;
+    --border: 214.3 31.8% 91%; /* Lighter border for cleaner look */
+    --input: 214.3 31.8% 91%;
     --ring: 24.6 95% 53.1%;
     --radius: 0.75rem;
   }
@@ -123,26 +123,25 @@
   }
 
   /* Forçar cores mais escuras para classes slate em light mode se não estiver no dark mode */
-  /* Aplicar apenas a classes específicas para evitar sobrepor cores intencionais (como branco em fundos escuros) */
   :not(.dark) .text-slate-400 {
-    color: #475569 !important; /* Corresp. ao slate-600 para contraste 5.3:1 */
+    color: #334155 !important; /* Slate-700 instead of 600 for better reading */
   }
 
   :not(.dark) .text-slate-500 {
-    color: #334155 !important; /* Corresp. ao slate-700 para contraste 7.6:1 */
+    color: #1e293b !important; /* Slate-800 instead of 700 */
   }
 
   :not(.dark) .text-slate-600 {
-    color: #1e293b !important; /* Corresp. ao slate-800 para contraste 11.5:1 */
+    color: #0f172a !important; /* Slate-900 instead of 800 */
   }
 
   /* Melhorar legibilidade do laranja em texto sobre fundo branco */
   :not(.dark) .text-orange-500 {
-    color: #c2410c !important; /* Corresp. ao orange-700 */
+    color: #9a3412 !important; /* Orange-800 for high contrast */
   }
 
   :not(.dark) .text-orange-600 {
-    color: #9a3412 !important; /* Corresp. ao orange-800 */
+    color: #7c2d12 !important; /* Orange-900 */
   }
 }
 
@@ -485,15 +484,15 @@ input::placeholder, textarea::placeholder {
 
 /* Texto mais legível em elementos específicos */
 .text-slate-600 {
-  color: #475569 !important;
+  color: #1e293b !important; /* Slate-800 */
 }
 
 .text-slate-700 {
-  color: #334155 !important;
+  color: #0f172a !important; /* Slate-900 */
 }
 
 .text-slate-800 {
-  color: #1e293b !important;
+  color: #020617 !important; /* Slate-950 */
 }
 
 .dark .text-slate-400 {

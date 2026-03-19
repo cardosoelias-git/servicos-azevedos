@@ -215,7 +215,7 @@ export default function Dashboard() {
             <Card className="bento-card card-hover relative overflow-hidden transition-theme h-full">
               <div className={`absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br ${stat.gradient} opacity-5 dark:opacity-10 rounded-full blur-xl sm:blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
               <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10 p-4 sm:p-6">
-                <CardTitle className="font-bold text-slate-600 dark:text-slate-400 text-xs sm:text-sm uppercase tracking-wider">{stat.title}</CardTitle>
+                <CardTitle className="font-bold text-slate-700 dark:text-slate-400 text-xs sm:text-sm uppercase tracking-wider">{stat.title}</CardTitle>
                 <div className={cn(stat.bg, "p-2 sm:p-3 rounded-lg sm:rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
                   <stat.icon className={cn(stat.color, "w-4 h-4 sm:w-6 sm:h-6")} />
                 </div>
