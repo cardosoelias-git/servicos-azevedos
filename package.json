@@ -9,7 +9,7 @@
     "lint": "next lint",
     "clean": "next clean",
     "typecheck": "tsc --noEmit",
-    "deploy": "git add app components lib supabase .agent .env.example .gitignore DEPLOY_GUIA.md next.config.mjs package.json && git commit -m \"deploy\" && git push origin main"
+    "deploy": "git add app components lib supabase .agent .env.example .gitignore DEPLOY_GUIA.md next.config.mjs package.json && git rm -f next.config.ts --ignore-unmatch && git commit -m \"deploy\" && git push origin main"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
