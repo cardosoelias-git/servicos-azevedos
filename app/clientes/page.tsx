@@ -164,12 +164,12 @@ export default function ClientesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Clientes</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-0.5 font-medium text-xs sm:text-sm">Gerencie e visualize todos os clientes cadastrados.</p>
+          <p className="text-slate-500 dark:text-slate-100 mt-0.5 font-medium text-xs sm:text-sm">Gerencie e visualize todos os clientes cadastrados.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
               <UserPlus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Cliente</span>
             </Button>
           </DialogTrigger>

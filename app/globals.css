@@ -53,7 +53,7 @@
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 5.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215 25% 15%; /* Much darker for better readability */
+    --muted-foreground: 215.4 16.3% 30%; /* Much darker for better readability (Slate-700 approx) */
     --accent: 24.6 95% 53.1%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
@@ -77,10 +77,10 @@
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65%;
+    --muted-foreground: 215 20.2% 80%; /* Even lighter for better contrast in dark mode */
     --accent: 24.6 95% 53.1%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 25%;
     --input: 217.2 32.6% 25%;
@@ -138,11 +138,11 @@
 
   /* Melhorar legibilidade do laranja em texto sobre fundo branco */
   :not(.dark) .text-orange-500 {
-    color: #9a3412 !important; /* Orange-800 for high contrast */
+    color: #c2410c !important; /* Orange-700 for high contrast */
   }
 
   :not(.dark) .text-orange-600 {
-    color: #7c2d12 !important; /* Orange-900 */
+    color: #9a3412 !important; /* Orange-800 */
   }
 }
 
@@ -497,29 +497,33 @@ input::placeholder, textarea::placeholder {
 }
 
 .dark .text-slate-400 {
-  color: #94a3b8 !important;
+  color: #f1f5f9 !important; /* Slate-100 for maximum visibility */
 }
 
 .dark .text-slate-500 {
-  color: #64748b !important;
+  color: #e2e8f0 !important; /* Slate-200 */
 }
 
-/* Links mais visíveis */
+.dark .text-muted-foreground {
+  color: #f1f5f9 !important;
+}
+
+/* Links - Removendo cor global agressiva que quebra botões */
 a {
-  color: hsl(var(--primary));
   font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-a:hover {
+.text-link {
+  color: hsl(var(--primary));
+}
+
+.text-link:hover {
   color: hsl(var(--primary) / 0.9);
 }
 
-.dark a {
+.dark .text-link {
   color: hsl(24.6 95% 60%);
-}
-
-.dark a:hover {
-  color: hsl(24.6 95% 70%);
 }
 
 /* Headers mais escuros no tema claro */

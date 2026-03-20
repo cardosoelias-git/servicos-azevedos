@@ -118,9 +118,9 @@ export default function Dashboard() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm lg:text-base animate-in fade-in slide-in-from-left-4 duration-1000 delay-300"
+          className="text-slate-600 dark:text-slate-200 text-xs sm:text-sm lg:text-base animate-in fade-in slide-in-from-left-4 duration-1000 delay-300"
         >
-          Aqui está o resumo da <span className="font-bold text-slate-900 dark:text-slate-200">SERVICOS AZEVEDO</span> hoje.
+          Aqui está o resumo da <span className="font-bold text-slate-900 dark:text-white">SERVICOS AZEVEDO</span> hoje.
         </motion.p>
       </div>
 
@@ -154,10 +154,10 @@ export default function Dashboard() {
               
               <div className="mt-3 sm:mt-4">
                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">Serviços H</h3>
-                <p className="text-blue-100 text-xs sm:text-sm font-medium mt-0.5 sm:mt-1">
+                <p className="text-blue-50 text-xs sm:text-sm font-bold mt-0.5 sm:mt-1">
                   Habilitação: CNH, Adição e Mudança de Categoria
                 </p>
-                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-white/80 text-[10px] sm:text-xs font-semibold">
+                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-white text-[10px] sm:text-xs font-bold">
                   <span>Ver serviços</span>
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </div>
@@ -189,10 +189,10 @@ export default function Dashboard() {
               
               <div className="mt-3 sm:mt-4">
                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">Serviços V</h3>
-                <p className="text-emerald-100 text-xs sm:text-sm font-medium mt-0.5 sm:mt-1">
+                <p className="text-emerald-50 text-xs sm:text-sm font-bold mt-0.5 sm:mt-1">
                   Transferência, Licenciamento e Vistoria
                 </p>
-                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-white/80 text-[10px] sm:text-xs font-semibold">
+                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-white text-[10px] sm:text-xs font-bold">
                   <span>Ver serviços</span>
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </div>
@@ -215,7 +215,7 @@ export default function Dashboard() {
             <Card className="bento-card card-hover relative overflow-hidden transition-theme h-full">
               <div className={`absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br ${stat.gradient} opacity-5 dark:opacity-10 rounded-full blur-xl sm:blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
               <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 p-4 sm:p-5">
-                <CardTitle className="font-bold text-slate-800 dark:text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider">{stat.title}</CardTitle>
+                <CardTitle className="font-bold text-slate-800 dark:text-white text-[10px] sm:text-xs uppercase tracking-wider">{stat.title}</CardTitle>
                 <div className={cn(stat.bg, "p-2 sm:p-2.5 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
                   <stat.icon className={cn(stat.color, "w-4 h-4 sm:w-5 sm:h-5")} />
                 </div>
@@ -224,7 +224,7 @@ export default function Dashboard() {
                 <div className="flex items-baseline gap-2">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</div>
                 </div>
-                <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-500 mt-0.5 sm:mt-1 font-medium">{stat.description}</p>
+                <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-200 mt-0.5 sm:mt-1 font-medium">{stat.description}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -268,9 +268,9 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">{activity.user}</h4>
-                  <p className="text-[10px] sm:text-xs text-slate-700 dark:text-slate-400 font-medium truncate">{activity.action}</p>
+                  <p className="text-[10px] sm:text-xs text-slate-700 dark:text-slate-100 font-medium truncate">{activity.action}</p>
                 </div>
-                <div className="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg shrink-0 hidden xs:block">
+                <div className="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-white bg-slate-50 dark:bg-slate-800 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg shrink-0 hidden xs:block">
                   {activity.time}
                 </div>
               </motion.div>
@@ -287,19 +287,19 @@ export default function Dashboard() {
         >
           <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 dark:text-white">Ações Rápidas</h2>
           <div className="grid gap-2 sm:gap-3">
-            <Link href="/servicos" className="group flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.01] transition-all duration-300 font-bold">
+            <Link href="/servicos" className="group flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.01] transition-all duration-300 font-extrabold">
               <span className="text-sm sm:text-base">Novo Serviço</span>
               <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
                 <Car className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </Link>
-            <Link href="/clientes" className="group flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white rounded-xl shadow-lg shadow-slate-800/30 hover:shadow-slate-800/50 hover:scale-[1.01] transition-all duration-300 font-bold">
+            <Link href="/clientes" className="group flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white rounded-xl shadow-lg shadow-slate-800/30 hover:shadow-slate-800/50 hover:scale-[1.01] transition-all duration-300 font-extrabold">
               <span className="text-sm sm:text-base">Cadastrar Cliente</span>
               <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
                 <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </Link>
-            <Link href="/financeiro" className="group flex items-center justify-between p-3.5 sm:p-4 bg-white dark:bg-slate-900/80 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-700/50 rounded-xl shadow-sm hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-500/30 hover:scale-[1.01] transition-all duration-300 font-bold">
+            <Link href="/financeiro" className="group flex items-center justify-between p-3.5 sm:p-4 bg-white dark:bg-slate-900/80 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-700/50 rounded-xl shadow-sm hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-500/30 hover:scale-[1.01] transition-all duration-300 font-extrabold">
               <span className="text-sm sm:text-base">Financeiro</span>
               <div className="bg-orange-50 dark:bg-orange-500/20 p-2 rounded-lg group-hover:bg-orange-500 transition-colors group-hover:text-white">
                 <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 dark:text-orange-400 group-hover:text-white transition-colors" />
@@ -317,7 +317,7 @@ export default function Dashboard() {
             </div>
             <div className="space-y-2 sm:space-y-2.5">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 text-[10px] sm:text-xs">Crescimento</span>
+                <span className="text-slate-400 dark:text-white text-[10px] sm:text-xs">Crescimento</span>
                 <span className="font-bold text-emerald-400 text-xs sm:text-sm">+15%</span>
               </div>
               <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
@@ -328,7 +328,7 @@ export default function Dashboard() {
                   className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
                 />
               </div>
-              <p className="text-[10px] text-slate-400">Comparado ao mês anterior</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-200">Comparado ao mês anterior</p>
             </div>
           </div>
         </motion.div>
