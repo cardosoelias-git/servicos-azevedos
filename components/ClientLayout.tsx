@@ -11,6 +11,9 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { ThemeProvider } from '@/hooks/useTheme';
+import Image from 'next/image';
+
+const LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_png_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19wbmdfYXpldmVkb3MucG5nIiwiaWF0IjoxNzczOTcwMDU3LCJleHAiOjE4MDU1MDYwNTd9.uBfZZt7A1dvAhJV49suHaetWqHvacIYq9EG0q6dbtSM";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,8 +45,14 @@ function HeaderContent() {
         <div className="w-full px-3 sm:px-4 md:px-6 flex items-center justify-between h-12 sm:h-14">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
             <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-black text-sm sm:text-base shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 group-hover:scale-110 transition-all duration-300">
-                A
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-110">
+                <Image 
+                  src={LOGO_URL}
+                  alt="Azevedos Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
               <span className="font-black text-sm sm:text-base md:text-lg tracking-tight hidden xs:block">
                 <span className="text-slate-900 dark:text-white">SERVICOS</span> <span className="text-gradient">AZEVEDO</span>
@@ -181,8 +190,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           <div className="w-full px-4 md:px-6">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-2 sm:gap-2.5">
-                <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-black text-xs shadow-md">
-                  A
+                <div className="relative w-6 h-6">
+                  <Image 
+                    src={LOGO_URL}
+                    alt="Azevedos Logo"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
                 <span className="font-black text-sm text-slate-900 dark:text-white">SERVICOS <span className="text-orange-500">AZEVEDO</span></span>
               </div>
