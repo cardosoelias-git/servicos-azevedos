@@ -1,48 +1,55 @@
 const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 function run(command) {
   try {
     return execSync(command, { stdio: 'inherit', shell: true });
   } catch (error) {
-    // Silencia erros esperados como "nada para commitar"
     return null;
   }
 }
 
-console.log('🚀 Iniciando o deploy oficial...');
+console.log('🚀 [DEPLOY] Iniciando processo de sincronização...');
 
-// 1. Limpeza preventiva de arquivos inválidos do Windows
-console.log('🧹 Limpando arquivos temporários...');
+// 1. Limpeza de cache e arquivos problemáticos
+console.log('🧹 [1/4] Limpando cache e arquivos temporários...');
 try {
-  run('cmd /c "del \\\\?\\c:\\Users\\cardo\\OneDrive\\Documentos\\servicos_azevedo\\nul" 2>nul');
-} catch (e) {}
-
-// 2. Adição de arquivos (específica para evitar o arquivo nul)
-console.log('📦 Preparando arquivos para envio...');
-const foldersToStage = ['app', 'components', 'lib', 'supabase', '.agent'];
-const filesToStage = ['.env.example', '.gitignore', 'DEPLOY_GUIA.md', 'next.config.mjs', 'package.json', 'README.md', 'scripts/deploy.js'];
-
-run(`git add ${foldersToStage.join(' ')} ${filesToStage.join(' ')}`);
-
-// 3. Remover arquivos antigos (migração de configuração)
-run('git rm -f next.config.ts --ignore-unmatch');
-
-// 4. Commit (com proteção para commit vazio)
-console.log('✍️ Criando registro das alterações (commit)...');
-try {
-  execSync('git commit -m "deploy"', { stdio: 'inherit', shell: true });
-} catch (error) {
-  console.log('ℹ️ Nenhuma alteração nova detectada, forçando sincronização...');
-  run('git commit --allow-empty -m "deploy empty sync"');
+  // Limpa o cache do Next.js para evitar erros de chunk
+  if (fs.existsSync('.next')) {
+    fs.rmSync('.next', { recursive: true, force: true });
+  }
+  // Remove o arquivo 'nul' problemático se existir (específico para OneDrive)
+  const nulPath = path.join(process.cwd(), 'nul');
+  run(`cmd /c "if exist \\\\?\\${nulPath} del \\\\?\\${nulPath}" 2>nul`);
+} catch (e) {
+  console.log('⚠️ Aviso: Falha ao limpar alguns arquivos temporários, prosseguindo...');
 }
 
-// 5. Push para o GitHub
-console.log('📤 Enviando para o GitHub...');
+// 2. Sincronização de arquivos
+console.log('📦 [2/4] Preparando arquivos para o GitHub...');
+// Adicionando tudo exceto o que está no .gitignore
+run('git add .');
+
+// 3. Commit
+console.log('✍️ [3/4] Criando registro das alterações...');
+const commitMsg = process.argv[2] || "deploy: atualização de sistema e design";
+try {
+  execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit', shell: true });
+} catch (error) {
+  console.log('ℹ️ Nenhuma alteração nova detectada, sincronizando estado atual...');
+  run('git commit --allow-empty -m "deploy: sync empty"');
+}
+
+// 4. Envio Final
+console.log('📤 [4/4] Enviando para o servidor de produção...');
 try {
   run('git push origin main');
-  console.log('✅ DEPLOY REALIZADO COM SUCESSO!');
-  console.log('🌐 O Vercel/Netlify iniciará o build automaticamente.');
+  console.log('\n✅ DEPLOY REALIZADO COM SUCESSO!');
+  console.log('🌐 Suas alterações estarão no ar em alguns instantes.');
+  console.log('💡 Dica: Se o site local der erro, rode "npm run dev" novamente.');
 } catch (error) {
-  console.error('❌ Erro ao enviar para o GitHub. Verifique sua conexão ou permissões.');
+  console.error('\n❌ Erro crítico ao enviar para o GitHub.');
+  console.error('👉 Verifique sua conexão com a internet ou se há conflitos no Git.');
   process.exit(1);
 }

@@ -9,11 +9,14 @@ Sempre que fizer alterações no código, basta abrir o terminal e digitar:
 npm run deploy
 ```
 
+> [!TIP]
+> Você pode adicionar uma mensagem personalizada: `npm run deploy -- "Minha mensagem de alteração"`
+
 **O que este comando faz:**
-- Limpa arquivos inválidos do Windows automaticamente.
-- Prepara todos os seus arquivos (Layout, Temas, Supabase) para envio.
-- Cria um registro (commit) e envia tudo para o GitHub.
-- Dispara o build automático no seu painel (Vercel ou Netlify).
+- **Limpeza de Cache**: Remove a pasta `.next` automaticamente para evitar erros de visualização e "Cannot find module".
+- **Resiliência Windows**: Trata arquivos problemáticos (como o arquivo `nul`) que costumam travar o OneDrive.
+- **Sincronização Total**: Prepara todos os seus arquivos (Layout, Temas, Supabase) para envio.
+- **Commit & Push**: Cria um registro e envia tudo para o GitHub em um único passo.
 
 ## 🌐 2. Configuração no Painel
 Certifique-se de que as **Variáveis de Ambiente** estão configuradas no seu serviço de hospedagem:
