@@ -43,17 +43,17 @@
   /* Light Mode - SEARCHABLE COLORS with high contrast */
   :root {
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 222 47% 5%; /* Darker for better visibility */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 222 47% 5%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     --primary: 24.6 95% 53.1%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: 222.2 47.4% 5.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215 25% 27%; /* Darker gray for better readability */
+    --muted-foreground: 215 25% 15%; /* Much darker for better readability */
     --accent: 24.6 95% 53.1%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
@@ -92,6 +92,7 @@
   }
 
   html {
+    font-size: 90%; /* Reduced from 100% to shrink the site */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -137,11 +138,11 @@
 
   /* Melhorar legibilidade do laranja em texto sobre fundo branco */
   :not(.dark) .text-orange-500 {
-    color: #c2410c !important; /* Orange-700 for high contrast */
+    color: #9a3412 !important; /* Orange-800 for high contrast */
   }
 
   :not(.dark) .text-orange-600 {
-    color: #9a3412 !important; /* Orange-800 */
+    color: #7c2d12 !important; /* Orange-900 */
   }
 }
 

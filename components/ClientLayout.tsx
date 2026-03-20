@@ -39,10 +39,10 @@ function HeaderContent() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-slate-200/50 dark:border-slate-800/50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-sm transition-colors duration-300">
-        <div className="w-full px-3 sm:px-4 md:px-6 flex items-center justify-between h-14 sm:h-16">
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-6 flex-1 min-w-0">
-            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-black text-base sm:text-lg shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 group-hover:scale-110 transition-all duration-300">
+        <div className="w-full px-3 sm:px-4 md:px-6 flex items-center justify-between h-12 sm:h-14">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+            <Link href="/" className="flex items-center gap-2 group shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-black text-sm sm:text-base shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 group-hover:scale-110 transition-all duration-300">
                 A
               </div>
               <span className="font-black text-sm sm:text-base md:text-lg tracking-tight hidden xs:block">
@@ -162,7 +162,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <div className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col transition-colors duration-300`}>
         <HeaderContent />
 
-        <main className="flex-1 w-full px-3 sm:px-4 md:px-6 py-4 sm:py-5 md:py-6 pb-24 lg:pb-6">
+        <main className="flex-1 w-full px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5 pb-20 lg:pb-5">
           <AnimatePresence mode="wait">
             <motion.div
               key="main-content"
