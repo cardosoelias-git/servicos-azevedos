@@ -10,7 +10,7 @@ npm run deploy
 ```
 
 > [!TIP]
-> Você pode adicionar uma mensagem personalizada: `npm run deploy -- "Minha mensagem de alteração"`
+> Você pode adicionar uma mensagem personalizada: `npm run deploy -- "azevedos"`
 
 **O que este comando faz:**
 - **Limpeza de Cache**: Remove a pasta `.next` automaticamente para evitar erros de visualização e "Cannot find module".
