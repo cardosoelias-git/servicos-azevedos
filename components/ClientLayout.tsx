@@ -13,7 +13,7 @@ import ThemeToggle from './ThemeToggle';
 import { ThemeProvider } from '@/hooks/useTheme';
 import Image from 'next/image';
 
-const LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_png_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19wbmdfYXpldmVkb3MucG5nIiwiaWF0IjoxNzczOTcwMDU3LCJleHAiOjE4MDU1MDYwNTd9.uBfZZt7A1dvAhJV49suHaetWqHvacIYq9EG0q6dbtSM";
+const LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_png_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19wbmdfYXpldmVkb3MucG5nIiwiaWF0IjoxNzczOTcwNTAwLCJleHAiOjE4MDU1MDY1MDB9.Ggj-VZqEiBKViIAsvGoB4aXl-SRvydKXVG4Qk0sCRIw";
 
 const inter = Inter({ subsets: ['latin'] });
 
