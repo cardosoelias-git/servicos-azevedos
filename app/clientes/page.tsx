@@ -219,68 +219,103 @@ export default function ClientesPage() {
               <UserPlus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Cliente</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[450px] rounded-3xl">
-            <form onSubmit={handleCreateCliente}>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-slate-900">Cadastrar Cliente</DialogTitle>
-                <DialogDescription className="text-slate-500">
-                  Insira as informações básicas para o novo cadastro.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-5 py-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="nome" className="font-semibold text-slate-700">Nome Completo</Label>
-                  <Input 
-                    id="nome" 
-                    placeholder="Ex: João da Silva" 
-                    className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    required
-                  />
+          <DialogContent className="sm:max-w-[480px] rounded-[2rem] p-0 border-none overflow-hidden shadow-2xl transition-all duration-500">
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-8 pb-12 relative overflow-hidden">
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl" />
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner group transition-transform duration-500 hover:rotate-6">
+                  <UserPlus className="w-7 h-7 text-white" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="cpf" className="font-semibold text-slate-700">CPF</Label>
-                    <Input 
-                      id="cpf" 
-                      placeholder="000.000.000-00" 
-                      className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                      value={cpf}
-                      onChange={handleCpfChange}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="telefone" className="font-semibold text-slate-700">Telefone</Label>
-                    <Input 
-                      id="telefone" 
-                      placeholder="(00) 00000-0000" 
-                      className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                      value={telefone}
-                      onChange={handlePhoneChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="renach" className="font-semibold text-slate-700">RENACH</Label>
-                  <Input 
-                    id="renach" 
-                    placeholder="Ex: 00000000000" 
-                    className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                    value={renach}
-                    onChange={(e) => setRenach(e.target.value)}
-                    required
-                  />
+                <div>
+                  <DialogTitle className="text-2xl font-black text-white leading-tight">Cadastrar Cliente</DialogTitle>
+                  <DialogDescription className="text-orange-50/80 font-medium">
+                    Preencha os dados abaixo para criar um novo registro.
+                  </DialogDescription>
                 </div>
               </div>
-              <DialogFooter className="gap-3">
-                <Button type="button" variant="ghost" className="rounded-xl h-12 font-bold" onClick={() => setIsModalOpen(false)}>
+            </div>
+
+            <form onSubmit={handleCreateCliente} className="bg-white px-8 -mt-6 rounded-t-[2.5rem] relative z-20 pt-8 pb-8">
+              <div className="grid gap-6">
+                <div className="grid gap-2 relative">
+                  <Label htmlFor="nome" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Nome Completo</Label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                    <Input 
+                      id="nome" 
+                      placeholder="Ex: João da Silva" 
+                      className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium placeholder:text-slate-400"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2 relative">
+                    <Label htmlFor="cpf" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">CPF</Label>
+                    <div className="relative group">
+                      <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="cpf" 
+                        placeholder="000.000.000-00" 
+                        className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium placeholder:text-slate-400"
+                        value={cpf}
+                        onChange={handleCpfChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-2 relative">
+                    <Label htmlFor="telefone" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">WhatsApp / Celular</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="telefone" 
+                        placeholder="(00) 00000-0000" 
+                        className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium placeholder:text-slate-400"
+                        value={telefone}
+                        onChange={handlePhoneChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-2 relative">
+                  <Label htmlFor="renach" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">RENACH</Label>
+                  <div className="relative group">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                    <Input 
+                      id="renach" 
+                      placeholder="00000000000" 
+                      className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium placeholder:text-slate-400"
+                      value={renach}
+                      onChange={(e) => setRenach(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-10">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  className="rounded-2xl h-14 flex-1 font-bold text-slate-500 hover:bg-slate-100/50 hover:text-slate-700" 
+                  onClick={() => setIsModalOpen(false)}
+                >
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl h-12 px-8 font-bold">Salvar Cadastro</Button>
-              </DialogFooter>
+                <Button 
+                  type="submit" 
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-14 flex-[2] font-black text-base shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 uppercase tracking-wider"
+                >
+                  Concluir Cadastro
+                </Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>

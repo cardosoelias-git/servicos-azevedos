@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Plus, Search, MoreHorizontal, Eye, FileText, ClipboardList, Filter, Trash2, Car, Users } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Eye, FileText, ClipboardList, Filter, Trash2, Car, Users, User, DollarSign, Wallet } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -241,71 +241,110 @@ export default function ServicosPage() {
               <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Serviço</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[450px] rounded-3xl">
-            <form onSubmit={handleCreateServico}>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-slate-900">Iniciar Serviço</DialogTitle>
-                <DialogDescription className="text-slate-500">
-                  Selecione o cliente e o tipo de serviço para começar.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-5 py-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="cliente" className="font-semibold text-slate-700">Cliente</Label>
-                  <Select value={clienteId} onValueChange={setClienteId} required>
-                    <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500">
-                      <SelectValue placeholder="Selecione um cliente" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      {clientes.map(c => (
-                        <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+          <DialogContent className="sm:max-w-[480px] rounded-[2rem] p-0 border-none overflow-hidden shadow-2xl transition-all duration-500">
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-8 pb-12 relative overflow-hidden">
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl" />
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner group transition-transform duration-500 hover:rotate-6">
+                  <Plus className="w-7 h-7 text-white" />
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="tipo" className="font-semibold text-slate-700">Tipo de Serviço</Label>
-                  <Select value={tipoServico} onValueChange={setTipoServico} required>
-                    <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500">
-                      <SelectValue placeholder="Selecione o serviço" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      {TIPOS_SERVICO.map(t => (
-                        <SelectItem key={t} value={t}>{t}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div>
+                  <DialogTitle className="text-2xl font-black text-white leading-tight">Iniciar Serviço</DialogTitle>
+                  <DialogDescription className="text-orange-50/80 font-medium">
+                    Selecione o cliente e os detalhes do processo.
+                  </DialogDescription>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="valorTotal" className="font-semibold text-slate-700">Valor Total (R$)</Label>
-                    <Input 
-                      id="valorTotal" 
-                      placeholder="0,00" 
-                      className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                      value={valorTotal}
-                      onChange={(e) => setValorTotal(e.target.value)}
-                      required
-                    />
+              </div>
+            </div>
+
+            <form onSubmit={handleCreateServico} className="bg-white px-8 -mt-6 rounded-t-[2.5rem] relative z-20 pt-8 pb-8 text-slate-900">
+              <div className="grid gap-6">
+                <div className="grid gap-2 relative">
+                  <Label htmlFor="cliente" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Cliente</Label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
+                    <Select value={clienteId} onValueChange={setClienteId} required>
+                      <SelectTrigger className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900">
+                        <SelectValue placeholder="Selecione um cliente" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl shadow-xl border-slate-100 p-1">
+                        {clientes.map(c => (
+                          <SelectItem key={c.id} value={c.id} className="rounded-xl py-3 px-4 focus:bg-orange-50 focus:text-orange-700 cursor-pointer text-slate-900">
+                            {c.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="valorPago" className="font-semibold text-slate-700">Valor Pago (R$)</Label>
-                    <Input 
-                      id="valorPago" 
-                      placeholder="0,00" 
-                      className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                      value={valorPago}
-                      onChange={(e) => setValorPago(e.target.value)}
-                    />
+                </div>
+
+                <div className="grid gap-2 relative">
+                  <Label htmlFor="tipo" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Tipo de Serviço</Label>
+                  <div className="relative group">
+                    <Car className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
+                    <Select value={tipoServico} onValueChange={setTipoServico} required>
+                      <SelectTrigger className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900">
+                        <SelectValue placeholder="Selecione o serviço" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl shadow-xl border-slate-100 p-1">
+                        {TIPOS_SERVICO.map(t => (
+                          <SelectItem key={t} value={t} className="rounded-xl py-3 px-4 focus:bg-orange-50 focus:text-orange-700 cursor-pointer text-slate-900">
+                            {t}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2 relative">
+                    <Label htmlFor="valorTotal" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Valor Total (R$)</Label>
+                    <div className="relative group">
+                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="valorTotal" 
+                        placeholder="0,00" 
+                        className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-black text-slate-900 placeholder:text-slate-400"
+                        value={valorTotal}
+                        onChange={(e) => setValorTotal(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-2 relative">
+                    <Label htmlFor="valorPago" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Valor Sinal (R$)</Label>
+                    <div className="relative group">
+                      <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="valorPago" 
+                        placeholder="0,00" 
+                        className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-black text-emerald-600 placeholder:text-slate-400"
+                        value={valorPago}
+                        onChange={(e) => setValorPago(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-              <DialogFooter className="gap-3">
-                <Button type="button" variant="ghost" className="rounded-xl h-12 font-bold" onClick={() => setIsModalOpen(false)}>
+
+              <div className="flex gap-3 mt-10">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  className="rounded-2xl h-14 flex-1 font-bold text-slate-500 hover:bg-slate-100/50 hover:text-slate-700" 
+                  onClick={() => setIsModalOpen(false)}
+                >
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl h-12 px-8 font-bold">Criar Processo</Button>
-              </DialogFooter>
+                <Button 
+                  type="submit" 
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-14 flex-[2] font-black text-base shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 uppercase tracking-wider"
+                >
+                  Criar Processo
+                </Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
