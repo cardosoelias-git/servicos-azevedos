@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS clientes (
   nome VARCHAR(255) NOT NULL,
   cpf VARCHAR(14) UNIQUE,
   telefone VARCHAR(20),
-  data_nascimento DATE,
+  renach VARCHAR(20),
   email VARCHAR(255),
   endereco TEXT,
   observacoes TEXT,
@@ -93,8 +93,8 @@ CREATE POLICY "Permitir exclusão servicos" ON servicos
 -- ============================================
 CREATE TABLE IF NOT EXISTS transacoes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  cliente_id UUID REFERENCES clientes(id) ON DELETE SET NULL,
-  servico_id UUID REFERENCES servicos(id) ON DELETE SET NULL,
+  cliente_id UUID REFERENCES clientes(id) ON DELETE CASCADE,
+  servico_id UUID REFERENCES servicos(id) ON DELETE CASCADE,
   cliente_nome VARCHAR(255),
   servico_nome VARCHAR(255),
   tipo VARCHAR(50) NOT NULL CHECK (tipo IN ('Entrada', 'Saída', 'A Receber')),

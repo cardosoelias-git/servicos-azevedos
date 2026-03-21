@@ -6,16 +6,14 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { User, Bell, Shield, Database, Save, Moon, Sun, Download, Upload, Trash2, AlertTriangle } from "lucide-react"
+import { User, Bell, Shield, Database, Save, Sun, Download, Upload, Trash2, AlertTriangle } from "lucide-react"
 import { motion } from "motion/react"
 import { getStorageData } from "@/lib/storage"
 import { useToast } from "@/components/ui/use-toast"
-import { useTheme } from "@/hooks/useTheme"
 
 interface Configuracoes {
   nome: string
   email: string
-  modoEscuro: boolean
   notificacoesEmail: boolean
   backupAutomatico: boolean
 }
@@ -24,14 +22,12 @@ export default function ConfiguracoesPage() {
   const [config, setConfig] = useState<Configuracoes>({
     nome: "Admin",
     email: "admin@servicosazevedo.com",
-    modoEscuro: false,
     notificacoesEmail: true,
     backupAutomatico: true
   })
   const [salvando, setSalvando] = useState(false)
   const [tabAtiva, setTabAtiva] = useState("perfil")
   const { toast } = useToast()
-  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -41,14 +37,11 @@ export default function ConfiguracoesPage() {
           const configSalva = JSON.parse(data)
           if (configSalva && Object.keys(configSalva).length > 0) {
             setConfig(configSalva)
-            if (configSalva.modoEscuro !== undefined) {
-              setTheme(configSalva.modoEscuro ? "dark" : "light")
-            }
           }
         } catch (e) {}
       }
     }
-  }, [setTheme])
+  }, [])
 
   const handleSalvar = async () => {
     setSalvando(true)
@@ -56,7 +49,6 @@ export default function ConfiguracoesPage() {
       if (typeof window !== "undefined") {
         localStorage.setItem("azevedo_configuracoes", JSON.stringify(config))
       }
-      setTheme(config.modoEscuro ? "dark" : "light")
       await new Promise(resolve => setTimeout(resolve, 500))
       toast({
         title: "Sucesso",
@@ -73,10 +65,6 @@ export default function ConfiguracoesPage() {
     }
   }
 
-  const handleToggleDarkMode = (checked: boolean) => {
-    setConfig({ ...config, modoEscuro: checked })
-    setTheme(checked ? "dark" : "light")
-  }
 
   const handleExportarDados = () => {
     const dados = {
@@ -130,8 +118,8 @@ export default function ConfiguracoesPage() {
   return (
     <div className="space-y-4 sm:space-y-5 lg:space-y-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm lg:text-base">Gerencie as preferências do sistema e sua conta.</p>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">Configurações</h1>
+        <p className="text-slate-500 text-xs sm:text-sm lg:text-base">Gerencie as preferências do sistema e sua conta.</p>
       </div>
 
       <div className="flex flex-col lg:grid lg:grid-cols-4 gap-4 md:gap-6">
@@ -163,26 +151,26 @@ export default function ConfiguracoesPage() {
             >
               <Card className="bento-card">
                 <CardHeader className="p-4 sm:p-5">
-                  <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Informações do Perfil</CardTitle>
-                  <CardDescription className="text-slate-500 dark:text-slate-400 text-xs">Atualize seu nome e e-mail.</CardDescription>
+                  <CardTitle className="text-lg font-bold text-slate-900">Informações do Perfil</CardTitle>
+                  <CardDescription className="text-slate-500 text-xs">Atualize seu nome e e-mail.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 p-4 sm:pt-0 sm:p-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="name" className="font-semibold text-slate-800 dark:text-slate-300 text-xs">Nome Completo</Label>
+                      <Label htmlFor="name" className="font-semibold text-slate-800 text-xs">Nome Completo</Label>
                       <Input 
                         id="name" 
-                        className="rounded-lg h-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm" 
+                        className="rounded-lg h-10 bg-white border-slate-200 text-slate-900 text-sm" 
                         value={config.nome}
                         onChange={(e) => setConfig({ ...config, nome: e.target.value })}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="email" className="font-semibold text-slate-800 dark:text-slate-300 text-xs">E-mail</Label>
+                      <Label htmlFor="email" className="font-semibold text-slate-800 text-xs">E-mail</Label>
                       <Input 
                         id="email" 
                         type="email"
-                        className="rounded-lg h-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm" 
+                        className="rounded-lg h-10 bg-white border-slate-200 text-slate-900 text-sm" 
                         value={config.email}
                         onChange={(e) => setConfig({ ...config, email: e.target.value })}
                       />
@@ -210,14 +198,14 @@ export default function ConfiguracoesPage() {
             >
               <Card className="bento-card">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Preferências de Notificação</CardTitle>
-                  <CardDescription className="text-slate-500 dark:text-slate-400">Configure como deseja receber alertas.</CardDescription>
+                  <CardTitle className="text-xl font-bold text-slate-900">Preferências de Notificação</CardTitle>
+                  <CardDescription className="text-slate-500">Configure como deseja receber alertas.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl transition-theme">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl transition-theme">
                     <div className="space-y-0.5">
-                      <Label className="text-base font-bold text-slate-900 dark:text-white">Notificações por E-mail</Label>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Receber alertas de novos serviços e pagamentos.</p>
+                      <Label className="text-base font-bold text-slate-900">Notificações por E-mail</Label>
+                      <p className="text-sm text-slate-500">Receber alertas de novos serviços e pagamentos.</p>
                     </div>
                     <Switch 
                       checked={config.notificacoesEmail}
@@ -246,22 +234,19 @@ export default function ConfiguracoesPage() {
             >
               <Card className="bento-card">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Preferências de Segurança</CardTitle>
-                  <CardDescription className="text-slate-500 dark:text-slate-400">Configure o modo escuro e outras opções.</CardDescription>
+                  <CardTitle className="text-xl font-bold text-slate-900">Preferências de Segurança</CardTitle>
+                  <CardDescription className="text-slate-500">Configure o modo escuro e outras opções.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl transition-theme">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl transition-theme">
                     <div className="flex items-center gap-3">
-                      {config.modoEscuro ? <Moon className="w-5 h-5 text-slate-600 dark:text-slate-400" /> : <Sun className="w-5 h-5 text-slate-600 dark:text-slate-400" />}
+                      <Sun className="w-5 h-5 text-slate-600" />
                       <div className="space-y-0.5">
-                        <Label className="text-base font-bold text-slate-900 dark:text-white">Modo Escuro</Label>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Alternar entre tema claro e escuro.</p>
+                        <Label className="text-base font-bold text-slate-900">Tema do Sistema</Label>
+                        <p className="text-sm text-slate-500">O sistema está otimizado para o tema claro.</p>
                       </div>
                     </div>
-                    <Switch 
-                      checked={theme === "dark"}
-                      onCheckedChange={handleToggleDarkMode}
-                    />
+                    <Sun className="w-6 h-6 text-orange-500" />
                   </div>
 
                   <div className="flex justify-end">
@@ -285,16 +270,16 @@ export default function ConfiguracoesPage() {
             >
               <Card className="bento-card">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Backup e Dados</CardTitle>
-                  <CardDescription className="text-slate-500 dark:text-slate-400">Gerencie seus dados e backups.</CardDescription>
+                  <CardTitle className="text-xl font-bold text-slate-900">Backup e Dados</CardTitle>
+                  <CardDescription className="text-slate-500">Gerencie seus dados e backups.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl transition-theme">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl transition-theme">
                     <div className="flex items-center gap-3">
-                      <Download className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                      <Download className="w-5 h-5 text-slate-600" />
                       <div className="space-y-0.5">
-                        <Label className="text-base font-bold text-slate-900 dark:text-white">Backup Automático</Label>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Realizar backup diário dos dados.</p>
+                        <Label className="text-base font-bold text-slate-900">Backup Automático</Label>
+                        <p className="text-sm text-slate-500">Realizar backup diário dos dados.</p>
                       </div>
                     </div>
                     <Switch 
@@ -303,32 +288,32 @@ export default function ConfiguracoesPage() {
                     />
                   </div>
 
-                  <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-4">
-                    <h3 className="font-bold text-slate-900 dark:text-white">Ações de Dados</h3>
+                  <div className="border-t border-slate-200 pt-4 space-y-4">
+                    <h3 className="font-bold text-slate-900">Ações de Dados</h3>
                     
                     <div className="flex flex-col sm:flex-row gap-4">
                       <Button 
                         variant="outline"
                         onClick={handleExportarDados}
-                        className="rounded-xl h-12 font-bold flex-1 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                        className="rounded-xl h-12 font-bold flex-1 border-slate-200 hover:bg-slate-50"
                       >
                         <Download className="mr-2 h-4 w-4" /> Exportar Dados (JSON)
                       </Button>
                       
                       <Button 
                         variant="outline"
-                        className="rounded-xl h-12 font-bold flex-1 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                        className="rounded-xl h-12 font-bold flex-1 border-slate-200 hover:bg-slate-50"
                       >
                         <Upload className="mr-2 h-4 w-4" /> Importar Dados
                       </Button>
                     </div>
 
-                    <div className="bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-2xl p-4">
+                    <div className="bg-red-50 border border-red-100 rounded-2xl p-4">
                       <div className="flex items-start gap-3">
-                        <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400 mt-0.5" />
+                        <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
                         <div className="flex-1">
-                          <h4 className="font-bold text-red-700 dark:text-red-400">Zona de Perigo</h4>
-                          <p className="text-sm text-red-600 dark:text-red-500 mt-1">
+                          <h4 className="font-bold text-red-700">Zona de Perigo</h4>
+                          <p className="text-sm text-red-600 mt-1">
                             Esta ação é irreversível. Todos os dados serão permanentemente removidos.
                           </p>
                           <Button 

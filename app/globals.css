@@ -32,20 +32,16 @@
   --radius-sm: 0.5rem;
 }
 
-/* Configurar Dark Mode para usar a classe .dark */
-@variant dark (&:where(.dark, .dark *));
-
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: hsl(var(--border) / 0.8);
   }
 
-  /* Light Mode - SEARCHABLE COLORS with high contrast */
   :root {
     --background: 0 0% 100%;
-    --foreground: 222 47% 5%; /* Darker for better visibility */
+    --foreground: 222 47% 2%; /* Praticamente preto para máxima leitura */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 5%;
+    --card-foreground: 222 47% 2%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     --primary: 24.6 95% 53.1%;
@@ -53,46 +49,19 @@
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 5.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 30%; /* Much darker for better readability (Slate-700 approx) */
+    --muted-foreground: 215.4 16.3% 35%; /* Slate-600/700 para leitura */
     --accent: 24.6 95% 53.1%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214.3 31.8% 88%; /* Slightly darker border for definition */
-    --input: 214.3 31.8% 88%;
+    --border: 214.3 31.8% 91%; /* Borda sutil mas definida */
+    --input: 214.3 31.8% 91%;
     --ring: 24.6 95% 53.1%;
-    --radius: 0.6rem; /* Slightly smaller radius for professional look */
-  }
-
-  /* Dark Mode Colors */
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 6%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 24.6 95% 53.1%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 80%; /* Even lighter for better contrast in dark mode */
-    --accent: 24.6 95% 53.1%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 25%;
-    --input: 217.2 32.6% 25%;
-    --ring: 24.6 95% 53.1%;
-  }
-
-  * {
-    border-color: hsl(var(--border));
+    --radius: 0.6rem;
   }
 
   html {
-    font-size: 90%; /* Reduced from 100% to shrink the site */
+    font-size: 90%;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -100,50 +69,31 @@
   }
 
   body {
-    background-color: hsl(var(--background));
+    background-color: #f8fafc; /* Fundo levemente acinzentado para destacar os cards brancos */
     color: hsl(var(--foreground));
-    font-weight: 400;
+    font-weight: 450; /* Um pouco mais de peso para ajudar na leitura */
     line-height: 1.6;
     letter-spacing: -0.01em;
   }
 
-  /* Títulos com peso de fonte mais forte para melhor legibilidade */
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.3;
-    color: hsl(var(--foreground));
+    font-weight: 800; /* Mais negrito */
+    line-height: 1.25;
+    color: #0f172a;
   }
 
-  /* Texto secundário/mutado - Overrides para garantir legibilidade (Mínimo 4.5:1 contraste) */
+  /* Melhora readability de textos secundários */
   .text-muted-foreground {
-    color: hsl(var(--muted-foreground)) !important;
+    color: #475569 !important;
   }
 
-  .text-muted {
-    color: hsl(var(--muted-foreground)) !important;
-  }
-
-  /* Forçar cores mais escuras para classes slate em light mode se não estiver no dark mode */
-  :not(.dark) .text-slate-400 {
-    color: #475569 !important; /* Slate-600 for better reading */
-  }
-
-  :not(.dark) .text-slate-500 {
-    color: #334155 !important; /* Slate-700 */
-  }
-
-  :not(.dark) .text-slate-600 {
-    color: #1e293b !important; /* Slate-800 */
-  }
-
-  /* Melhorar legibilidade do laranja em texto sobre fundo branco */
-  :not(.dark) .text-orange-500 {
-    color: #c2410c !important; /* Orange-700 for high contrast */
-  }
-
-  :not(.dark) .text-orange-600 {
-    color: #9a3412 !important; /* Orange-800 */
-  }
+  /* Garante que classes slate comuns sejam bem legíveis */
+  .text-slate-400 { color: #64748b !important; }
+  .text-slate-500 { color: #475569 !important; }
+  .text-slate-600 { color: #334155 !important; }
+  .text-slate-700 { color: #1e293b !important; }
+  .text-slate-800 { color: #0f172a !important; }
+  .text-slate-900 { color: #020617 !important; }
 }
 
 @layer utilities {
@@ -154,48 +104,19 @@
     border: 1px solid rgba(249, 115, 22, 0.15);
   }
   
-  .dark .glass {
-    background: rgba(15, 23, 42, 0.9);
-    border-color: rgba(249, 115, 22, 0.2);
-  }
-  
   .bento-card {
-    @apply bg-white border border-slate-200 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(249,115,22,0.15)] transition-all duration-500 rounded-2xl overflow-hidden;
     background-color: #ffffff !important;
-    border-color: #cbd5e1 !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 1.25rem;
+    overflow: hidden;
   }
   
-  .dark .bento-card {
-    @apply bg-slate-900 border-slate-700/50;
-    background-color: hsl(222.2 84% 8%) !important;
-    border-color: hsl(217.2 32.6% 25%) !important;
-    box-shadow: 0 4px 20px -5px rgba(0,0,0,0.4);
-  }
-  
-  .gradient-border {
-    position: relative;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #F97316, #0F172A) border-box;
-    border: 2px solid transparent;
-  }
-  
-  .btn-glow {
-    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
-    transition: all 0.3s ease;
-  }
-  
-  .btn-glow:hover {
-    box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
-    transform: translateY(-2px);
-  }
-  
-  .card-hover {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .card-hover:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 20px 40px -12px rgba(249, 115, 22, 0.2);
+  .bento-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px -12px rgba(249, 115, 22, 0.12);
+    border-color: rgba(249, 115, 22, 0.3) !important;
   }
   
   .text-gradient {
@@ -205,57 +126,15 @@
     background-clip: text;
   }
   
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-  }
-  
-  .animate-pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
-  }
-  
-  @keyframes pulse-slow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-  
-  .shimmer {
-    background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.1), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-  }
-  
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  
   .bg-grid-pattern {
-    background-image: radial-gradient(circle, rgba(249, 115, 22, 0.03) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(249, 115, 22, 0.04) 1px, transparent 1px);
     background-size: 24px 24px;
-  }
-  
-  .bg-dots-pattern {
-    background-image: radial-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px);
-    background-size: 16px 16px;
-  }
-
-  .dark .bg-grid-pattern {
-    background-image: radial-gradient(circle, rgba(249, 115, 22, 0.08) 1px, transparent 1px);
-  }
-
-  .dark .bg-dots-pattern {
-    background-image: radial-gradient(rgba(249, 115, 22, 0.1) 1px, transparent 1px);
   }
 }
 
-/* Light Mode Scrollbar - mais visível */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -263,289 +142,36 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #f97316, #ea580c);
+  background: #cbd5e1;
   border-radius: 10px;
-  border: 3px solid #f1f5f9;
+  border: 2px solid #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ea580c, #c2410c);
+  background: #94a3b8;
 }
 
-/* Dark Mode Scrollbar */
-.dark ::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #f97316, #ea580c);
-  border-color: #1e293b;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ea580c, #c2410c);
-}
-
-/* Selection - melhor contraste */
+/* Selection */
 ::selection {
-  background: rgba(249, 115, 22, 0.25);
+  background: rgba(249, 115, 22, 0.2);
   color: #0f172a;
 }
 
-.dark ::selection {
-  background: rgba(249, 115, 22, 0.4);
-  color: #f8fafc;
-}
-
-/* Focus States - mais visível */
-:focus-visible {
-  outline: 2px solid #f97316;
-  outline-offset: 2px;
-}
-
-.dark :focus-visible {
-  outline-color: #f97316;
-}
-
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Card Styles - fundo branco sólido no tema claro */
-.card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-}
-
-.dark .card {
-  background-color: hsl(222.2 84% 8%);
-  border-color: hsl(217.2 32.6% 25%);
-}
-
-/* Table Styles */
-.table {
-  background-color: #ffffff;
-}
-
-.dark .table {
-  background-color: hsl(222.2 84% 8%);
-}
-
-/* Input Styles - texto mais legível */
+/* Inputs con contraste */
 input, textarea, select {
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
-  font-weight: 400;
+  background-color: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  border-radius: 0.75rem !important;
+  transition: all 0.2s ease !important;
 }
 
-input::placeholder, textarea::placeholder {
-  color: #94a3b8;
+input:focus, textarea:focus, select:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1) !important;
 }
 
-.dark input, .dark textarea, .dark select {
-  background-color: hsl(217.2 32.6% 12%);
-  border-color: hsl(217.2 32.6% 25%);
-  color: #f1f5f9;
-}
-
-.dark input::placeholder, .dark textarea::placeholder {
-  color: hsl(215 20.2% 55%);
-}
-
-/* Button Styles */
-.btn-primary {
-  background: linear-gradient(135deg, #F97316, #EA580C);
-  color: white;
-  font-weight: 600;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #EA580C, #C2410C);
-}
-
-/* Dialog/Modal Styles */
-.dialog-content {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-}
-
-.dark .dialog-content {
-  background-color: hsl(222.2 84% 8%);
-  border-color: hsl(217.2 32.6% 25%);
-}
-
-/* Dropdown Menu */
-.dropdown-menu {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-}
-
-.dark .dropdown-menu {
-  background-color: hsl(222.2 84% 8%);
-  border-color: hsl(217.2 32.6% 25%);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
-}
-
-/* Toast Styles */
-.toast {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-}
-
-.dark .toast {
-  background-color: hsl(222.2 84% 8%);
-  border-color: hsl(217.2 32.6% 25%);
-}
-
-/* Badge/Status Styles - cores mais saturadas */
-.badge-success {
-  background-color: #dcfce7;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-
-.dark .badge-success {
-  background-color: rgba(22, 163, 74, 0.2);
-  color: #4ade80;
-  border-color: rgba(22, 163, 74, 0.3);
-}
-
-.badge-warning {
-  background-color: #fef3c7;
-  color: #b45309;
-  border: 1px solid #fde68a;
-}
-
-.dark .badge-warning {
-  background-color: rgba(217, 119, 6, 0.2);
-  color: #fbbf24;
-  border-color: rgba(217, 119, 6, 0.3);
-}
-
-.badge-error {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-}
-
-.dark .badge-error {
-  background-color: rgba(220, 38, 38, 0.2);
-  color: #f87171;
-  border-color: rgba(220, 38, 38, 0.3);
-}
-
-/* Progress Bar */
-.progress-bar {
-  background-color: #e2e8f0;
-}
-
-.dark .progress-bar {
-  background-color: hsl(217.2 32.6% 20%);
-}
-
-/* Stats Card */
-.stats-card {
-  background: linear-gradient(135deg, #F97316, #EA580C);
-  color: white;
-}
-
-.dark .stats-card {
-  background: linear-gradient(135deg, #EA580C, #C2410C);
-}
-
-/* Skeleton Loading - mais visível */
-.skeleton {
-  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite;
-}
-
-.dark .skeleton {
-  background: linear-gradient(90deg, hsl(217.2 32.6% 15%) 25%, hsl(217.2 32.6% 20%) 50%, hsl(217.2 32.6% 15%) 75%);
-  background-size: 200% 100%;
-}
-
-@keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Focus Ring for Radix */
-[data-state="checked"] .check-indicator {
-  background-color: #F97316;
-}
-
-/* Transition utilities */
-.transition-theme {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-/* Texto mais legível em elementos específicos */
-.text-slate-600 {
-  color: #334155 !important; /* Slate-700 */
-}
-
-.text-slate-700 {
-  color: #1e293b !important; /* Slate-800 */
-}
-
-.text-slate-800 {
-  color: #0f172a !important; /* Slate-900 */
-}
-
-.dark .text-slate-400 {
-  color: #f1f5f9 !important; /* Slate-100 for maximum visibility */
-}
-
-.dark .text-slate-500 {
-  color: #e2e8f0 !important; /* Slate-200 */
-}
-
-.dark .text-muted-foreground {
-  color: #f1f5f9 !important;
-}
-
-/* Links - Removendo cor global agressiva que quebra botões */
-a {
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.text-link {
-  color: hsl(var(--primary));
-}
-
-.text-link:hover {
-  color: hsl(var(--primary) / 0.9);
-}
-
-.dark .text-link {
-  color: hsl(24.6 95% 60%);
-}
-
-/* Headers mais escuros no tema claro */
-header, .header {
-  background-color: hsl(var(--background) / 0.98) !important;
-}
-
-.dark header, .dark .header {
-  background-color: hsl(var(--background) / 0.98) !important;
-}
-
-/* Footer mais legível */
-footer {
-  background-color: hsl(var(--background)) !important;
-  color: hsl(var(--foreground)) !important;
-}
-
-/* Melhorar contraste em backgrounds */
-.bg-slate-50 {
-  background-color: #f8fafc !important;
-}
-
-.bg-slate-100 {
-  background-color: #f1f5f9 !important;
-}
+/* Status Badges */
+.badge-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.badge-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+.badge-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }

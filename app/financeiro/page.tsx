@@ -131,8 +131,8 @@ export default function FinanceiroPage() {
     <div className="space-y-4 sm:space-y-5 lg:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Financeiro</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o fluxo de caixa e as pendências financeiras.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Financeiro</h1>
+          <p className="text-slate-500 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o fluxo de caixa e as pendências financeiras.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -279,7 +279,7 @@ export default function FinanceiroPage() {
           <Input 
             type="search" 
             placeholder="Pesquisar..." 
-            className="pl-9 h-10 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-lg transition-all text-xs"
+            className="pl-9 h-10 bg-slate-50 border-transparent focus:bg-white focus:border-orange-500 rounded-lg transition-all text-xs"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -316,7 +316,7 @@ export default function FinanceiroPage() {
       <div className="hidden md:block bg-card rounded-2xl shadow-sm border border-border overflow-hidden transition-theme">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
+            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Data</TableHead>
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Cliente</TableHead>
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Serviço</TableHead>
@@ -352,30 +352,30 @@ export default function FinanceiroPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group hover:bg-orange-50/30 dark:hover:bg-orange-500/10 transition-colors border-b last:border-0"
-                >
-                  <TableCell className="text-slate-500 py-3.5 text-xs font-medium">
-                    {new Date(transacao.data).toLocaleDateString("pt-BR")}
-                  </TableCell>
-                  <TableCell className="font-bold text-slate-900 py-3.5 text-sm">{transacao.cliente}</TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5 font-medium text-xs">{transacao.servico}</TableCell>
-                  <TableCell className="py-3.5">
-                    <span className={cn(
-                      "inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider",
-                      transacao.tipo === "Entrada" ? 'text-emerald-700 dark:text-emerald-500' : 'text-orange-700 dark:text-orange-500'
+                  className="group hover:bg-orange-50/30 transition-colors border-b last:border-0"
+                  >
+                    <TableCell className="text-slate-500 py-3.5 text-xs font-medium">
+                      {new Date(transacao.data).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell className="font-bold text-slate-900 py-3.5 text-sm">{transacao.cliente}</TableCell>
+                    <TableCell className="text-slate-700 py-3.5 font-medium text-xs">{transacao.servico}</TableCell>
+                    <TableCell className="py-3.5">
+                      <span className={cn(
+                        "inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider",
+                        transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-700'
+                      )}>
+                        {transacao.tipo === "Entrada" ? (
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        ) : (
+                          <ArrowDownRight className="h-3.5 w-3.5" />
+                        )}
+                        {transacao.tipo}
+                      </span>
+                    </TableCell>
+                    <TableCell className={cn(
+                      "text-right font-black py-3.5 text-base",
+                      transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-700'
                     )}>
-                      {transacao.tipo === "Entrada" ? (
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      ) : (
-                        <ArrowDownRight className="h-3.5 w-3.5" />
-                      )}
-                      {transacao.tipo}
-                    </span>
-                  </TableCell>
-                  <TableCell className={cn(
-                    "text-right font-black py-3.5 text-base",
-                    transacao.tipo === "Entrada" ? 'text-emerald-700 dark:text-emerald-500' : 'text-orange-700 dark:text-orange-500'
-                  )}>
                     R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </TableCell>
                   <TableCell className="py-3.5">
@@ -406,13 +406,13 @@ export default function FinanceiroPage() {
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50">
+            <div key={i} className="bg-white rounded-xl p-4 border border-slate-200/60">
               <Skeleton className="h-20 w-full rounded-lg" />
             </div>
           ))
         ) : filteredTransacoes.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900/80 rounded-xl p-8 border border-slate-200/60 dark:border-slate-700/50 text-center">
-            <p className="text-slate-400 dark:text-slate-500 font-medium">Nenhuma transação registrada no período.</p>
+          <div className="bg-white rounded-xl p-8 border border-slate-200/60 text-center">
+            <p className="text-slate-400 font-medium">Nenhuma transação registrada no período.</p>
           </div>
         ) : (
           filteredTransacoes.map((transacao, index) => (
@@ -425,7 +425,7 @@ export default function FinanceiroPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white">{transacao.cliente}</h3>
+                  <h3 className="font-bold text-slate-900">{transacao.cliente}</h3>
                   <p className="text-sm text-slate-500">{transacao.servico}</p>
                 </div>
                 <span className={cn(

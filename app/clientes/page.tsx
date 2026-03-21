@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Search, MoreHorizontal, Edit, Trash2, UserPlus, Filter, User, Phone, Calendar } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Edit, Trash2, UserPlus, Filter, User, Phone, Calendar, FileText } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -36,9 +36,9 @@ import { motion } from "motion/react"
 import { getStorageData, addStorageItem, deleteStorageItem } from "@/lib/storage"
 
 const mockClientes = [
-  { id: "1", nome: "João Silva", cpf: "111.222.333-44", telefone: "(11) 99999-8888", data_nascimento: "1990-05-15" },
-  { id: "2", nome: "Maria Oliveira", cpf: "555.666.777-88", telefone: "(11) 97777-6666", data_nascimento: "1985-10-20" },
-  { id: "3", nome: "Pedro Santos", cpf: "999.000.111-22", telefone: "(11) 95555-4444", data_nascimento: "2000-02-28" },
+  { id: "1", nome: "João Silva", cpf: "111.222.333-44", telefone: "(11) 99999-8888", renach: "12345678900" },
+  { id: "2", nome: "Maria Oliveira", cpf: "555.666.777-88", telefone: "(11) 97777-6666", renach: "98765432111" },
+  { id: "3", nome: "Pedro Santos", cpf: "999.000.111-22", telefone: "(11) 95555-4444", renach: "55544433322" },
 ]
 
 export default function ClientesPage() {
@@ -51,7 +51,7 @@ export default function ClientesPage() {
   const [nome, setNome] = useState("")
   const [cpf, setCpf] = useState("")
   const [telefone, setTelefone] = useState("")
-  const [dataNascimento, setDataNascimento] = useState("")
+  const [renach, setRenach] = useState("")
 
   useEffect(() => {
     fetchClientes()
@@ -91,7 +91,7 @@ export default function ClientesPage() {
       }
       const { error } = await (await import("@/lib/supabase")).supabase
         .from("clientes")
-        .insert([{ nome, cpf, telefone, data_nascimento: dataNascimento }])
+        .insert([{ nome, cpf, telefone, renach }])
       if (error) throw error
       setClientes([...clientes])
       toast({ title: "Sucesso", description: "✅ Cliente criado com sucesso!" })
@@ -101,7 +101,7 @@ export default function ClientesPage() {
         nome,
         cpf,
         telefone,
-        data_nascimento: dataNascimento,
+        renach,
         created_at: new Date().toISOString()
       }
       const updatedData = addStorageItem("clientes", newCliente)
@@ -122,9 +122,29 @@ export default function ClientesPage() {
       setClientes(clientes.filter(c => c.id !== id))
       toast({ title: "Sucesso", description: "✅ Cliente excluído com sucesso!" })
     } catch {
+      const clientToDelete = clientes.find(c => c.id === id)
+      const clientName = clientToDelete?.nome
+
+      // Cascade Delete in Local Storage
+      if (typeof window !== "undefined") {
+        const { setStorageData } = await import("@/lib/storage")
+        
+        // Delete related services
+        const services = getStorageData("servicos", [])
+        const updatedServices = services.filter((s: any) => s.cliente_id !== id)
+        setStorageData("servicos", updatedServices)
+
+        // Delete related transactions
+        if (clientName) {
+          const transacoes = getStorageData("transacoes", [])
+          const updatedTransacoes = transacoes.filter((t: any) => t.cliente !== clientName)
+          setStorageData("transacoes", updatedTransacoes)
+        }
+      }
+
       deleteStorageItem("clientes", id)
       setClientes(clientes.filter(c => c.id !== id))
-      toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente excluído com sucesso!" })
+      toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente e todos os dados relacionados foram excluídos!" })
     }
   }
 
@@ -132,7 +152,7 @@ export default function ClientesPage() {
     setNome("")
     setCpf("")
     setTelefone("")
-    setDataNascimento("")
+    setRenach("")
   }
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,8 +183,8 @@ export default function ClientesPage() {
     <div className="space-y-4 sm:space-y-5 lg:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Clientes</h1>
-          <p className="text-slate-500 dark:text-slate-100 mt-0.5 font-medium text-xs sm:text-sm">Gerencie e visualize todos os clientes cadastrados.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Clientes</h1>
+          <p className="text-slate-500 mt-0.5 font-medium text-xs sm:text-sm">Gerencie e visualize todos os clientes cadastrados.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -218,13 +238,13 @@ export default function ClientesPage() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="dataNascimento" className="font-semibold text-slate-700">Data de Nascimento</Label>
+                  <Label htmlFor="renach" className="font-semibold text-slate-700">RENACH</Label>
                   <Input 
-                    id="dataNascimento" 
-                    type="date"
+                    id="renach" 
+                    placeholder="Ex: 00000000000" 
                     className="rounded-xl h-12 border-slate-200 focus:ring-orange-500 focus:border-orange-500"
-                    value={dataNascimento}
-                    onChange={(e) => setDataNascimento(e.target.value)}
+                    value={renach}
+                    onChange={(e) => setRenach(e.target.value)}
                     required
                   />
                 </div>
@@ -246,7 +266,7 @@ export default function ClientesPage() {
           <Input 
             type="search" 
             placeholder="Pesquisar..." 
-            className="pl-9 h-10 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-lg transition-all text-xs sm:text-sm text-slate-900 dark:text-white"
+            className="pl-9 h-10 bg-slate-50 border-transparent focus:bg-white focus:border-orange-500 rounded-lg transition-all text-xs sm:text-sm text-slate-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -259,11 +279,11 @@ export default function ClientesPage() {
       <div className="hidden md:block bg-card rounded-2xl shadow-sm border border-border overflow-hidden transition-theme">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
+            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Nome</TableHead>
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">CPF</TableHead>
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Telefone</TableHead>
-              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Data de Nascimento</TableHead>
+              <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">RENACH</TableHead>
               <TableHead className="w-[80px] font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -291,7 +311,7 @@ export default function ClientesPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group hover:bg-orange-50/30 dark:hover:bg-orange-500/10 transition-colors border-b last:border-0"
+                  className="group hover:bg-orange-50/30 transition-colors border-b last:border-0"
                 >
                   <TableCell className="font-bold text-slate-900 py-3.5">
                     <div className="flex items-center gap-2.5">
@@ -301,17 +321,17 @@ export default function ClientesPage() {
                       <span className="text-sm">{cliente.nome}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5 font-mono text-xs">{cliente.cpf}</TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5">
+                  <TableCell className="text-slate-700 py-3.5 font-mono text-xs">{cliente.cpf}</TableCell>
+                  <TableCell className="text-slate-700 py-3.5">
                     <div className="flex items-center gap-1.5 text-xs">
                       <Phone className="w-3.5 h-3.5 text-orange-400" />
                       {cliente.telefone}
                     </div>
                   </TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300 py-3.5">
+                  <TableCell className="text-slate-700 py-3.5">
                     <div className="flex items-center gap-1.5 text-xs">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                      {cliente.data_nascimento ? new Date(cliente.data_nascimento).toLocaleDateString('pt-BR') : '-'}
+                      <FileText className="w-3.5 h-3.5 text-slate-400" />
+                      {cliente.renach || '-'}
                     </div>
                   </TableCell>
                   <TableCell className="py-3.5 text-right">
@@ -347,14 +367,14 @@ export default function ClientesPage() {
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50">
+            <div key={i} className="bg-white rounded-xl p-4 border border-slate-200/60">
               <Skeleton className="h-6 w-48 rounded-lg mb-4" />
               <Skeleton className="h-16 w-full rounded-lg" />
             </div>
           ))
         ) : filteredClientes.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900/80 rounded-xl p-8 border border-slate-200/60 dark:border-slate-700/50 text-center">
-            <p className="text-slate-400 dark:text-slate-500 font-medium">Nenhum cliente encontrado na base de dados.</p>
+          <div className="bg-white rounded-xl p-8 border border-slate-200/60 text-center">
+            <p className="text-slate-400 font-medium">Nenhum cliente encontrado na base de dados.</p>
           </div>
         ) : (
           filteredClientes.map((cliente, index) => (
@@ -370,20 +390,20 @@ export default function ClientesPage() {
                   {cliente.nome.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white">{cliente.nome}</h3>
+                  <h3 className="font-bold text-slate-900">{cliente.nome}</h3>
                   <p className="text-sm text-slate-500 font-mono">{cliente.cpf}</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
                   <Phone className="w-4 h-4 text-orange-400" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">{cliente.telefone}</span>
+                  <span className="text-sm text-slate-600">{cliente.telefone}</span>
                 </div>
-                <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {cliente.data_nascimento ? new Date(cliente.data_nascimento).toLocaleDateString('pt-BR') : '-'}
+                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                  <FileText className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-slate-600">
+                    {cliente.renach || '-'}
                   </span>
                 </div>
               </div>

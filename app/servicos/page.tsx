@@ -190,9 +190,27 @@ export default function ServicosPage() {
       setServicos(servicos.filter(s => s.id !== id))
       toast({ title: "Sucesso", description: "✅ Serviço excluído com sucesso!" })
     } catch {
+      const serviceToDelete = servicos.find(s => s.id === id)
+      const serviceType = serviceToDelete?.tipo_servico
+      const clientName = serviceToDelete?.cliente_nome || serviceToDelete?.clientes?.nome
+
+      // Cascade Delete in Local Storage
+      if (typeof window !== "undefined") {
+        const { setStorageData } = await import("@/lib/storage")
+        
+        // Delete related transactions
+        if (clientName && serviceType) {
+          const transacoes = getStorageData("transacoes", [])
+          const updatedTransacoes = transacoes.filter((t: any) => 
+            !(t.cliente === clientName && t.servico === serviceType)
+          )
+          setStorageData("transacoes", updatedTransacoes)
+        }
+      }
+
       deleteStorageItem("servicos", id)
       setServicos(servicos.filter(s => s.id !== id))
-      toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço excluído com sucesso!" })
+      toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço e transações relacionadas foram excluídos!" })
     }
   }
 
@@ -207,8 +225,8 @@ export default function ServicosPage() {
     <div className="space-y-4 sm:space-y-5 lg:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Serviços</h1>
-          <p className="text-slate-500 dark:text-slate-100 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o progresso de cada processo de habilitação.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Serviços</h1>
+          <p className="text-slate-500 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o progresso de cada processo de habilitação.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -293,12 +311,12 @@ export default function ServicosPage() {
           <Input 
             type="search" 
             placeholder="Pesquisar..." 
-            className="pl-9 h-10 bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-orange-500 rounded-lg transition-all text-xs sm:text-sm text-slate-900 dark:text-white"
+            className="pl-9 h-10 bg-slate-50 border-transparent focus:bg-white focus:border-orange-500 rounded-lg transition-all text-xs sm:text-sm text-slate-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="h-10 px-3 rounded-lg font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-xs text-slate-700 dark:text-slate-400">
+        <Button variant="outline" className="h-10 px-3 rounded-lg font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-xs">
           <Filter className="mr-1.5 h-3.5 w-3.5" /> <span className="hidden sm:inline">Filtros</span>
         </Button>
       </div>
@@ -306,7 +324,7 @@ export default function ServicosPage() {
       <div className="hidden md:block bg-card rounded-2xl shadow-sm border border-border overflow-hidden transition-theme">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
+            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Cliente</TableHead>
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Serviço</TableHead>
               <TableHead className="font-black text-muted-foreground h-11 text-[11px] uppercase tracking-wider">Progresso</TableHead>
@@ -329,7 +347,7 @@ export default function ServicosPage() {
               ))
             ) : filteredServicos.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-40 text-center text-slate-400 dark:text-slate-500 font-medium">
+                <TableCell colSpan={6} className="h-40 text-center text-slate-400 font-medium">
                   Nenhum serviço em andamento no momento.
                 </TableCell>
               </TableRow>
@@ -342,7 +360,7 @@ export default function ServicosPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group hover:bg-orange-50/30 dark:hover:bg-orange-500/10 transition-colors border-b last:border-0"
+                    className="group hover:bg-orange-50/30 transition-colors border-b last:border-0"
                   >
                     <TableCell className="font-bold text-slate-900 py-3 text-sm">
                       {servico.clientes?.nome || servico.cliente_nome}
@@ -350,7 +368,7 @@ export default function ServicosPage() {
                     <TableCell className="py-3">
                       <div className="flex items-center gap-2">
                         <ClipboardList className="w-3.5 h-3.5 text-orange-400" />
-                        <span className="text-slate-700 dark:text-slate-300 font-medium text-xs">{servico.tipo_servico}</span>
+                        <span className="text-slate-700 font-medium text-xs">{servico.tipo_servico}</span>
                       </div>
                     </TableCell>
                     <TableCell className="py-3">
@@ -359,7 +377,7 @@ export default function ServicosPage() {
                           <span>{servico.etapas_completas || 0} / {servico.total_etapas || 9} ETAPAS</span>
                           <span>{progress}%</span>
                         </div>
-                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                           <motion.div 
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
@@ -374,10 +392,10 @@ export default function ServicosPage() {
                     </TableCell>
                     <TableCell className="text-right py-3">
                       <div className="space-y-0.5">
-                        <div className="text-emerald-700 dark:text-emerald-500 font-bold text-xs">
+                        <div className="text-emerald-700 font-bold text-xs">
                           R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
-                        <div className="text-orange-600 dark:text-orange-400 font-medium text-[10px]">
+                        <div className="text-orange-600 font-medium text-[10px]">
                           Faltam R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
                       </div>
@@ -437,14 +455,14 @@ export default function ServicosPage() {
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200/60 dark:border-slate-700/50">
+            <div key={i} className="bg-white rounded-xl p-4 border border-slate-200/60">
               <Skeleton className="h-6 w-48 rounded-lg mb-4" />
               <Skeleton className="h-20 w-full rounded-lg" />
             </div>
           ))
         ) : filteredServicos.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900/80 rounded-xl p-8 border border-slate-200/60 dark:border-slate-700/50 text-center">
-            <p className="text-slate-400 dark:text-slate-500 font-medium">Nenhum serviço em andamento no momento.</p>
+          <div className="bg-white rounded-xl p-8 border border-slate-200/60 text-center">
+            <p className="text-slate-400 font-medium">Nenhum serviço em andamento no momento.</p>
           </div>
         ) : (
           filteredServicos.map((servico, index) => {
@@ -459,7 +477,7 @@ export default function ServicosPage() {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white">{servico.clientes?.nome || servico.cliente_nome}</h3>
+                    <h3 className="font-bold text-slate-900">{servico.clientes?.nome || servico.cliente_nome}</h3>
                     <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
                       <ClipboardList className="w-3 h-3" /> {servico.tipo_servico}
                     </p>
@@ -500,11 +518,11 @@ export default function ServicosPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg">
+                  <div className="p-3 bg-emerald-50 rounded-lg">
                     <p className="text-[10px] text-emerald-600 font-medium uppercase">Pago</p>
                     <p className="font-bold text-emerald-600 text-sm">R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
-                  <div className="p-3 bg-orange-50 dark:bg-orange-500/10 rounded-lg">
+                  <div className="p-3 bg-orange-50 rounded-lg">
                     <p className="text-[10px] text-orange-600 font-medium uppercase">A Receber</p>
                     <p className="font-bold text-orange-600 text-sm">R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>

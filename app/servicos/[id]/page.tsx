@@ -223,8 +223,8 @@ export default function ServicoDetailsPage() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white truncate">Detalhes do Serviço</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium text-sm sm:text-base truncate">{servico.cliente_nome} - {servico.tipo_servico}</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 truncate">Detalhes do Serviço</h1>
+          <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base truncate">{servico.cliente_nome} - {servico.tipo_servico}</p>
         </div>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
           <Dialog open={isPagamentoModalOpen} onOpenChange={setIsPagamentoModalOpen}>
@@ -314,19 +314,19 @@ export default function ServicoDetailsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <Card className="bento-card lg:col-span-1">
-          <CardHeader className="pb-2 md:pb-4">
-            <CardTitle className="text-base sm:text-lg font-black text-slate-900 dark:text-white">Resumo Financeiro</CardTitle>
+        <CardHeader className="pb-2 md:pb-4">
+            <CardTitle className="text-base sm:text-lg font-black text-slate-900">Resumo Financeiro</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 md:space-y-5">
-            <div className="p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg sm:rounded-xl">
+            <div className="p-3 sm:p-4 bg-slate-50 rounded-lg sm:rounded-xl">
               <p className="text-xs sm:text-sm text-slate-500 font-medium">Valor Total</p>
-              <p className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white">R$ {servico.valor_total.toFixed(2).replace(".", ",")}</p>
+              <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {servico.valor_total.toFixed(2).replace(".", ",")}</p>
             </div>
-            <div className="p-3 sm:p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg sm:rounded-xl border border-emerald-100">
+            <div className="p-3 sm:p-4 bg-emerald-50 rounded-lg sm:rounded-xl border border-emerald-100">
               <p className="text-xs sm:text-sm text-emerald-600 font-medium">Valor Pago</p>
               <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {servico.valor_pago.toFixed(2).replace(".", ",")}</p>
             </div>
-            <div className="p-3 sm:p-4 bg-orange-50 dark:bg-orange-500/10 rounded-lg sm:rounded-xl border border-orange-100">
+            <div className="p-3 sm:p-4 bg-orange-50 rounded-lg sm:rounded-xl border border-orange-100">
               <p className="text-xs sm:text-sm text-orange-600 font-medium">A Receber</p>
               <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {servico.valor_receber.toFixed(2).replace(".", ",")}</p>
             </div>
@@ -335,7 +335,7 @@ export default function ServicoDetailsPage() {
 
         <Card className="bento-card lg:col-span-2">
           <CardHeader className="pb-2 md:pb-4">
-            <CardTitle className="text-base sm:text-lg font-black text-slate-900 dark:text-white">Progresso das Etapas</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-black text-slate-900">Progresso das Etapas</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 md:space-y-4 max-h-[400px] sm:max-h-[500px] overflow-y-auto pr-1">
@@ -348,15 +348,15 @@ export default function ServicoDetailsPage() {
                   className={cn(
                     "flex flex-col sm:flex-row items-start sm:items-start gap-3 sm:gap-4 p-3 sm:p-5 rounded-xl border-2 transition-all duration-300",
                     etapa.concluido 
-                      ? "bg-emerald-50/50 dark:bg-emerald-500/10 border-emerald-200 hover:border-emerald-300" 
-                      : "bg-white dark:bg-slate-900/80 border-slate-200 dark:border-slate-700 hover:border-orange-200 hover:shadow-md"
+                      ? "bg-emerald-50/50 border-emerald-200 hover:border-emerald-300" 
+                      : "bg-white border-slate-200 hover:border-orange-200 hover:shadow-md"
                   )}
                 >
                   <div className={cn(
                     "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300 text-sm sm:text-base font-bold",
                     etapa.concluido 
                       ? "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30" 
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                      : "bg-slate-100 text-slate-400"
                   )}>
                     {index + 1}
                   </div>
@@ -365,9 +365,9 @@ export default function ServicoDetailsPage() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 gap-2">
                       <h3 className={cn(
                         "font-bold text-base sm:text-lg transition-all truncate",
-                        etapa.concluido ? "text-emerald-700" : "text-slate-900 dark:text-white"
+                        etapa.concluido ? "text-emerald-700" : "text-slate-900"
                       )}>{etapa.nome_etapa}</h3>
-                      <div className="flex items-center gap-2 bg-white dark:bg-slate-800 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
+                      <div className="flex items-center gap-2 bg-white px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">
                         <Checkbox 
                           id={`concluido-${index}`} 
                           checked={etapa.concluido}
@@ -383,7 +383,7 @@ export default function ServicoDetailsPage() {
                         <Label className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Valor Pago (R$)</Label>
                         <Input 
                           type="number" 
-                          className="h-9 sm:h-10 text-xs sm:text-sm font-medium rounded-lg border-slate-200 dark:border-slate-700 focus:ring-orange-500" 
+                          className="h-9 sm:h-10 text-xs sm:text-sm font-medium rounded-lg border-slate-200 focus:ring-orange-500" 
                           value={etapa.valor_pago_etapa}
                           onChange={(e) => handleUpdateEtapa(index, "valor_pago_etapa", parseFloat(e.target.value) || 0)}
                         />
