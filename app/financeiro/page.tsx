@@ -57,11 +57,27 @@ export default function FinanceiroPage() {
   const [novoStatus, setNovoStatus] = useState("Pendente")
 
   useEffect(() => {
-    const localData = getStorageData("transacoes", mockTransacoes)
-    localData.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
-    setTransacoes(localData)
-    setLoading(false)
+    fetchTransacoes()
   }, [])
+
+  const fetchTransacoes = async () => {
+    setLoading(true)
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+        throw new Error("Supabase URL não configurada")
+      }
+      const { supabase } = await import("@/lib/supabase")
+      const { data, error } = await supabase.from("transacoes").select("*").order("data", { ascending: false })
+      if (error) throw error
+      setTransacoes(data || [])
+    } catch {
+      const localData = getStorageData("transacoes", mockTransacoes)
+      localData.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
+      setTransacoes(localData)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredTransacoes = transacoes.filter(t => {
     let matchesSearch = true
@@ -83,7 +99,7 @@ export default function FinanceiroPage() {
   const totalRecebido = transacoes.filter(t => t.tipo === "Entrada").reduce((acc, curr) => acc + curr.valor, 0)
   const totalReceber = transacoes.filter(t => t.tipo === "A Receber").reduce((acc, curr) => acc + curr.valor, 0)
 
-  const handleAdicionarTransacao = (e: React.FormEvent) => {
+  const handleAdicionarTransacao = async (e: React.FormEvent) => {
     e.preventDefault()
     
     const valor = parseFloat(novoValor.replace(",", ".")) || 0
@@ -107,7 +123,16 @@ export default function FinanceiroPage() {
     }
 
     const updatedData = addStorageItem("transacoes", novaTransacao)
-    setTransacoes([updatedData, ...transacoes])
+    
+    // Sync with Supabase
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      await supabase.from("transacoes").insert([novaTransacao])
+    } catch(err) {
+      console.error(err)
+    }
+
+    setTransacoes([novaTransacao, ...transacoes])
 
     toast({
       title: "Sucesso",
@@ -123,8 +148,16 @@ export default function FinanceiroPage() {
     router.refresh()
   }
 
-  const handleExcluirTransacao = (id: string) => {
+  const handleExcluirTransacao = async (id: string) => {
     deleteStorageItem("transacoes", id)
+    
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      await supabase.from("transacoes").delete().eq("id", id)
+    } catch(err) {
+      console.error(err)
+    }
+
     setTransacoes(transacoes.filter(t => t.id !== id))
     toast({
       title: "Sucesso",

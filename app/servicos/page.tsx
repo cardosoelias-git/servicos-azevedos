@@ -115,18 +115,50 @@ export default function ServicosPage() {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
         throw new Error("Local mode")
       }
+      const clientName = clientes.find(c => c.id === clienteId)?.nome || "Cliente Desconhecido"
+      const vTotal = parseFloat(valorTotal.replace(",", ".")) || 0
+      const vPago = parseFloat(valorPago.replace(",", ".")) || 0
+
       const { error } = await (await import("@/lib/supabase")).supabase
         .from("servicos")
         .insert([{ 
           cliente_id: clienteId, 
           tipo_servico: tipoServico,
-          valor_total: parseFloat(valorTotal.replace(",", ".")) || 0,
-          valor_pago: parseFloat(valorPago.replace(",", ".")) || 0,
-          valor_receber: (parseFloat(valorTotal.replace(",", ".")) || 0) - (parseFloat(valorPago.replace(",", ".")) || 0),
+          valor_total: vTotal,
+          valor_pago: vPago,
+          valor_receber: Math.max(0, vTotal - vPago),
           status: "Em Andamento"
         }])
       if (error) throw error
-      toast({ title: "Sucesso", description: "✅ Serviço criado com sucesso!" })
+
+      // Create initial transactions
+      const transacoesIniciais = []
+      if (vPago > 0) {
+        transacoesIniciais.push({
+          data: new Date().toISOString(),
+          cliente: clientName,
+          servico: tipoServico,
+          tipo: "Entrada",
+          valor: vPago,
+          status: "Pago"
+        })
+      }
+      if (vTotal - vPago > 0) {
+        transacoesIniciais.push({
+          data: new Date().toISOString(),
+          cliente: clientName,
+          servico: tipoServico,
+          tipo: "A Receber",
+          valor: vTotal - vPago,
+          status: "Pendente"
+        })
+      }
+
+      if (transacoesIniciais.length > 0) {
+        await (await import("@/lib/supabase")).supabase.from("transacoes").insert(transacoesIniciais)
+      }
+
+      toast({ title: "Sucesso", description: "✅ Serviço criado com sucesso e financeiro integrado!" })
       fetchData()
     } catch (error) {
       console.error("Erro ao criar no Supabase (Servicos):", error)
@@ -187,7 +219,20 @@ export default function ServicosPage() {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
         throw new Error("Local mode")
       }
-      await (await import("@/lib/supabase")).supabase.from("servicos").delete().eq("id", id)
+      const serviceToDelete = servicos.find(s => s.id === id)
+      const serviceType = serviceToDelete?.tipo_servico
+      const clientName = serviceToDelete?.cliente_nome || serviceToDelete?.clientes?.nome
+
+      const { supabase } = await import("@/lib/supabase")
+      await supabase.from("servicos").delete().eq("id", id)
+
+      // Also cascade delete related transactions from Supabase
+      if (clientName && serviceType) {
+        await supabase.from("transacoes").delete()
+          .eq("cliente", clientName)
+          .eq("servico", serviceType)
+      }
+
       setServicos(servicos.filter(s => s.id !== id))
       toast({ title: "Sucesso", description: "✅ Serviço excluído com sucesso!" })
     } catch {

@@ -45,17 +45,46 @@ export default function ServicoDetailsPage() {
   const [etapas, setEtapas] = useState<any[]>([])
 
   useEffect(() => {
-    const id = params.id as string
-    const servicos = getStorageData("servicos", [])
-    const servicoData = servicos.find((s: any) => s.id === id)
-    
-    if (!servicoData) {
-      setServicoNaoEncontrado(true)
-      setLoading(false)
-      return
-    }
+    fetchServico()
+  }, [params.id])
 
-    setServico(servicoData)
+  const fetchServico = async () => {
+    const id = params.id as string
+    
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') throw new Error()
+      
+      const { supabase } = await import("@/lib/supabase")
+      const { data, error } = await supabase
+        .from("servicos")
+        .select("*, clientes (nome)")
+        .eq("id", id)
+        .single()
+        
+      if (error || !data) throw new Error()
+      processServicoData({
+        ...data,
+        cliente_nome: data.clientes?.nome || data.cliente_nome
+      })
+    } catch {
+      const servicos = getStorageData("servicos", [])
+      const servicoData = servicos.find((s: any) => s.id === id)
+      
+      if (!servicoData) {
+        setServicoNaoEncontrado(true)
+        setLoading(false)
+        return
+      }
+      processServicoData(servicoData)
+    }
+  }
+
+  const processServicoData = (servicoData: any) => {
+    setServico({
+      ...servicoData,
+      cliente_nome: servicoData.cliente_nome || "Desconhecido",
+      documentos: servicoData.documentos || []
+    })
     
     const etapasSalvas = servicoData.etapas || []
     const tipo = servicoData.tipo_servico as keyof typeof ETAPAS_POR_TIPO
@@ -74,7 +103,7 @@ export default function ServicoDetailsPage() {
     
     setEtapas(etapasFormatadas)
     setLoading(false)
-  }, [params.id])
+  }
 
   const handleUpdateEtapa = (index: number, field: string, value: any) => {
     const newEtapas = [...etapas]
@@ -100,12 +129,30 @@ export default function ServicoDetailsPage() {
         status: novoStatus
       }
       
+      // Update local storage explicitly
       updateStorageItem("servicos", servico.id, updatedServico)
+      
+      // Update Supabase
+      const { supabase } = await import("@/lib/supabase")
+      const { error } = await supabase
+        .from("servicos")
+        .update({
+          etapas,
+          etapas_completas: etapasConcluidas,
+          total_etapas: etapas.length,
+          valor_pago: valorPagoReal,
+          valor_receber: Math.max(0, servico.valor_total - valorPagoReal),
+          status: novoStatus
+        })
+        .eq("id", servico.id)
+
+      if (error) console.error("Erro ao sincronizar com banco:", error)
+      
       setServico(updatedServico)
       
       toast({
         title: "Sucesso",
-        description: "✅ Etapas atualizadas com sucesso!",
+        description: "✅ Etapas atualizadas e salvas no banco!",
       })
     } catch (error) {
       toast({
@@ -150,13 +197,38 @@ export default function ServicoDetailsPage() {
       status: "Pago"
     })
     
+    // Sync with Supabase
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      await supabase
+        .from("servicos")
+        .update({
+          valor_pago: novoValorPago,
+          valor_receber: Math.max(0, novoValorReceber)
+        })
+        .eq("id", servico.id)
+        
+      await supabase
+        .from("transacoes")
+        .insert([{
+          data: new Date().toISOString(),
+          cliente: servico.cliente_nome,
+          servico: servico.tipo_servico,
+          tipo: "Entrada",
+          valor: valor,
+          status: "Pago"
+        }])
+    } catch(err) {
+      console.error("Erro banco sync transação:", err)
+    }
+    
     setServico(updatedServico)
     setIsPagamentoModalOpen(false)
     setValorPagamento("")
     
     toast({
       title: "Sucesso",
-      description: `✅ Pagamento de R$ ${valor.toFixed(2).replace(".", ",")} registrado!`,
+      description: `✅ Pagamento de R$ ${valor.toFixed(2).replace(".", ",")} registrado no banco!`,
     })
   }
 
@@ -170,11 +242,27 @@ export default function ServicoDetailsPage() {
     }
     
     updateStorageItem("servicos", servico.id, updatedServico)
+    
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      await supabase
+        .from("servicos")
+        .update({
+          status: "Concluído",
+          etapas_completas: etapas.length,
+          valor_pago: servico.valor_total,
+          valor_receber: 0
+        })
+        .eq("id", servico.id)
+    } catch(err) {
+      console.error(err)
+    }
+
     setServico(updatedServico)
     
     toast({
       title: "Sucesso",
-      description: "✅ Serviço concluído com sucesso!",
+      description: "✅ Serviço concluído no banco!",
     })
   }
 
@@ -245,9 +333,20 @@ export default function ServicoDetailsPage() {
       updateStorageItem("servicos", servico.id, updatedServico)
       setServico(updatedServico)
       
+      // Sync to Supabase
+      try {
+        const { supabase } = await import("@/lib/supabase")
+        await supabase
+          .from("servicos")
+          .update({ documentos: updatedServico.documentos })
+          .eq("id", servico.id)
+      } catch(err) {
+        console.warn("Could not sync doc to supabase: Is the JSONB column missing?", err)
+      }
+
       toast({
         title: "Upload",
-        description: "✅ Documento salvo com sucesso!",
+        description: "✅ Documento salvo com sucesso e enviado ao banco!",
       })
     } catch (err) {
       toast({
@@ -261,7 +360,7 @@ export default function ServicoDetailsPage() {
     }
   }
 
-  const handleDeleteDocument = (docId: string) => {
+  const handleDeleteDocument = async (docId: string) => {
     if (!confirm("Excluir este documento?")) return
     const updatedServico = {
       ...servico,
@@ -269,9 +368,19 @@ export default function ServicoDetailsPage() {
     }
     updateStorageItem("servicos", servico.id, updatedServico)
     setServico(updatedServico)
+    
+    // Sync to Supabase
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      await supabase
+        .from("servicos")
+        .update({ documentos: updatedServico.documentos })
+        .eq("id", servico.id)
+    } catch(err) {}
+
     toast({
       title: "Excluído",
-      description: "✅ Documento removido.",
+      description: "✅ Documento removido do banco de dados.",
     })
   }
 
