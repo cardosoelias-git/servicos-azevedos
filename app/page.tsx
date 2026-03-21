@@ -103,14 +103,14 @@ export default function Dashboard() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-3 sm:space-y-4 lg:space-y-5">
+    <div className="space-y-2.5 sm:space-y-4 lg:space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-1 sm:gap-1.5 relative">
         <div className="absolute -top-10 sm:-top-16 -right-10 sm:-right-20 w-32 h-32 sm:w-48 sm:h-48 bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-full blur-2xl sm:blur-3xl"></div>
         <motion.h1 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-slate-900"
+          className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-slate-900"
         >
           Seja <span className="text-gradient">Bem-vindo</span>
         </motion.h1>
@@ -129,7 +129,7 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4"
       >
         {/* Card Serviços H - Habilitação */}
         <Link href="/servicos?tipo=habilitacao" className="group">
@@ -203,7 +203,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 sm:gap-4">
         {dashboardStats.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -214,13 +214,13 @@ export default function Dashboard() {
           >
             <Card className="bento-card relative overflow-hidden h-full border-slate-200">
               <div className={`absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br ${stat.gradient} opacity-5 rounded-full blur-xl sm:blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
-              <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 p-4 sm:p-5">
+              <CardHeader className="flex flex-row items-center justify-between pb-0.5 relative z-10 p-3 sm:p-5">
                 <CardTitle className="font-bold text-slate-500 text-[10px] sm:text-xs uppercase tracking-wider">{stat.title}</CardTitle>
-                <div className={cn(stat.bg, "p-2 sm:p-2.5 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
-                  <stat.icon className={cn(stat.color, "w-4 h-4 sm:w-5 sm:h-5")} />
+                <div className={cn(stat.bg, "p-1.5 sm:p-2.5 rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-6")}>
+                  <stat.icon className={cn(stat.color, "w-3.5 h-3.5 sm:w-5 sm:h-5")} />
                 </div>
               </CardHeader>
-              <CardContent className="relative z-10 px-4 sm:px-5 pb-4 sm:pb-5">
+              <CardContent className="relative z-10 px-3 sm:px-5 pb-3 sm:pb-5">
                 <div className="flex items-baseline gap-2">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">{stat.value}</div>
                 </div>
@@ -254,7 +254,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.7 + index * 0.1 }}
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 bg-card rounded-xl border border-border shadow-sm hover:shadow-lg hover:border-orange-200/50 transition-all duration-300 group"
+                className="flex items-center gap-2.5 p-2 sm:p-3.5 bg-card rounded-xl border border-border transition-all duration-300 group"
               >
                 <div className={cn(
                   "w-10 h-10 sm:w-11 sm:h-11 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
@@ -286,8 +286,8 @@ export default function Dashboard() {
           className="space-y-3 sm:space-y-4"
         >
           <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Ações Rápidas</h2>
-          <div className="grid gap-2 sm:gap-3">
-            <Link href="/servicos" className="group flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.01] transition-all duration-300 font-extrabold">
+          <div className="grid gap-2">
+            <Link href="/servicos" className="group flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.01] transition-all duration-300 font-extrabold">
               <span className="text-sm sm:text-base">Novo Serviço</span>
               <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
                 <IdCard className="w-4 h-4 sm:w-5 sm:h-5" />

@@ -41,10 +41,10 @@ function HeaderContent() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/95 backdrop-blur-xl shadow-sm transition-all duration-300">
-        <div className="w-full px-3 sm:px-4 md:px-6 flex items-center justify-between h-16 sm:h-24">
+        <div className="w-full px-2 sm:px-4 md:px-6 flex items-center justify-between h-14 sm:h-20 lg:h-24">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
-            <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="relative w-12 h-12 sm:w-20 sm:h-20 transition-transform duration-300 group-hover:scale-110 drop-shadow-xl border-2 border-white/10 rounded-full overflow-hidden bg-white/5 p-1">
+            <Link href="/" className="flex items-center gap-1.5 sm:gap-2 group shrink-0">
+              <div className="relative w-8 h-8 xs:w-10 xs:h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20 transition-transform duration-300 group-hover:scale-110 drop-shadow-xl border-2 border-white/10 rounded-full overflow-hidden bg-white/5 p-0.5">
                 <Image 
                   src={LOGO_URL}
                   alt="Azevedos Logo"
@@ -167,7 +167,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <div className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col transition-colors duration-300`}>
       <HeaderContent />
 
-      <main className="flex-1 w-full px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5 pb-20 lg:pb-5">
+      <main className="flex-1 w-full px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-5 pb-20 lg:pb-5">
         <AnimatePresence mode="wait">
           <motion.div
             key="main-content"
@@ -175,7 +175,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="max-w-7xl mx-auto"
+            className="w-full max-w-[1400px] mx-auto"
           >
             {children}
           </motion.div>

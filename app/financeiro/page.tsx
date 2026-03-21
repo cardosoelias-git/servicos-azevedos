@@ -44,6 +44,8 @@ export default function FinanceiroPage() {
   const [filterType, setFilterType] = useState("todos")
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedTransacao, setSelectedTransacao] = useState<any>(null)
   const { toast } = useToast()
 
   const [novoCliente, setNovoCliente] = useState("")
@@ -125,10 +127,17 @@ export default function FinanceiroPage() {
       title: "Sucesso",
       description: "✅ Transação excluída com sucesso!",
     })
+    setIsDeleteModalOpen(false)
+    setSelectedTransacao(null)
+  }
+
+  const confirmDelete = (transacao: any) => {
+    setSelectedTransacao(transacao)
+    setIsDeleteModalOpen(true)
   }
 
   return (
-    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+    <div className="space-y-3.5 sm:space-y-5 lg:space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Financeiro</h1>
@@ -221,7 +230,7 @@ export default function FinanceiroPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 md:gap-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -232,13 +241,13 @@ export default function FinanceiroPage() {
             <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
               <TrendingUp className="w-16 h-16 md:w-32 md:h-32 text-white" />
             </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-4 pt-4">
+            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-3.5 pt-3.5">
               <CardTitle className="font-black text-white/80 text-[10px] md:text-xs uppercase tracking-wider">Total Recebido</CardTitle>
               <div className="bg-white/20 p-1.5 md:p-2 rounded-lg">
                 <ArrowUpRight className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent className="relative z-10 px-4 pb-4">
+            <CardContent className="relative z-10 px-3.5 pb-3.5">
               <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-1">
                 R$ {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
@@ -257,13 +266,13 @@ export default function FinanceiroPage() {
             <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
               <Wallet className="w-16 h-16 md:w-32 md:h-32 text-white" />
             </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-4 pt-4">
+            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-3.5 pt-3.5">
               <CardTitle className="font-black text-white/80 text-[10px] md:text-xs uppercase tracking-wider">Total a Receber</CardTitle>
               <div className="bg-white/20 p-1.5 md:p-2 rounded-lg">
                 <ArrowDownRight className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent className="relative z-10 px-4 pb-4">
+            <CardContent className="relative z-10 px-3.5 pb-3.5">
               <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-1">
                 R$ {totalReceber.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
@@ -273,7 +282,7 @@ export default function FinanceiroPage() {
         </motion.div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-2 md:gap-3 justify-between items-stretch lg:items-center bg-card p-2 sm:p-3 rounded-xl shadow-sm border border-border">
+      <div className="flex flex-col lg:flex-row gap-2 md:gap-3 justify-between items-stretch lg:items-center bg-card p-1.5 sm:p-3 rounded-xl shadow-sm border border-border">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
           <Input 
@@ -391,7 +400,7 @@ export default function FinanceiroPage() {
                       variant="ghost" 
                       size="icon"
                       className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 hover:text-red-500 transition-all font-bold"
-                      onClick={() => handleExcluirTransacao(transacao.id)}
+                      onClick={() => confirmDelete(transacao)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -421,53 +430,74 @@ export default function FinanceiroPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-card rounded-xl p-4 border border-border shadow-sm"
+              className="bg-card rounded-xl p-3 sm:p-4 border border-border shadow-sm"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h3 className="font-bold text-slate-900">{transacao.cliente}</h3>
-                  <p className="text-sm text-slate-500">{transacao.servico}</p>
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">{transacao.cliente}</h3>
+                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium">{transacao.servico}</p>
                 </div>
                 <span className={cn(
-                  "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase",
-                  transacao.tipo === "Entrada" ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'
+                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider",
+                  transacao.tipo === "Entrada" ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-orange-50 text-orange-600 border border-orange-100'
                 )}>
                   {transacao.tipo === "Entrada" ? (
-                    <ArrowUpRight className="w-3 h-3" />
+                    <ArrowUpRight className="w-2.5 h-2.5" />
                   ) : (
-                    <ArrowDownRight className="w-3 h-3" />
+                    <ArrowDownRight className="w-2.5 h-2.5" />
                   )}
                   {transacao.tipo}
                 </span>
               </div>
               
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-slate-500">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[10px] sm:text-xs text-slate-400 font-medium">
                   {new Date(transacao.data).toLocaleDateString("pt-BR")}
                 </div>
                 <div className={cn(
-                  "text-xl font-black",
+                  "text-lg sm:text-xl font-black tracking-tight",
                   transacao.tipo === "Entrada" ? 'text-emerald-600' : 'text-orange-600'
                 )}>
                   R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100/50">
                 <span className={cn(
-                  "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                  "inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest",
                   transacao.status === "Pago" ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'
                 )}>
                   {transacao.status}
                 </span>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleExcluirTransacao(transacao.id)}>
-                  <Trash2 className="w-3.5 h-3.5" />
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => confirmDelete(transacao)}>
+                  <Trash2 className="w-3 h-3" />
                 </Button>
               </div>
             </motion.div>
           ))
         )}
       </div>
+
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="sm:max-w-[400px] rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-slate-900">Confirmar Exclusão</DialogTitle>
+            <DialogDescription className="text-slate-500 py-2">
+              Deseja realmente excluir esta transação de <strong>R$ {selectedTransacao?.valor?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong> ({selectedTransacao?.cliente})?
+              <br /><br />
+              <span className="text-red-500 text-xs font-bold uppercase tracking-wider">⚠️ Esta ação removerá o registro permanentemente do fluxo de caixa.</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="ghost" className="rounded-xl font-bold flex-1" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleExcluirTransacao(selectedTransacao?.id)}>
+              Excluir Registro
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

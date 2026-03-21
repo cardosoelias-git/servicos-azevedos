@@ -43,18 +43,12 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { getStorageData, addStorageItem, deleteStorageItem } from "@/lib/storage"
+import { TIPOS_SERVICO, ETAPAS_POR_TIPO } from "@/lib/constants"
 
 const mockServicos = [
-  { id: "1", cliente_nome: "João Silva", tipo_servico: "Habilitação", etapas_completas: 2, total_etapas: 9, valor_pago: 500, valor_receber: 1500, status: "Em Andamento" },
-  { id: "2", cliente_nome: "Maria Oliveira", tipo_servico: "Renovação", etapas_completas: 4, total_etapas: 4, valor_pago: 350, valor_receber: 0, status: "Concluído" },
-  { id: "3", cliente_nome: "Pedro Santos", tipo_servico: "Adição de Categoria", etapas_completas: 1, total_etapas: 7, valor_pago: 200, valor_receber: 800, status: "Em Andamento" },
-]
-
-const tiposServico = [
-  "Habilitação",
-  "Renovação",
-  "Adição de Categoria",
-  "Mudança de Categoria"
+  { id: "1", cliente_id: "1", cliente_nome: "João Silva", tipo_servico: "Habilitação", etapas_completas: 2, total_etapas: 9, valor_pago: 500, valor_receber: 1500, status: "Em Andamento" },
+  { id: "2", cliente_id: "2", cliente_nome: "Maria Oliveira", tipo_servico: "Renovação", etapas_completas: 4, total_etapas: 4, valor_pago: 350, valor_receber: 0, status: "Concluído" },
+  { id: "3", cliente_id: "3", cliente_nome: "Pedro Santos", tipo_servico: "Adição de Categoria", etapas_completas: 1, total_etapas: 7, valor_pago: 200, valor_receber: 800, status: "Em Andamento" },
 ]
 
 export default function ServicosPage() {
@@ -63,6 +57,8 @@ export default function ServicosPage() {
   const [clientes, setClientes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedServico, setSelectedServico] = useState<any>(null)
   const { toast } = useToast()
 
   const [clienteId, setClienteId] = useState("")
@@ -130,17 +126,19 @@ export default function ServicosPage() {
       if (error) throw error
       toast({ title: "Sucesso", description: "✅ Serviço criado com sucesso!" })
       fetchData()
-    } catch {
+    } catch (error) {
+      console.error("Erro ao criar no Supabase (Servicos):", error)
       const vTotal = parseFloat(valorTotal.replace(",", ".")) || 0
       const vPago = parseFloat(valorPago.replace(",", ".")) || 0
-      
+      const totalEtapas = ETAPAS_POR_TIPO[tipoServico as keyof typeof ETAPAS_POR_TIPO]?.length || 4
+
       const newServico = {
         id: Math.random().toString(),
         cliente_id: clienteId,
         cliente_nome: clientes.find(c => c.id === clienteId)?.nome || "Cliente Desconhecido",
         tipo_servico: tipoServico,
         etapas_completas: 0,
-        total_etapas: tipoServico === "Habilitação" ? 9 : tipoServico === "Renovação" ? 4 : 7,
+        total_etapas: totalEtapas,
         valor_total: vTotal,
         valor_pago: vPago,
         valor_receber: vTotal - vPago,
@@ -210,8 +208,16 @@ export default function ServicosPage() {
 
       deleteStorageItem("servicos", id)
       setServicos(servicos.filter(s => s.id !== id))
-      toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço e transações relacionadas foram excluídos!" })
+      toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço excluído!" })
+    } finally {
+      setIsDeleteModalOpen(false)
+      setSelectedServico(null)
     }
+  }
+
+  const confirmDelete = (servico: any) => {
+    setSelectedServico(servico)
+    setIsDeleteModalOpen(true)
   }
 
   const resetForm = () => {
@@ -222,7 +228,7 @@ export default function ServicosPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+    <div className="space-y-3.5 sm:space-y-5 lg:space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Serviços</h1>
@@ -264,7 +270,7 @@ export default function ServicosPage() {
                       <SelectValue placeholder="Selecione o serviço" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
-                      {tiposServico.map(t => (
+                      {TIPOS_SERVICO.map(t => (
                         <SelectItem key={t} value={t}>{t}</SelectItem>
                       ))}
                     </SelectContent>
@@ -305,7 +311,7 @@ export default function ServicosPage() {
         </Dialog>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 bg-card p-2 sm:p-3 rounded-xl border border-border shadow-sm transition-theme">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 bg-card p-1.5 sm:p-3 rounded-xl border border-border shadow-sm transition-theme">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input 
@@ -437,7 +443,7 @@ export default function ServicosPage() {
                           <DropdownMenuSeparator className="my-1" />
                           <DropdownMenuItem 
                             className="text-red-600 rounded-lg py-2.5 font-medium cursor-pointer hover:bg-red-50 focus:bg-red-50"
-                            onClick={() => handleDeleteServico(servico.id)}
+                            onClick={() => confirmDelete(servico)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Cancelar Serviço
                           </DropdownMenuItem>
@@ -473,12 +479,12 @@ export default function ServicosPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-card rounded-xl p-4 border border-border shadow-sm"
+                className="bg-card rounded-xl p-3 sm:p-4 border border-border shadow-sm"
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-slate-900">{servico.clientes?.nome || servico.cliente_nome}</h3>
-                    <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
+                    <h3 className="font-bold text-slate-900 text-sm sm:text-base">{servico.clientes?.nome || servico.cliente_nome}</h3>
+                    <p className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
                       <ClipboardList className="w-3 h-3" /> {servico.tipo_servico}
                     </p>
                   </div>
@@ -498,12 +504,12 @@ export default function ServicosPage() {
                   </span>
                 </div>
                 
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-xs font-black text-slate-500 uppercase">
+                <div className="space-y-1.5 mb-3">
+                  <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
                     <span>Progresso</span>
                     <span>{progress}%</span>
                   </div>
-                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
@@ -514,28 +520,28 @@ export default function ServicosPage() {
                       )}
                     />
                   </div>
-                  <p className="text-xs text-slate-500">{servico.etapas_completas || 0} de {servico.total_etapas || 9} etapas concluídas</p>
+                  <p className="text-[10px] text-slate-400 font-medium">{servico.etapas_completas || 0} de {servico.total_etapas || 9} etapas concluídas</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="p-3 bg-emerald-50 rounded-lg">
-                    <p className="text-[10px] text-emerald-600 font-medium uppercase">Pago</p>
-                    <p className="font-bold text-emerald-600 text-sm">R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="p-2 sm:p-3 bg-emerald-50 rounded-lg">
+                    <p className="text-[9px] text-emerald-600 font-black uppercase">Pago</p>
+                    <p className="font-bold text-emerald-600 text-xs sm:text-sm">R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
-                  <div className="p-3 bg-orange-50 rounded-lg">
-                    <p className="text-[10px] text-orange-600 font-medium uppercase">A Receber</p>
-                    <p className="font-bold text-orange-600 text-sm">R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                  <div className="p-2 sm:p-3 bg-orange-50 rounded-lg">
+                    <p className="text-[9px] text-orange-600 font-black uppercase">A Receber</p>
+                    <p className="font-bold text-orange-600 text-xs sm:text-sm">R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" asChild className="flex-1 h-10 text-xs rounded-lg">
+                  <Button variant="outline" asChild className="flex-1 h-9 text-[11px] font-bold rounded-lg border-slate-200">
                     <Link href={`/servicos/${servico.id}`}>
-                      <Eye className="w-3.5 h-3.5 mr-1.5" /> Ver
+                      <Eye className="w-3.5 h-3.5 mr-1.5" /> Ver Detalhes
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleDeleteServico(servico.id)}>
-                    <Trash2 className="w-4 h-4" />
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => confirmDelete(servico)}>
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </motion.div>
@@ -543,6 +549,27 @@ export default function ServicosPage() {
           })
         )}
       </div>
+
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="sm:max-w-[400px] rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-slate-900">Confirmar Cancelamento</DialogTitle>
+            <DialogDescription className="text-slate-500 py-2">
+              Deseja cancelar o serviço de <strong>{selectedServico?.tipo_servico}</strong> para <strong>{selectedServico?.cliente_nome || selectedServico?.clientes?.nome}</strong>?
+              <br /><br />
+              <span className="text-red-500 text-xs font-bold uppercase tracking-wider">⚠️ Esta ação removerá o processo e todos os registros financeiros vinculados localmente.</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="ghost" className="rounded-xl font-bold flex-1" onClick={() => setIsDeleteModalOpen(false)}>
+              Manter Serviço
+            </Button>
+            <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteServico(selectedServico?.id)}>
+              Confirmar Cancelamento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

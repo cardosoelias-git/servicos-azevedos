@@ -53,6 +53,9 @@ export default function ClientesPage() {
   const [telefone, setTelefone] = useState("")
   const [renach, setRenach] = useState("")
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedCliente, setSelectedCliente] = useState<any>(null)
+
   useEffect(() => {
     fetchClientes()
   }, [])
@@ -85,6 +88,17 @@ export default function ClientesPage() {
   const handleCreateCliente = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Duplicate Check
+    const isDuplicate = clientes.find(c => c.cpf === cpf || (renach && c.renach === renach))
+    if (isDuplicate) {
+      toast({
+        variant: "destructive",
+        title: "Atenção",
+        description: `❌ Já existe um cliente cadastrado com este ${isDuplicate.cpf === cpf ? 'CPF' : 'RENACH'}.`
+      })
+      return
+    }
+
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
         throw new Error("Local mode")
@@ -93,9 +107,12 @@ export default function ClientesPage() {
         .from("clientes")
         .insert([{ nome, cpf, telefone, renach }])
       if (error) throw error
-      setClientes([...clientes])
+      
+      const newlyCreated = { id: Math.random().toString(), nome, cpf, telefone, renach, created_at: new Date().toISOString() }
+      setClientes([newlyCreated, ...clientes])
       toast({ title: "Sucesso", description: "✅ Cliente criado com sucesso!" })
-    } catch {
+    } catch (error) {
+      console.error("Erro ao criar no Supabase (Clientes):", error)
       const newCliente = {
         id: Math.random().toString(),
         nome,
@@ -121,7 +138,8 @@ export default function ClientesPage() {
       await (await import("@/lib/supabase")).supabase.from("clientes").delete().eq("id", id)
       setClientes(clientes.filter(c => c.id !== id))
       toast({ title: "Sucesso", description: "✅ Cliente excluído com sucesso!" })
-    } catch {
+    } catch (error) {
+      console.error("Erro ao deletar no Supabase (Clientes):", error)
       const clientToDelete = clientes.find(c => c.id === id)
       const clientName = clientToDelete?.nome
 
@@ -137,15 +155,23 @@ export default function ClientesPage() {
         // Delete related transactions
         if (clientName) {
           const transacoes = getStorageData("transacoes", [])
-          const updatedTransacoes = transacoes.filter((t: any) => t.cliente !== clientName)
+          const updatedTransacoes = transacoes.filter((t: any) => t.cliente === clientName)
           setStorageData("transacoes", updatedTransacoes)
         }
       }
 
       deleteStorageItem("clientes", id)
       setClientes(clientes.filter(c => c.id !== id))
-      toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente e todos os dados relacionados foram excluídos!" })
+      toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente excluído!" })
+    } finally {
+      setIsDeleteModalOpen(false)
+      setSelectedCliente(null)
     }
+  }
+
+  const confirmDelete = (cliente: any) => {
+    setSelectedCliente(cliente)
+    setIsDeleteModalOpen(true)
   }
 
   const resetForm = () => {
@@ -350,7 +376,7 @@ export default function ClientesPage() {
                         <DropdownMenuSeparator className="my-1" />
                         <DropdownMenuItem 
                           className="text-red-600 rounded-lg py-2.5 font-medium cursor-pointer hover:bg-red-50 focus:bg-red-50"
-                          onClick={() => handleDeleteCliente(cliente.id)}
+                          onClick={() => confirmDelete(cliente)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Excluir Cliente
                         </DropdownMenuItem>
@@ -412,7 +438,7 @@ export default function ClientesPage() {
                 <Button variant="outline" className="flex-1 h-10 text-xs rounded-lg">
                   <Edit className="w-3.5 h-3.5 mr-1.5" /> Editar
                 </Button>
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleDeleteCliente(cliente.id)}>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => confirmDelete(cliente)}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -420,6 +446,27 @@ export default function ClientesPage() {
           ))
         )}
       </div>
+
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="sm:max-w-[400px] rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-slate-900">Confirmar Exclusão</DialogTitle>
+            <DialogDescription className="text-slate-500 py-2">
+              Você tem certeza que deseja excluir <strong>{selectedCliente?.nome}</strong>? 
+              <br /><br />
+              <span className="text-red-500 text-xs font-bold uppercase tracking-wider">⚠️ Esta ação é irreversível e excluirá todos os serviços e registros vinculados.</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="ghost" className="rounded-xl font-bold flex-1" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteCliente(selectedCliente?.id)}>
+              Excluir Permanente
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

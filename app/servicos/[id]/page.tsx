@@ -14,21 +14,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { getStorageData, updateStorageItem, addStorageItem } from "@/lib/storage"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
+import { ETAPAS_POR_TIPO } from "@/lib/constants"
 
-const etapasPorTipo: Record<string, string[]> = {
-  "Habilitação": [
-    "Aula Teórica", "Certificado", "Laudo", "Digitalização", "Médicos", "Prova de Legislação", "Aula Prática", "Prova Prática", "Gráfica"
-  ],
-  "Renovação": [
-    "Laudo", "Digitalização", "Médicos", "Gráfica"
-  ],
-  "Adição de Categoria": [
-    "Laudo", "Digitalização", "Aula Teórica", "Certificado", "Prova de Legislação", "Aula Prática", "Prova Prática"
-  ],
-  "Mudança de Categoria": [
-    "Toxicológico", "Laudo", "Médicos", "Aula Teórica", "Certificado", "Prova de Legislação", "Aula Prática", "Prova Prática"
-  ]
-}
+// Constants are now imported from @/lib/constants
 
 export default function ServicoDetailsPage() {
   const params = useParams()
@@ -68,8 +56,8 @@ export default function ServicoDetailsPage() {
     setServico(servicoData)
     
     const etapasSalvas = servicoData.etapas || []
-    const tipo = servicoData.tipo_servico as keyof typeof etapasPorTipo
-    const nomesEtapas = etapasPorTipo[tipo] || etapasPorTipo["Habilitação"]
+    const tipo = servicoData.tipo_servico as keyof typeof ETAPAS_POR_TIPO
+    const nomesEtapas = ETAPAS_POR_TIPO[tipo] || ETAPAS_POR_TIPO["Habilitação"]
     
     const etapasFormatadas = nomesEtapas.map((nome, index) => {
       const etapaSalva = etapasSalvas[index]
@@ -96,7 +84,8 @@ export default function ServicoDetailsPage() {
     setSaving(true)
     try {
       const etapasConcluidas = etapas.filter(e => e.concluido).length
-      const valorPagoCalculado = etapas.reduce((acc, e) => acc + (e.valor_pago_etapa || 0), 0)
+      const valorPagoMensurado = etapas.reduce((acc, e) => acc + (e.valor_pago_etapa || 0), 0)
+      const valorPagoReal = Math.max(servico.valor_pago, valorPagoMensurado)
       const novoStatus = etapasConcluidas === etapas.length ? "Concluído" : "Em Andamento"
       
       const updatedServico = {
@@ -104,8 +93,8 @@ export default function ServicoDetailsPage() {
         etapas,
         etapas_completas: etapasConcluidas,
         total_etapas: etapas.length,
-        valor_pago: valorPagoCalculado,
-        valor_receber: servico.valor_total - valorPagoCalculado,
+        valor_pago: valorPagoReal,
+        valor_receber: Math.max(0, servico.valor_total - valorPagoReal),
         status: novoStatus
       }
       
