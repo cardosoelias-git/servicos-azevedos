@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useRouter } from "next/navigation"
 
 const mockTransacoes = [
   { id: "1", data: "2023-10-25", cliente: "João Silva", servico: "Habilitação", tipo: "Entrada", valor: 500, status: "Pago" },
@@ -47,6 +48,7 @@ export default function FinanceiroPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedTransacao, setSelectedTransacao] = useState<any>(null)
   const { toast } = useToast()
+  const router = useRouter()
 
   const [novoCliente, setNovoCliente] = useState("")
   const [novoServico, setNovoServico] = useState("")
@@ -118,6 +120,7 @@ export default function FinanceiroPage() {
     setNovoTipo("Entrada")
     setNovoValor("")
     setNovoStatus("Pendente")
+    router.refresh()
   }
 
   const handleExcluirTransacao = (id: string) => {
@@ -129,6 +132,7 @@ export default function FinanceiroPage() {
     })
     setIsDeleteModalOpen(false)
     setSelectedTransacao(null)
+    router.refresh()
   }
 
   const confirmDelete = (transacao: any) => {
@@ -227,7 +231,8 @@ export default function FinanceiroPage() {
               <div className="flex gap-3 mt-8">
                 <Button 
                   type="button" 
-                  className="rounded-xl h-12 flex-1 font-semibold bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm" 
+                  variant="dark"
+                  className="rounded-xl h-12 flex-1 font-semibold transition-all shadow-sm" 
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancelar
@@ -497,7 +502,7 @@ export default function FinanceiroPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button className="rounded-xl font-bold flex-1 bg-slate-800 text-white hover:bg-slate-900 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
+            <Button variant="dark" className="rounded-xl font-bold flex-1 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
             <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleExcluirTransacao(selectedTransacao?.id)}>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 import {
   Table,
   TableBody,
@@ -28,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Plus, Search, MoreHorizontal, Eye, FileText, ClipboardList, Filter, Trash2, Car, Users, User, DollarSign, Wallet } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Eye, FileText, ClipboardList, Filter, Trash2, Car, Users, User, DollarSign, Wallet, IdCard } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -60,6 +61,7 @@ export default function ServicosPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedServico, setSelectedServico] = useState<any>(null)
   const { toast } = useToast()
+  const router = useRouter()
 
   const [clienteId, setClienteId] = useState("")
   const [tipoServico, setTipoServico] = useState("")
@@ -176,6 +178,7 @@ export default function ServicosPage() {
     } finally {
       setIsModalOpen(false)
       resetForm()
+      router.refresh()
     }
   }
 
@@ -212,6 +215,7 @@ export default function ServicosPage() {
     } finally {
       setIsDeleteModalOpen(false)
       setSelectedServico(null)
+      router.refresh()
     }
   }
 
@@ -280,7 +284,7 @@ export default function ServicosPage() {
                 <div className="grid gap-1.5 relative">
                   <Label htmlFor="tipo" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Tipo de Serviço</Label>
                   <div className="relative group">
-                    <Car className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
+                    <IdCard className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
                     <Select value={tipoServico} onValueChange={setTipoServico} required>
                       <SelectTrigger className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 data-[placeholder]:text-slate-400">
                         <SelectValue placeholder="Selecione o serviço" />
@@ -330,7 +334,8 @@ export default function ServicosPage() {
               <div className="flex gap-3 mt-8">
                 <Button 
                   type="button" 
-                  className="rounded-xl h-12 flex-1 font-semibold bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm" 
+                  variant="dark"
+                  className="rounded-xl h-12 flex-1 font-semibold transition-all shadow-sm" 
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancelar
@@ -597,7 +602,7 @@ export default function ServicosPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-              <Button className="rounded-xl font-bold flex-1 bg-slate-800 text-white hover:bg-slate-900 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
+              <Button variant="dark" className="rounded-xl font-bold flex-1 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
                 Cancelar
               </Button>
             <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteServico(selectedServico?.id)}>

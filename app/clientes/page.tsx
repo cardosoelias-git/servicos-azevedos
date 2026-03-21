@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 import {
   Table,
   TableBody,
@@ -47,6 +48,7 @@ export default function ClientesPage() {
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   const [nome, setNome] = useState("")
   const [cpf, setCpf] = useState("")
@@ -127,6 +129,7 @@ export default function ClientesPage() {
     } finally {
       setIsModalOpen(false)
       resetForm()
+      router.refresh()
     }
   }
 
@@ -166,6 +169,7 @@ export default function ClientesPage() {
     } finally {
       setIsDeleteModalOpen(false)
       setSelectedCliente(null)
+      router.refresh()
     }
   }
 
@@ -301,7 +305,8 @@ export default function ClientesPage() {
               <div className="flex gap-3 mt-8">
                 <Button 
                   type="button" 
-                  className="rounded-xl h-12 flex-1 font-semibold bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm" 
+                  variant="dark"
+                  className="rounded-xl h-12 flex-1 font-semibold transition-all shadow-sm" 
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancelar
@@ -490,7 +495,7 @@ export default function ClientesPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button className="rounded-xl font-bold flex-1 bg-slate-800 text-white hover:bg-slate-900 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
+            <Button variant="dark" className="rounded-xl font-bold flex-1 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
             <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteCliente(selectedCliente?.id)}>
