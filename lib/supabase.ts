@@ -23,23 +23,21 @@ export const supabase: SupabaseClient = isConfigured
     })
   : createClient('https://placeholder.supabase.co', 'placeholder');
 
-export async function checkSupabaseConnection(): Promise<boolean> {
+export async function checkSupabaseConnection(): Promise<{ success: boolean; message?: string }> {
   if (!isConfigured) {
-    console.warn('⚠️ Supabase não configurado. Usando localStorage.');
-    return false;
+    return { success: false, message: 'Supabase não configurado no .env.local' };
   }
   
   try {
-    const { error } = await supabase.from('clientes').select('count').limit(1);
+    const { error } = await supabase.from('clientes').select('count', { count: 'exact', head: true });
     if (error) {
       console.error('❌ Erro ao conectar com Supabase:', error.message);
-      return false;
+      return { success: false, message: error.message };
     }
-    console.log('✅ Conectado ao Supabase com sucesso!');
-    return true;
-  } catch (err) {
+    return { success: true };
+  } catch (err: any) {
     console.error('❌ Erro de conexão:', err);
-    return false;
+    return { success: false, message: err.message || 'Erro de rede ou DNS' };
   }
 }
 

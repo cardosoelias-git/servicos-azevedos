@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DollarSign, ArrowUpRight, ArrowDownRight, Search, Filter, TrendingUp, Wallet, Plus, Trash2 } from "lucide-react"
+import { DollarSign, ArrowUpRight, ArrowDownRight, Search, Filter, TrendingUp, Wallet, Plus, Trash2, AlertCircle, RefreshCw } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
@@ -44,6 +44,8 @@ export default function FinanceiroPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState("todos")
   const [loading, setLoading] = useState(true)
+  const [isLocalMode, setIsLocalMode] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedTransacao, setSelectedTransacao] = useState<any>(null)
@@ -64,18 +66,50 @@ export default function FinanceiroPage() {
     setLoading(true)
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-        throw new Error("Supabase URL não configurada")
+        throw new Error("Local mode")
       }
       const { supabase } = await import("@/lib/supabase")
       const { data, error } = await supabase.from("transacoes").select("*").order("data", { ascending: false })
       if (error) throw error
       setTransacoes(data || [])
-    } catch {
+      setIsLocalMode(false)
+    } catch (err) {
+      console.warn("Using local storage for Transacoes:", err)
       const localData = getStorageData("transacoes", mockTransacoes)
       localData.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
       setTransacoes(localData)
+      setIsLocalMode(true)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSyncLocalData = async () => {
+    setIsSyncing(true)
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+        throw new Error("Supabase não configurado")
+      }
+      
+      const localData = getStorageData("transacoes", [])
+      if (localData.length === 0) {
+        toast({ title: "Nada para sincronizar", description: "Não há dados locais para enviar." })
+        return
+      }
+
+      const { supabase } = await import("@/lib/supabase")
+      
+      for (const transacao of localData) {
+        const { id, ...transacaoData } = transacao
+        await supabase.from("transacoes").upsert([transacaoData])
+      }
+
+      toast({ title: "Sincronização concluída", description: "Dados locais enviados para o Supabase." })
+      fetchTransacoes()
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erro na sincronização", description: error.message })
+    } finally {
+      setIsSyncing(false)
     }
   }
 
@@ -281,6 +315,32 @@ export default function FinanceiroPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {isLocalMode && (
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-amber-900 text-sm">Modo de Armazenamento Local</h3>
+              <p className="text-amber-700 text-xs">Os dados estão sendo salvos apenas neste navegador. Conecte o Supabase para sincronizar.</p>
+            </div>
+          </div>
+          <Button 
+            className="bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl h-10 px-6 shadow-sm transition-all"
+            onClick={handleSyncLocalData}
+            disabled={isSyncing}
+          >
+            {isSyncing ? (
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4 mr-2" />
+            )}
+            Sincronizar Agora
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 md:gap-8">
         <motion.div

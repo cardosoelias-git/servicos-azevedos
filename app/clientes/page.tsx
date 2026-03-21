@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Search, MoreHorizontal, Edit, Trash2, UserPlus, Filter, User, Phone, Calendar, FileText } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Edit, Trash2, UserPlus, Filter, User, Phone, Calendar, FileText, AlertCircle, RefreshCw } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -46,7 +46,10 @@ export default function ClientesPage() {
   const [clientes, setClientes] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
+  const [isLocalMode, setIsLocalMode] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
 
@@ -75,16 +78,52 @@ export default function ClientesPage() {
     setLoading(true)
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-        throw new Error("Supabase URL não configurada")
+        throw new Error("Local mode")
       }
       const { data, error } = await (await import("@/lib/supabase")).supabase.from("clientes").select("*").order("created_at", { ascending: false })
       if (error) throw error
       setClientes(data || [])
-    } catch {
+      setIsLocalMode(false)
+    } catch (err) {
+      console.warn("Using local storage for Clientes:", err)
       const localData = getStorageData("clientes", mockClientes)
       setClientes(localData)
+      setIsLocalMode(true)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSyncLocalData = async () => {
+    setIsSyncing(true)
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+        throw new Error("Supabase não configurado")
+      }
+      
+      const localData = getStorageData("clientes", [])
+      if (localData.length === 0) {
+        toast({ title: "Nada para sincronizar", description: "Não há dados locais para enviar." })
+        return
+      }
+
+      const { supabase } = await import("@/lib/supabase")
+      
+      // Filter out mock data or items that might already be in Supabase (simplified)
+      // In a real app, we'd check by ID or CPF
+      for (const client of localData) {
+        // Remove local temporary ID to let Supabase generate UUID if needed, 
+        // OR keep it if it's already a UUID.
+        const { id, ...clientData } = client
+        await supabase.from("clientes").upsert([clientData], { onConflict: 'cpf' })
+      }
+
+      toast({ title: "Sincronização concluída", description: "Dados locais enviados para o Supabase." })
+      fetchClientes()
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erro na sincronização", description: error.message })
+    } finally {
+      setIsSyncing(false)
     }
   }
 
@@ -130,6 +169,81 @@ export default function ClientesPage() {
       toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente criado com sucesso!" })
     } finally {
       setIsModalOpen(false)
+      resetForm()
+      router.refresh()
+    }
+  }
+
+  const openEditModal = (cliente: any) => {
+    setSelectedCliente(cliente)
+    setNome(cliente.nome || "")
+    setCpf(cliente.cpf || "")
+    setTelefone(cliente.telefone || "")
+    setRenach(cliente.renach || "")
+    setDataInicio(cliente.data_inicio || "")
+    setIsEditModalOpen(true)
+  }
+
+  const handleUpdateCliente = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!selectedCliente) return
+
+    // Duplicate Check
+    const isDuplicate = clientes.find(c => c.id !== selectedCliente.id && (c.cpf === cpf || (renach && c.renach === renach)))
+    if (isDuplicate) {
+      toast({
+        variant: "destructive",
+        title: "Atenção",
+        description: `❌ Já existe outro cliente cadastrado com este ${isDuplicate.cpf === cpf ? 'CPF' : 'RENACH'}.`
+      })
+      return
+    }
+
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+        throw new Error("Local mode")
+      }
+      const { error } = await (await import("@/lib/supabase")).supabase
+        .from("clientes")
+        .update({ nome, cpf, telefone, renach, data_inicio: dataInicio })
+        .eq("id", selectedCliente.id)
+
+      if (error) throw error
+      
+      const updatedClientes = clientes.map(c => 
+        c.id === selectedCliente.id 
+          ? { ...c, nome, cpf, telefone, renach, data_inicio: dataInicio }
+          : c
+      )
+      setClientes(updatedClientes)
+      toast({ title: "Sucesso", description: "✅ Cliente atualizado com sucesso!" })
+    } catch (error) {
+      console.error("Erro ao atualizar no Supabase (Clientes):", error)
+      const updatedCliente = {
+        ...selectedCliente,
+        nome,
+        cpf,
+        telefone,
+        renach,
+        data_inicio: dataInicio,
+      }
+      
+      if (typeof window !== "undefined") {
+        const localData = getStorageData("clientes", mockClientes)
+        const newLocalData = localData.map((c: any) => c.id === selectedCliente.id ? updatedCliente : c)
+        const { setStorageData } = await import("@/lib/storage")
+        setStorageData("clientes", newLocalData)
+      }
+
+      const updatedClientes = clientes.map(c => 
+        c.id === selectedCliente.id ? updatedCliente : c
+      )
+      setClientes(updatedClientes)
+      toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente atualizado com sucesso!" })
+    } finally {
+      setIsEditModalOpen(false)
+      setSelectedCliente(null)
       resetForm()
       router.refresh()
     }
@@ -340,7 +454,159 @@ export default function ClientesPage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={isEditModalOpen} onOpenChange={(open) => {
+          setIsEditModalOpen(open)
+          if (!open) {
+            setSelectedCliente(null)
+            resetForm()
+          }
+        }}>
+          <DialogContent className="sm:max-w-[500px] p-0 border border-slate-100 rounded-3xl overflow-hidden shadow-xl bg-white">
+            <div className="px-8 pt-8 pb-6 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 transition-transform duration-300">
+                  <Edit className="w-6 h-6" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">Editar Cliente</DialogTitle>
+                  <DialogDescription className="text-slate-500 font-medium text-sm mt-1">
+                    Atualize os dados do cliente abaixo.
+                  </DialogDescription>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleUpdateCliente} className="p-8 bg-white pb-8 relative">
+              <div className="grid gap-5">
+                <div className="grid gap-1.5 relative">
+                  <Label htmlFor="edit-nome" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Nome Completo</Label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                    <Input 
+                      id="edit-nome" 
+                      placeholder="Ex: João da Silva" 
+                      className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="edit-cpf" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">CPF</Label>
+                    <div className="relative group">
+                      <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="edit-cpf" 
+                        placeholder="000.000.000-00" 
+                        className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400"
+                        value={cpf}
+                        onChange={handleCpfChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="edit-telefone" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">WhatsApp / Cel</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="edit-telefone" 
+                        placeholder="(00) 00000-0000" 
+                        className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400"
+                        value={telefone}
+                        onChange={handlePhoneChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="edit-renach" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">RENACH</Label>
+                    <div className="relative group">
+                      <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="edit-renach" 
+                        placeholder="00000000000" 
+                        className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400"
+                        value={renach}
+                        onChange={(e) => setRenach(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="edit-dataInicio" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Data de Início</Label>
+                    <div className="relative group">
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300 pointer-events-none" />
+                      <Input 
+                        id="edit-dataInicio" 
+                        type="date"
+                        className="rounded-xl h-12 pl-11 pr-4 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400 style-date-input"
+                        value={dataInicio}
+                        onChange={(e) => setDataInicio(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-8">
+                <Button 
+                  type="button" 
+                  variant="dark"
+                  className="rounded-xl h-12 flex-1 font-semibold transition-all shadow-sm" 
+                  onClick={() => {
+                    setIsEditModalOpen(false)
+                    setSelectedCliente(null)
+                    resetForm()
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-12 flex-[2] font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  Salvar Alterações
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {isLocalMode && (
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-amber-900 text-sm">Modo de Armazenamento Local</h3>
+              <p className="text-amber-700 text-xs">Os dados estão sendo salvos apenas neste navegador. Conecte o Supabase para sincronizar.</p>
+            </div>
+          </div>
+          <Button 
+            className="bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl h-10 px-6 shadow-sm transition-all"
+            onClick={handleSyncLocalData}
+            disabled={isSyncing}
+          >
+            {isSyncing ? (
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4 mr-2" />
+            )}
+            Sincronizar Agora
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 bg-card p-2 sm:p-3 rounded-xl border border-border shadow-sm">
         <div className="relative flex-1">
@@ -426,7 +692,10 @@ export default function ClientesPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="rounded-xl p-2 shadow-xl border-slate-200/60">
                         <DropdownMenuLabel className="text-xs font-black text-slate-400 uppercase tracking-wider mb-1">Gerenciar</DropdownMenuLabel>
-                        <DropdownMenuItem className="rounded-lg py-2.5 font-medium cursor-pointer hover:bg-orange-50">
+                        <DropdownMenuItem 
+                          className="rounded-lg py-2.5 font-medium cursor-pointer hover:bg-orange-50"
+                          onClick={() => openEditModal(cliente)}
+                        >
                           <Edit className="mr-2 h-4 w-4 text-orange-400" /> Editar Perfil
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="my-1" />
@@ -491,7 +760,11 @@ export default function ClientesPage() {
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1 h-10 text-xs rounded-lg">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 h-10 text-xs rounded-lg"
+                  onClick={() => openEditModal(cliente)}
+                >
                   <Edit className="w-3.5 h-3.5 mr-1.5" /> Editar
                 </Button>
                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => confirmDelete(cliente)}>

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Inter } from 'next/font/google';
@@ -10,6 +9,7 @@ import { LayoutDashboard, Users, IdCard, CreditCard, Settings, User, Menu, X } f
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { ConnectionStatus } from './ConnectionStatus';
 
 const LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/icone%20_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvaWNvbmUgX2F6ZXZlZG9zLnBuZyIsImlhdCI6MTc3NDA1NjE0MiwiZXhwIjoxODA1NTkyMTQyfQ.hm3XdkycdDjF22O9X4ogC_KXyoUHO0v5TmNbUO-Dljk";
 const FOOTER_LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19hemV2ZWRvcy5wbmciLCJpYXQiOjE3NzQwNTYyNTgsImV4cCI6MTgwNTU5MjI1OH0.bofxAW2ZQtDk4X3VH62qUuIB3PTKT4YCv3_5aHEMMm0";
@@ -87,6 +87,9 @@ function HeaderContent() {
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2">
+            <div className="mr-2 hidden xs:block">
+              <ConnectionStatus />
+            </div>
             <button className="hidden xs:flex items-center gap-2 p-1 pl-2 sm:pl-2.5 pr-2.5 sm:pr-3.5 hover:bg-slate-50 rounded-lg transition-all border border-slate-200 bg-white shadow-sm">
               <div className="w-6.5 h-6.5 sm:w-7 sm:h-7 bg-orange-500 rounded-md flex items-center justify-center text-white">
                 <User className="w-3 h-3 sm:w-3.5 sm:h-3.5" />

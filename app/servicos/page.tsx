@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Plus, Search, MoreHorizontal, Eye, FileText, ClipboardList, Filter, Trash2, Car, Users, User, DollarSign, Wallet, IdCard } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Eye, FileText, ClipboardList, Filter, Trash2, Car, Users, User, DollarSign, Wallet, IdCard, AlertCircle, RefreshCw } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -57,6 +57,8 @@ export default function ServicosPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [clientes, setClientes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [isLocalMode, setIsLocalMode] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedServico, setSelectedServico] = useState<any>(null)
@@ -84,18 +86,24 @@ export default function ServicosPage() {
     setLoading(true)
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-        throw new Error("Supabase URL não configurada")
+        throw new Error("Local mode")
       }
-      const { data: servicosData } = await (await import("@/lib/supabase")).supabase
+      const { data: servicosData, error: sError } = await (await import("@/lib/supabase")).supabase
         .from("servicos")
         .select(`*, clientes (nome)`)
         .order("created_at", { ascending: false })
-      const { data: clientesData } = await (await import("@/lib/supabase")).supabase
+      if (sError) throw sError
+
+      const { data: clientesData, error: cError } = await (await import("@/lib/supabase")).supabase
         .from("clientes")
         .select("id, nome")
+      if (cError) throw cError
+
       setServicos(servicosData || [])
       setClientes(clientesData || [])
-    } catch {
+      setIsLocalMode(false)
+    } catch (err) {
+      console.warn("Using local storage for Servicos:", err)
       const localServicos = getStorageData("servicos", mockServicos)
       const localClientes = getStorageData("clientes", [
         { id: "1", nome: "João Silva" },
@@ -103,8 +111,38 @@ export default function ServicosPage() {
       ])
       setServicos(localServicos)
       setClientes(localClientes)
+      setIsLocalMode(true)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSyncLocalData = async () => {
+    setIsSyncing(true)
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+        throw new Error("Supabase não configurado")
+      }
+      
+      const localData = getStorageData("servicos", [])
+      if (localData.length === 0) {
+        toast({ title: "Nada para sincronizar", description: "Não há dados locais para enviar." })
+        return
+      }
+
+      const { supabase } = await import("@/lib/supabase")
+      
+      for (const servico of localData) {
+        const { id, clientes, cliente_nome, ...servicoData } = servico
+        await supabase.from("servicos").upsert([servicoData])
+      }
+
+      toast({ title: "Sincronização concluída", description: "Dados locais enviados para o Supabase." })
+      fetchData()
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erro na sincronização", description: error.message })
+    } finally {
+      setIsSyncing(false)
     }
   }
 
@@ -396,6 +434,32 @@ export default function ServicosPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {isLocalMode && (
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-amber-900 text-sm">Modo de Armazenamento Local</h3>
+              <p className="text-amber-700 text-xs">Os dados estão sendo salvos apenas neste navegador. Conecte o Supabase para sincronizar.</p>
+            </div>
+          </div>
+          <Button 
+            className="bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl h-10 px-6 shadow-sm transition-all"
+            onClick={handleSyncLocalData}
+            disabled={isSyncing}
+          >
+            {isSyncing ? (
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4 mr-2" />
+            )}
+            Sincronizar Agora
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 bg-card p-1.5 sm:p-3 rounded-xl border border-border shadow-sm transition-theme">
         <div className="relative flex-1">
