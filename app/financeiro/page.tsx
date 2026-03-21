@@ -164,7 +164,7 @@ export default function FinanceiroPage() {
                 </div>
               </div>
             </div>
-            <form onSubmit={handleAdicionarTransacao} className="p-8 bg-slate-50/50 pb-8 relative text-slate-900">
+            <form onSubmit={handleAdicionarTransacao} className="p-8 bg-white pb-8 relative text-slate-900">
               <div className="grid gap-4 py-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -227,8 +227,7 @@ export default function FinanceiroPage() {
               <div className="flex gap-3 mt-8">
                 <Button 
                   type="button" 
-                  variant="outline" 
-                  className="rounded-xl h-12 flex-1 font-semibold text-slate-700 hover:bg-slate-50 border-slate-200 transition-all" 
+                  className="rounded-xl h-12 flex-1 font-semibold bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm" 
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancelar
@@ -498,7 +497,7 @@ export default function FinanceiroPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="ghost" className="rounded-xl font-bold flex-1" onClick={() => setIsDeleteModalOpen(false)}>
+            <Button className="rounded-xl font-bold flex-1 bg-slate-800 text-white hover:bg-slate-900 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
             <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleExcluirTransacao(selectedTransacao?.id)}>

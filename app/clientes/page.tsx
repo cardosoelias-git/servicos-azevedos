@@ -234,7 +234,7 @@ export default function ClientesPage() {
               </div>
             </div>
 
-            <form onSubmit={handleCreateCliente} className="p-8 bg-slate-50/50 pb-8 relative">
+            <form onSubmit={handleCreateCliente} className="p-8 bg-white pb-8 relative">
               <div className="grid gap-5">
                 <div className="grid gap-1.5 relative">
                   <Label htmlFor="nome" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Nome Completo</Label>
@@ -301,8 +301,7 @@ export default function ClientesPage() {
               <div className="flex gap-3 mt-8">
                 <Button 
                   type="button" 
-                  variant="outline" 
-                  className="rounded-xl h-12 flex-1 font-semibold text-slate-700 hover:bg-slate-50 border-slate-200 transition-all" 
+                  className="rounded-xl h-12 flex-1 font-semibold bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm" 
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancelar
@@ -491,7 +490,7 @@ export default function ClientesPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="ghost" className="rounded-xl font-bold flex-1" onClick={() => setIsDeleteModalOpen(false)}>
+            <Button className="rounded-xl font-bold flex-1 bg-slate-800 text-white hover:bg-slate-900 shadow-sm" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
             <Button variant="destructive" className="rounded-xl font-bold flex-1 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteCliente(selectedCliente?.id)}>
