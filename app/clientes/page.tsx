@@ -215,7 +215,7 @@ export default function ClientesPage() {
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-400 to-orange-500 text-white font-extrabold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
               <UserPlus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Cliente</span>
             </Button>
           </DialogTrigger>
@@ -297,8 +297,8 @@ export default function ClientesPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="h-10 px-3 rounded-lg bg-orange-500 border-orange-500 font-bold text-white hover:bg-orange-600 hover:border-orange-600 shrink-0 text-xs shadow-sm">
-          <Filter className="mr-1.5 h-3.5 w-3.5 text-white" /> <span className="hidden sm:inline">Filtros</span>
+        <Button variant="outline" className="h-10 px-3 rounded-lg bg-orange-50 border-orange-200 font-bold text-orange-600 hover:bg-orange-100 hover:border-orange-300 shrink-0 text-xs shadow-sm transition-all">
+          <Filter className="mr-1.5 h-3.5 w-3.5 text-orange-500" /> <span className="hidden sm:inline">Filtros</span>
         </Button>
       </div>
 

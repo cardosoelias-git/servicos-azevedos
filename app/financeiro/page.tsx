@@ -146,7 +146,7 @@ export default function FinanceiroPage() {
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
               <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Nova Transação</span>
             </Button>
           </DialogTrigger>
@@ -295,9 +295,9 @@ export default function FinanceiroPage() {
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full lg:w-auto">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-full sm:w-[140px] md:w-[160px] h-10 rounded-lg bg-orange-500 border-orange-500 font-bold text-white hover:bg-orange-600 hover:border-orange-600 shadow-sm text-xs">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-[160px] h-10 rounded-lg bg-orange-50 border-orange-200 font-bold text-orange-600 hover:bg-orange-100 hover:border-orange-300 shadow-sm text-xs transition-all">
               <div className="flex items-center gap-2">
-                <Filter className="h-3.5 w-3.5 text-white" />
+                <Filter className="h-3.5 w-3.5 text-orange-500" />
                 <SelectValue placeholder="Tipo" />
               </div>
             </SelectTrigger>

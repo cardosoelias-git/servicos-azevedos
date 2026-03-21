@@ -133,31 +133,28 @@ export default function Dashboard() {
       >
         {/* Card Serviços H - Habilitação */}
         <Link href="/servicos?tipo=habilitacao" className="group">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-5 sm:p-6 h-full min-h-[140px] sm:min-h-[150px] shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-[1.01] transition-all duration-300">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-20 h-20 bg-white rounded-full blur-2xl"></div>
-            </div>
+          <div className="relative overflow-hidden rounded-2xl bg-white border border-blue-100 p-5 sm:p-6 h-full min-h-[140px] sm:min-h-[150px] shadow-sm hover:shadow-md hover:border-blue-300 hover:scale-[1.01] transition-all duration-300">
+            {/* Soft Background Accent */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 blur-3xl opacity-60"></div>
             
             {/* Content */}
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div className="flex items-start justify-between">
-                <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl">
-                  <IdCard className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                <div className="bg-blue-100 p-2.5 sm:p-3 rounded-xl transform group-hover:rotate-6 transition-transform">
+                  <IdCard className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
                 </div>
-                <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                  <Star className="w-3.5 h-3.5 text-white" />
-                  <span className="text-white text-[10px] sm:text-xs font-bold">Popular</span>
+                <div className="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
+                  <Star className="w-3.5 h-3.5 text-blue-600" />
+                  <span className="text-blue-700 text-[10px] sm:text-xs font-bold">Popular</span>
                 </div>
               </div>
               
               <div className="mt-3 sm:mt-4">
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">Serviços H</h3>
-                <p className="text-blue-50 text-xs sm:text-sm font-bold mt-0.5 sm:mt-1">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Serviços H</h3>
+                <p className="text-slate-500 text-xs sm:text-sm font-semibold mt-0.5 sm:mt-1">
                   Habilitação: CNH, Adição e Mudança de Categoria
                 </p>
-                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-white text-[10px] sm:text-xs font-bold">
+                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-blue-600 text-[10px] sm:text-xs font-bold">
                   <span>Ver serviços</span>
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </div>
@@ -168,31 +165,28 @@ export default function Dashboard() {
 
         {/* Card Serviços V - Veículos */}
         <Link href="/servicos?tipo=veiculos" className="group">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 p-5 sm:p-6 h-full min-h-[140px] sm:min-h-[150px] shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] transition-all duration-300">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-20 h-20 bg-white rounded-full blur-2xl"></div>
-            </div>
+          <div className="relative overflow-hidden rounded-2xl bg-white border border-emerald-100 p-5 sm:p-6 h-full min-h-[140px] sm:min-h-[150px] shadow-sm hover:shadow-md hover:border-emerald-300 hover:scale-[1.01] transition-all duration-300">
+            {/* Soft Background Accent */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 blur-3xl opacity-60"></div>
             
             {/* Content */}
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div className="flex items-start justify-between">
-                <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl">
-                  <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                <div className="bg-emerald-100 p-2.5 sm:p-3 rounded-xl transform group-hover:-rotate-6 transition-transform">
+                  <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-600" />
                 </div>
-                <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                  <Award className="w-3.5 h-3.5 text-white" />
-                  <span className="text-white text-[10px] sm:text-xs font-bold">Novo</span>
+                <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                  <Award className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700 text-[10px] sm:text-xs font-bold">Novo</span>
                 </div>
               </div>
               
               <div className="mt-3 sm:mt-4">
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">Serviços V</h3>
-                <p className="text-emerald-50 text-xs sm:text-sm font-bold mt-0.5 sm:mt-1">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Serviços V</h3>
+                <p className="text-slate-500 text-xs sm:text-sm font-semibold mt-0.5 sm:mt-1">
                   Transferência, Licenciamento e Vistoria
                 </p>
-                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-white text-[10px] sm:text-xs font-bold">
+                <div className="flex items-center gap-2 mt-2 sm:mt-3 text-emerald-600 text-[10px] sm:text-xs font-bold">
                   <span>Ver serviços</span>
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </div>
