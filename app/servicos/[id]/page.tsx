@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, CheckCircle2, Circle, Save, DollarSign, AlertCircle } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Circle, Save, DollarSign, AlertCircle, Upload, FileText, Image as ImageIcon, Download, Trash2, X } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -15,6 +15,7 @@ import { getStorageData, updateStorageItem, addStorageItem } from "@/lib/storage
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { ETAPAS_POR_TIPO } from "@/lib/constants"
+import { useRef } from "react"
 
 // Constants are now imported from @/lib/constants
 
@@ -27,6 +28,7 @@ export default function ServicoDetailsPage() {
   const [servicoNaoEncontrado, setServicoNaoEncontrado] = useState(false)
   const [isPagamentoModalOpen, setIsPagamentoModalOpen] = useState(false)
   const [valorPagamento, setValorPagamento] = useState("")
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const [servico, setServico] = useState<any>({
     id: "",
@@ -176,6 +178,120 @@ export default function ServicoDetailsPage() {
     })
   }
 
+  const resizeImage = (file: File, maxSize: number): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement("canvas")
+          let { width, height } = img
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = Math.round((height * maxSize) / width)
+              width = maxSize
+            } else {
+              width = Math.round((width * maxSize) / height)
+              height = maxSize
+            }
+          }
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext("2d")
+          ctx?.drawImage(img, 0, 0, width, height)
+          resolve(canvas.toDataURL(file.type || "image/jpeg", 0.7)) // 0.7 quality to save space
+        }
+        img.src = e.target?.result as string
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => resolve(e.target?.result as string)
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setLoading(true) // Show loading state briefly while crunching base64
+    try {
+      let base64 = ""
+      if (file.type.startsWith("image/")) {
+        base64 = await resizeImage(file, 1200)
+      } else {
+        base64 = await fileToBase64(file)
+      }
+
+      const novoDoc = {
+        id: Math.random().toString(36).substr(2, 9),
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        base64,
+        uploaded_at: new Date().toISOString()
+      }
+
+      const updatedServico = {
+        ...servico,
+        documentos: [...(servico.documentos || []), novoDoc]
+      }
+
+      updateStorageItem("servicos", servico.id, updatedServico)
+      setServico(updatedServico)
+      
+      toast({
+        title: "Upload",
+        description: "✅ Documento salvo com sucesso!",
+      })
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Erro de Upload",
+        description: "❌ Não foi possível salvar o arquivo.",
+      })
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      setLoading(false)
+    }
+  }
+
+  const handleDeleteDocument = (docId: string) => {
+    if (!confirm("Excluir este documento?")) return
+    const updatedServico = {
+      ...servico,
+      documentos: (servico.documentos || []).filter((d: any) => d.id !== docId)
+    }
+    updateStorageItem("servicos", servico.id, updatedServico)
+    setServico(updatedServico)
+    toast({
+      title: "Excluído",
+      description: "✅ Documento removido.",
+    })
+  }
+
+  const handleDownloadDocument = async (doc: any) => {
+    try {
+      const res = await fetch(doc.base64)
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = doc.name
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro", description: "Falha ao abrir documento."})
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -302,25 +418,73 @@ export default function ServicoDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <Card className="bento-card lg:col-span-1">
-        <CardHeader className="pb-2 md:pb-4">
-            <CardTitle className="text-base sm:text-lg font-black text-slate-900">Resumo Financeiro</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 md:space-y-5">
-            <div className="p-3 sm:p-4 bg-slate-50 rounded-lg sm:rounded-xl">
-              <p className="text-xs sm:text-sm text-slate-500 font-medium">Valor Total</p>
-              <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {servico.valor_total.toFixed(2).replace(".", ",")}</p>
-            </div>
-            <div className="p-3 sm:p-4 bg-emerald-50 rounded-lg sm:rounded-xl border border-emerald-100">
-              <p className="text-xs sm:text-sm text-emerald-600 font-medium">Valor Pago</p>
-              <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {servico.valor_pago.toFixed(2).replace(".", ",")}</p>
-            </div>
-            <div className="p-3 sm:p-4 bg-orange-50 rounded-lg sm:rounded-xl border border-orange-100">
-              <p className="text-xs sm:text-sm text-orange-600 font-medium">A Receber</p>
-              <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {servico.valor_receber.toFixed(2).replace(".", ",")}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-1 space-y-4 md:space-y-6">
+          <Card className="bento-card">
+            <CardHeader className="pb-2 md:pb-4">
+              <CardTitle className="text-base sm:text-lg font-black text-slate-900">Resumo Financeiro</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 md:space-y-5">
+              <div className="p-3 sm:p-4 bg-slate-50 rounded-lg sm:rounded-xl">
+                <p className="text-xs sm:text-sm text-slate-500 font-medium">Valor Total</p>
+                <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {servico.valor_total.toFixed(2).replace(".", ",")}</p>
+              </div>
+              <div className="p-3 sm:p-4 bg-emerald-50 rounded-lg sm:rounded-xl border border-emerald-100">
+                <p className="text-xs sm:text-sm text-emerald-600 font-medium">Valor Pago</p>
+                <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {servico.valor_pago.toFixed(2).replace(".", ",")}</p>
+              </div>
+              <div className="p-3 sm:p-4 bg-orange-50 rounded-lg sm:rounded-xl border border-orange-100">
+                <p className="text-xs sm:text-sm text-orange-600 font-medium">A Receber</p>
+                <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {servico.valor_receber.toFixed(2).replace(".", ",")}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bento-card">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 md:pb-4">
+              <CardTitle className="text-base sm:text-lg font-black text-slate-900">Documentos</CardTitle>
+              <Button variant="outline" className="h-8 px-3 rounded-lg text-xs font-bold border-orange-200 text-orange-600 hover:bg-orange-50" onClick={() => fileInputRef.current?.click()}>
+                <Upload className="w-3.5 h-3.5 mr-1.5" /> Adicionar
+              </Button>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={handleFileUpload} 
+              />
+            </CardHeader>
+            <CardContent className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+              {(!servico.documentos || servico.documentos.length === 0) ? (
+                <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
+                  <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-slate-500">Nenhum documento.</p>
+                  <p className="text-xs text-slate-400 mt-1">Envie FOTO, RENACH, etc.</p>
+                </div>
+              ) : (
+                servico.documentos.map((doc: any) => (
+                  <div key={doc.id} className="group flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 hover:border-orange-200 hover:shadow-sm transition-all duration-300">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center shrink-0 border border-slate-100 text-slate-500 group-hover:text-orange-500 group-hover:bg-orange-50 transition-colors">
+                        {doc.type.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-slate-900 truncate" title={doc.name}>{doc.name}</p>
+                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider mt-0.5">{(doc.size / 1024).toFixed(0)} KB</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity pl-2">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-emerald-50 hover:text-emerald-600" onClick={() => handleDownloadDocument(doc)} title="Baixar / Abrir">
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleDeleteDocument(doc.id)} title="Excluir">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="bento-card lg:col-span-2">
           <CardHeader className="pb-2 md:pb-4">
