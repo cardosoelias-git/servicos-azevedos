@@ -54,6 +54,7 @@ export default function ClientesPage() {
   const [cpf, setCpf] = useState("")
   const [telefone, setTelefone] = useState("")
   const [renach, setRenach] = useState("")
+  const [dataInicio, setDataInicio] = useState("")
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedCliente, setSelectedCliente] = useState<any>(null)
@@ -107,10 +108,10 @@ export default function ClientesPage() {
       }
       const { error } = await (await import("@/lib/supabase")).supabase
         .from("clientes")
-        .insert([{ nome, cpf, telefone, renach }])
+        .insert([{ nome, cpf, telefone, renach, data_inicio: dataInicio }])
       if (error) throw error
       
-      const newlyCreated = { id: Math.random().toString(), nome, cpf, telefone, renach, created_at: new Date().toISOString() }
+      const newlyCreated = { id: Math.random().toString(), nome, cpf, telefone, renach, data_inicio: dataInicio, created_at: new Date().toISOString() }
       setClientes([newlyCreated, ...clientes])
       toast({ title: "Sucesso", description: "✅ Cliente criado com sucesso!" })
     } catch (error) {
@@ -121,6 +122,7 @@ export default function ClientesPage() {
         cpf,
         telefone,
         renach,
+        data_inicio: dataInicio,
         created_at: new Date().toISOString()
       }
       const updatedData = addStorageItem("clientes", newCliente)
@@ -183,6 +185,7 @@ export default function ClientesPage() {
     setCpf("")
     setTelefone("")
     setRenach("")
+    setDataInicio("")
   }
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -286,18 +289,34 @@ export default function ClientesPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-1.5 relative">
-                  <Label htmlFor="renach" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">RENACH</Label>
-                  <div className="relative group">
-                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
-                    <Input 
-                      id="renach" 
-                      placeholder="00000000000" 
-                      className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400"
-                      value={renach}
-                      onChange={(e) => setRenach(e.target.value)}
-                      required
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="renach" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">RENACH</Label>
+                    <div className="relative group">
+                      <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Input 
+                        id="renach" 
+                        placeholder="00000000000" 
+                        className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400"
+                        value={renach}
+                        onChange={(e) => setRenach(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="dataInicio" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Data de Início</Label>
+                    <div className="relative group">
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300 pointer-events-none" />
+                      <Input 
+                        id="dataInicio" 
+                        type="date"
+                        className="rounded-xl h-12 pl-11 pr-4 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 placeholder:text-slate-400 style-date-input"
+                        value={dataInicio}
+                        onChange={(e) => setDataInicio(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
