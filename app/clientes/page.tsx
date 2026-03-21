@@ -297,8 +297,8 @@ export default function ClientesPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="h-10 px-3 rounded-lg border-slate-200 font-bold text-slate-600 hover:bg-slate-50 hover:border-orange-200 shrink-0 text-xs">
-          <Filter className="mr-1.5 h-3.5 w-3.5" /> <span className="hidden sm:inline">Filtros</span>
+        <Button variant="outline" className="h-10 px-3 rounded-lg bg-orange-500 border-orange-500 font-bold text-white hover:bg-orange-600 hover:border-orange-600 shrink-0 text-xs shadow-sm">
+          <Filter className="mr-1.5 h-3.5 w-3.5 text-white" /> <span className="hidden sm:inline">Filtros</span>
         </Button>
       </div>
 

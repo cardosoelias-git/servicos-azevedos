@@ -295,9 +295,9 @@ export default function FinanceiroPage() {
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full lg:w-auto">
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-full sm:w-[140px] md:w-[160px] h-10 rounded-lg border-slate-200 bg-white font-medium text-xs">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-[160px] h-10 rounded-lg bg-orange-500 border-orange-500 font-bold text-white hover:bg-orange-600 hover:border-orange-600 shadow-sm text-xs">
               <div className="flex items-center gap-2">
-                <Filter className="h-3.5 w-3.5 text-slate-400" />
+                <Filter className="h-3.5 w-3.5 text-white" />
                 <SelectValue placeholder="Tipo" />
               </div>
             </SelectTrigger>
