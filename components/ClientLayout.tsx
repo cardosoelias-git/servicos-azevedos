@@ -21,7 +21,6 @@ const navItems = [
   { name: 'Serviços', href: '/servicos', icon: IdCard },
   { name: 'Clientes', href: '/clientes', icon: Users },
   { name: 'Financeiro', href: '/financeiro', icon: CreditCard },
-  { name: 'Configurações', href: '/configuracoes', icon: Settings },
 ];
 
 function HeaderContent() {
