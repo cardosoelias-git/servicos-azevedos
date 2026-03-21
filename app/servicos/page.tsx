@@ -237,40 +237,38 @@ export default function ServicosPage() {
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-400 to-orange-500 text-white font-extrabold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+            <Button className="w-full sm:w-auto bg-orange-500 text-white font-semibold px-4 py-2.5 sm:px-6 sm:py-5 rounded-xl hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 shadow-sm">
               <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Serviço</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[480px] rounded-[2rem] p-0 border-none overflow-hidden shadow-2xl transition-all duration-500">
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-8 pb-12 relative overflow-hidden">
-              <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl" />
-              <div className="relative z-10 flex items-center gap-4">
-                <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner group transition-transform duration-500 hover:rotate-6">
-                  <Plus className="w-7 h-7 text-white" />
+          <DialogContent className="sm:max-w-[500px] p-0 border border-slate-100 rounded-3xl overflow-hidden shadow-xl bg-white">
+            <div className="px-8 pt-8 pb-6 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 transition-transform duration-300">
+                  <Plus className="w-6 h-6" />
                 </div>
                 <div>
-                  <DialogTitle className="text-2xl font-black text-white leading-tight">Iniciar Serviço</DialogTitle>
-                  <DialogDescription className="text-orange-50/80 font-medium">
+                  <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">Iniciar Serviço</DialogTitle>
+                  <DialogDescription className="text-slate-500 font-medium text-sm mt-1">
                     Selecione o cliente e os detalhes do processo.
                   </DialogDescription>
                 </div>
               </div>
             </div>
 
-            <form onSubmit={handleCreateServico} className="bg-white px-8 -mt-6 rounded-t-[2.5rem] relative z-20 pt-8 pb-8 text-slate-900">
-              <div className="grid gap-6">
-                <div className="grid gap-2 relative">
-                  <Label htmlFor="cliente" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Cliente</Label>
+            <form onSubmit={handleCreateServico} className="p-8 bg-slate-50/50 pb-8 relative text-slate-900">
+              <div className="grid gap-5">
+                <div className="grid gap-1.5 relative">
+                  <Label htmlFor="cliente" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Cliente</Label>
                   <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
                     <Select value={clienteId} onValueChange={setClienteId} required>
-                      <SelectTrigger className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900">
+                      <SelectTrigger className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 data-[placeholder]:text-slate-400">
                         <SelectValue placeholder="Selecione um cliente" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-2xl shadow-xl border-slate-100 p-1">
+                      <SelectContent className="rounded-2xl shadow-xl border border-slate-100 p-1.5 bg-white">
                         {clientes.map(c => (
-                          <SelectItem key={c.id} value={c.id} className="rounded-xl py-3 px-4 focus:bg-orange-50 focus:text-orange-700 cursor-pointer text-slate-900">
+                          <SelectItem key={c.id} value={c.id} className="rounded-xl py-3 px-4 focus:bg-orange-50 focus:text-orange-700 cursor-pointer text-slate-900 font-medium">
                             {c.nome}
                           </SelectItem>
                         ))}
@@ -279,17 +277,17 @@ export default function ServicosPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-2 relative">
-                  <Label htmlFor="tipo" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Tipo de Serviço</Label>
+                <div className="grid gap-1.5 relative">
+                  <Label htmlFor="tipo" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Tipo de Serviço</Label>
                   <div className="relative group">
-                    <Car className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
+                    <Car className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
                     <Select value={tipoServico} onValueChange={setTipoServico} required>
-                      <SelectTrigger className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900">
+                      <SelectTrigger className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-medium text-slate-900 data-[placeholder]:text-slate-400">
                         <SelectValue placeholder="Selecione o serviço" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-2xl shadow-xl border-slate-100 p-1">
+                      <SelectContent className="rounded-2xl shadow-xl border border-slate-100 p-1.5 bg-white">
                         {TIPOS_SERVICO.map(t => (
-                          <SelectItem key={t} value={t} className="rounded-xl py-3 px-4 focus:bg-orange-50 focus:text-orange-700 cursor-pointer text-slate-900">
+                          <SelectItem key={t} value={t} className="rounded-xl py-3 px-4 focus:bg-orange-50 focus:text-orange-700 cursor-pointer text-slate-900 font-medium">
                             {t}
                           </SelectItem>
                         ))}
@@ -299,28 +297,28 @@ export default function ServicosPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2 relative">
-                    <Label htmlFor="valorTotal" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Valor Total (R$)</Label>
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="valorTotal" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Valor Total (R$)</Label>
                     <div className="relative group">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
                       <Input 
                         id="valorTotal" 
                         placeholder="0,00" 
-                        className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-black text-slate-900 placeholder:text-slate-400"
+                        className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-black text-slate-900 placeholder:text-slate-400"
                         value={valorTotal}
                         onChange={(e) => setValorTotal(e.target.value)}
                         required
                       />
                     </div>
                   </div>
-                  <div className="grid gap-2 relative">
-                    <Label htmlFor="valorPago" className="font-bold text-slate-700 text-xs uppercase tracking-widest ml-1">Valor Sinal (R$)</Label>
+                  <div className="grid gap-1.5 relative">
+                    <Label htmlFor="valorPago" className="font-bold text-slate-700 text-[11px] uppercase tracking-wider ml-0.5">Valor Sinal (R$)</Label>
                     <div className="relative group">
-                      <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
+                      <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-orange-500 transition-colors duration-300" />
                       <Input 
                         id="valorPago" 
                         placeholder="0,00" 
-                        className="rounded-2xl h-12 pl-12 border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-black text-emerald-600 placeholder:text-slate-400"
+                        className="rounded-xl h-12 pl-11 bg-white border-slate-200 shadow-sm hover:border-orange-300 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all duration-300 font-black text-emerald-600 placeholder:text-slate-400"
                         value={valorPago}
                         onChange={(e) => setValorPago(e.target.value)}
                       />
@@ -329,20 +327,20 @@ export default function ServicosPage() {
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-10">
+              <div className="flex gap-3 mt-8">
                 <Button 
                   type="button" 
-                  variant="ghost" 
-                  className="rounded-2xl h-14 flex-1 font-bold text-slate-500 hover:bg-slate-100/50 hover:text-slate-700" 
+                  variant="outline" 
+                  className="rounded-xl h-12 flex-1 font-semibold text-slate-700 hover:bg-slate-50 border-slate-200 transition-all" 
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancelar
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-14 flex-[2] font-black text-base shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 uppercase tracking-wider"
+                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-12 flex-[2] font-semibold shadow-sm hover:shadow-md transition-all duration-300"
                 >
-                  Criar Processo
+                  Confirmar Serviço
                 </Button>
               </div>
             </form>

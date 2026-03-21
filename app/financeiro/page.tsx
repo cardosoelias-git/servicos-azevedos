@@ -146,18 +146,25 @@ export default function FinanceiroPage() {
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold px-4 py-3 sm:px-6 sm:py-5 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] transition-all duration-300">
+            <Button className="w-full sm:w-auto bg-orange-500 text-white font-semibold px-4 py-2.5 sm:px-6 sm:py-5 rounded-xl hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 shadow-sm">
               <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Nova Transação</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[450px] rounded-3xl">
-            <form onSubmit={handleAdicionarTransacao}>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-slate-900">Nova Transação</DialogTitle>
-                <DialogDescription className="text-slate-500">
-                  Registre uma nova entrada ou conta a receber.
-                </DialogDescription>
-              </DialogHeader>
+          <DialogContent className="sm:max-w-[450px] p-0 border border-slate-100 rounded-3xl overflow-hidden shadow-xl bg-white">
+            <div className="px-8 pt-8 pb-6 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 transition-transform duration-300">
+                  <Plus className="w-6 h-6" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">Nova Transação</DialogTitle>
+                  <DialogDescription className="text-slate-500 font-medium text-sm mt-1">
+                    Registre uma nova entrada ou conta a receber.
+                  </DialogDescription>
+                </div>
+              </div>
+            </div>
+            <form onSubmit={handleAdicionarTransacao} className="p-8 bg-slate-50/50 pb-8 relative text-slate-900">
               <div className="grid gap-4 py-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -217,14 +224,22 @@ export default function FinanceiroPage() {
                   />
                 </div>
               </div>
-              <DialogFooter className="gap-3">
-                <Button type="button" variant="ghost" className="rounded-xl h-12 font-bold" onClick={() => setIsModalOpen(false)}>
+              <div className="flex gap-3 mt-8">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="rounded-xl h-12 flex-1 font-semibold text-slate-700 hover:bg-slate-50 border-slate-200 transition-all" 
+                  onClick={() => setIsModalOpen(false)}
+                >
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl h-12 px-8 font-bold">
-                  Adicionar
+                <Button 
+                  type="submit" 
+                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-12 flex-[2] font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  Confirmar Adição
                 </Button>
-              </DialogFooter>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
@@ -232,54 +247,48 @@ export default function FinanceiroPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 md:gap-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="bento-card card-hover group relative overflow-hidden border-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600"></div>
-            <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
-              <TrendingUp className="w-16 h-16 md:w-32 md:h-32 text-white" />
-            </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-3.5 pt-3.5">
-              <CardTitle className="font-black text-white/80 text-[10px] md:text-xs uppercase tracking-wider">Total Recebido</CardTitle>
-              <div className="bg-white/20 p-1.5 md:p-2 rounded-lg">
-                <ArrowUpRight className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative z-10 px-3.5 pb-3.5">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-1">
-                R$ {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-              </div>
-              <p className="text-white/70 text-[10px] md:text-xs font-medium">{transacoes.filter(t => t.tipo === "Entrada" && t.status === "Pago").length} transações pagas</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="bento-card relative overflow-hidden h-full border-slate-200 shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 opacity-40 rounded-full blur-2xl group-hover:opacity-60 transition-opacity duration-500"></div>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10 p-4 sm:p-5">
+                <CardTitle className="font-semibold text-slate-500 text-xs sm:text-sm">Total Recebido</CardTitle>
+                <div className="bg-emerald-50 p-2 rounded-lg transition-transform duration-300 group-hover:scale-105">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
+                </div>
+              </CardHeader>
+              <CardContent className="relative z-10 px-4 sm:px-5 pb-4 sm:pb-5">
+                <div className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-1">
+                  R$ {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </div>
+                <p className="text-slate-500 text-xs font-medium">{transacoes.filter(t => t.tipo === "Entrada" && t.status === "Pago").length} transações pagas</p>
+              </CardContent>
+            </Card>
+          </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="bento-card card-hover group relative overflow-hidden border-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600"></div>
-            <div className="absolute top-0 right-0 p-4 md:p-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
-              <Wallet className="w-16 h-16 md:w-32 md:h-32 text-white" />
-            </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 relative z-10 px-3.5 pt-3.5">
-              <CardTitle className="font-black text-white/80 text-[10px] md:text-xs uppercase tracking-wider">Total a Receber</CardTitle>
-              <div className="bg-white/20 p-1.5 md:p-2 rounded-lg">
-                <ArrowDownRight className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative z-10 px-3.5 pb-3.5">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-1">
-                R$ {totalReceber.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-              </div>
-              <p className="text-white/70 text-[10px] md:text-xs font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="bento-card relative overflow-hidden h-full border-slate-200 shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 opacity-40 rounded-full blur-2xl group-hover:opacity-60 transition-opacity duration-500"></div>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10 p-4 sm:p-5">
+                <CardTitle className="font-semibold text-slate-500 text-xs sm:text-sm">Total a Receber</CardTitle>
+                <div className="bg-orange-50 p-2 rounded-lg transition-transform duration-300 group-hover:scale-105">
+                  <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+                </div>
+              </CardHeader>
+              <CardContent className="relative z-10 px-4 sm:px-5 pb-4 sm:pb-5">
+                <div className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-1">
+                  R$ {totalReceber.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </div>
+                <p className="text-slate-500 text-xs font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
+              </CardContent>
+            </Card>
+          </motion.div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-2 md:gap-3 justify-between items-stretch lg:items-center bg-card p-1.5 sm:p-3 rounded-xl shadow-sm border border-border">
