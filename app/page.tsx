@@ -9,6 +9,9 @@ import { useState, useEffect, useMemo } from "react"
 import { getStorageData } from "@/lib/storage"
 import { useRealtime } from "@/hooks/useRealtime"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
+
+const DASHBOARD_LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19hemV2ZWRvcy5wbmciLCJpYXQiOjE3NzQxNDQzNDIsImV4cCI6MTgwNTY4MDM0Mn0.OsaN0CzHn_bEC-_d1_yvLABS5gjBxQ6pAoNu3JKlk5U";
 
 export default function Dashboard() {
   const { data: servicos, loading: loadingServicos } = useRealtime<any>("servicos")
@@ -268,6 +271,23 @@ export default function Dashboard() {
               </motion.div>
             ))}
           </div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
+            className="flex items-center justify-center py-12 sm:py-20 select-none"
+          >
+            <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 drop-shadow-2xl">
+              <Image 
+                src={DASHBOARD_LOGO_URL}
+                alt="Azevedos Logo Dashboard"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Quick Actions */}

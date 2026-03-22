@@ -52,7 +52,7 @@ function HeaderContent() {
                   priority
                 />
               </div>
-              <span className="font-bold text-sm sm:text-base md:text-lg tracking-tight hidden xs:block">
+              <span className="font-bold text-sm sm:text-base md:text-lg tracking-tight">
                 <span className="text-slate-900">SERVICOS</span> <span className="text-orange-600">AZEVEDO</span>
               </span>
             </Link>
