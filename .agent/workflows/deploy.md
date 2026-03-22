@@ -2,30 +2,23 @@
 description: Como realizar o deploy oficial do projeto no GitHub e Vercel
 ---
 
-Este workflow deve ser seguido para garantir a sincronização segura do projeto local com o ambiente de produção.
+Para realizar o deploy deste projeto e garantir que todas as alterações (incluindo Realtime e Design) sejam aplicadas, siga estes passos:
 
-### 📋 Pré-requisitos
-- Repositório Git configurado (`https://github.com/cardosoelias-git/servicos-azevedos.git`)
-- Credenciais do Supabase no `.env.local`
+1. **Verificar Alterações Locais**:
+   Certifique-se de que todos os arquivos foram salvos.
 
-### 🛠️ Passos do Deploy
-
-1. **Validação Local**
+2. **Comando de Deploy Automatizado**:
+   Execute o seguinte comando no terminal:
    ```bash
-   npm run build
+   npm run deploy
    ```
+   *Este comando limpa o cache, adiciona todos os arquivos, faz o commit e envia para o GitHub (que dispara o deploy na Vercel).*
 
-2. **Sincronização com GitHub**
-   ```bash
-   git add .
-   git commit -m "Sua mensagem descritiva"
-   git push origin main
-   ```
-
-3. **Verificação de Variáveis (Vercel)**
-   Certifique-se de que o ambiente de produção tem:
+3. **Verificar Variáveis na Vercel**:
+   Sempre que houver mudanças no `.env.local`, verifique se as mesmas chaves existem no painel da Vercel:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_APP_URL`
 
----
-*Este workflow garante a integridade do deploy do Serviços Azevedo.*
+4. **Sincronização Realtime**:
+   Após o deploy, confirme no painel do Supabase se a publicação `supabase_realtime` continua ativa para as tabelas `clientes`, `servicos` e `transacoes`.

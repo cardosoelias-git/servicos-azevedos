@@ -33,23 +33,29 @@ run('git add .');
 
 // 3. Commit
 console.log('✍️ [3/4] Criando registro das alterações...');
-const commitMsg = process.argv[2] || "deploy: atualização de sistema e design";
+const commitMsg = process.argv[2] || "deploy: atualização de sistema e design (realtime)";
+
+// Verifica se há algo para commitar
 try {
-  execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit', shell: true });
+  const status = execSync('git status --porcelain', { encoding: 'utf8' });
+  if (!status) {
+    console.log('ℹ️ Nenhuma alteração detectada, criando commit de sincronização...');
+    run('git commit --allow-empty -m "deploy: sync (sem alterações detectadas)"');
+  } else {
+    run(`git commit -m "${commitMsg}"`);
+  }
 } catch (error) {
-  console.log('ℹ️ Nenhuma alteração nova detectada, sincronizando estado atual...');
-  run('git commit --allow-empty -m "deploy: sync empty"');
+  console.log('ℹ️ Prosseguindo com o estado atual...');
 }
 
 // 4. Envio Final
 console.log('📤 [4/4] Enviando para o servidor de produção...');
 try {
   run('git push origin main');
-  console.log('\n✅ DEPLOY REALIZADO COM SUCESSO!');
+  console.log('\n✨ CONFIGURAÇÃO DE DEPLOY SALVA E EXECUTADA!');
+  console.log('✅ DEPLOY REALIZADO COM SUCESSO!');
   console.log('🌐 Suas alterações estarão no ar em alguns instantes.');
-  console.log('💡 Dica: Se o site local der erro, rode "npm run dev" novamente.');
 } catch (error) {
   console.error('\n❌ Erro crítico ao enviar para o GitHub.');
-  console.error('👉 Verifique sua conexão com a internet ou se há conflitos no Git.');
   process.exit(1);
 }
