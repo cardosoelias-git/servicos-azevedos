@@ -2,7 +2,7 @@ export const siteConfig = {
   name: 'Serviços Azevedo',
   title: 'Serviços Azevedo - Sistema de Gestão para Habilitação',
   description: 'Sistema completo para gerenciamento de serviços de habilitação de veículos. Controle clientes, serviços, etapas e financeiro em um único lugar.',
-  url: 'https://servicos-azevedos.vercel.app',
+  url: 'https://servicosazevedo.vercel.app/',
   ogImage: '/og-image.png',
   keywords: [
     'serviços de habilitação',
@@ -19,7 +19,7 @@ export const siteConfig = {
   authors: [{ name: 'Serviços Azevedo' }],
   creator: 'Serviços Azevedo',
   publisher: 'Serviços Azevedo',
-  canonical: 'https://servicos-azevedos.vercel.app',
+  canonical: 'https://servicosazevedo.vercel.app/',
   twitter: {
     card: 'summary_large_image',
     title: 'Serviços Azevedo - Sistema de Gestão para Habilitação',
@@ -30,7 +30,7 @@ export const siteConfig = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://servicos-azevedos.vercel.app',
+    url: 'https://servicosazevedo.vercel.app/',
     siteName: 'Serviços Azevedo',
     title: 'Serviços Azevedo - Sistema de Gestão para Habilitação',
     description: 'Sistema completo para gerenciamento de serviços de habilitação de veículos. Controle clientes, serviços, etapas e financeiro.',

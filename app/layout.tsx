@@ -45,11 +45,10 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: 'https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/icone%20_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvaWNvbmUgX2F6ZXZlZG9zLnBuZyIsImlhdCI6MTc3NDE0NzYyNCwiZXhwIjoxODA1NjgzNjI0fQ.l6qUEXyhSvUwihZy_CgaHG2f7vGw95yFaLudEBorKv4', sizes: 'any' },
     ],
-    apple: '/apple-touch-icon.png',
-    shortcut: '/favicon.ico',
+    shortcut: 'https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/icone%20_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvaWNvbmUgX2F6ZXZlZG9zLnBuZyIsImlhdCI6MTc3NDE0NzYyNCwiZXhwIjoxODA1NjgzNjI0fQ.l6qUEXyhSvUwihZy_CgaHG2f7vGw95yFaLudEBorKv4',
+    apple: 'https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/icone%20_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvaWNvbmUgX2F6ZXZlZG9zLnBuZyIsImlhdCI6MTc3NDE0NzYyNCwiZXhwIjoxODA1NjgzNjI0fQ.l6qUEXyhSvUwihZy_CgaHG2f7vGw95yFaLudEBorKv4',
   },
   appleWebApp: {
     capable: true,
