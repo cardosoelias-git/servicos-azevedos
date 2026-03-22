@@ -91,18 +91,25 @@ export default function Dashboard() {
       }
     ])
 
-    if (servicos.length > 0) {
-      const recent = servicos.slice(0, 4).map((s: any) => ({
+    if (servicos && servicos.length > 0) {
+      // Sort by updated_at or created_at if possible, otherwise just take latest
+      const sortedServicos = [...servicos].sort((a: any, b: any) => {
+        const dateA = new Date(a.updated_at || a.created_at).getTime()
+        const dateB = new Date(b.updated_at || b.created_at).getTime()
+        return dateB - dateA
+      })
+      
+      const recent = sortedServicos.slice(0, 5).map((s: any) => ({
         id: s.id,
         user: s.cliente_nome || "Cliente",
         action: `Processo de ${s.tipo_servico}`,
-        time: s.created_at ? new Date(s.created_at).toLocaleDateString('pt-BR') : "Recentemente",
+        time: s.updated_at || s.created_at ? new Date(s.updated_at || s.created_at).toLocaleDateString('pt-BR') : "Recentemente",
         status: s.status === "Concluído" ? "success" : s.status === "Cancelado" ? "warning" : "info"
       }))
       setActivities(recent)
     } else {
       setActivities([
-        { id: 1, user: "Bem-vindo", action: "Comece adicionando clientes e serviços", time: "Hoje", status: "info" },
+        { id: 'welcome', user: "Bem-vindo", action: "Comece adicionando clientes e serviços", time: "Hoje", status: "info" },
       ])
     }
   }, [servicos, clientes, mounted, loadingServicos, loadingClientes])

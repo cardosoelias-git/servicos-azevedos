@@ -16,13 +16,17 @@ import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { ETAPAS_POR_TIPO } from "@/lib/constants"
 import { useRef } from "react"
-
-// Constants are now imported from @/lib/constants
+import { useRealtimeItem } from "@/hooks/useRealtimeItem"
+import { isConfigured } from "@/lib/supabase"
 
 export default function ServicoDetailsPage() {
   const params = useParams()
   const router = useRouter()
   const { toast } = useToast()
+  
+  const id = params.id as string
+  const { item: realtimeServico, loading: realtimeLoading } = useRealtimeItem<any>("servicos", id)
+  
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [servicoNaoEncontrado, setServicoNaoEncontrado] = useState(false)
@@ -30,43 +34,11 @@ export default function ServicoDetailsPage() {
   const [valorPagamento, setValorPagamento] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
   
-  const [servico, setServico] = useState<any>({
-    id: "",
-    cliente_nome: "",
-    tipo_servico: "",
-    valor_total: 0,
-    valor_pago: 0,
-    valor_receber: 0,
-    etapas_completas: 0,
-    total_etapas: 0,
-    status: "Em Andamento"
-  })
-
+  const [servico, setServico] = useState<any>(null)
   const [etapas, setEtapas] = useState<any[]>([])
 
   useEffect(() => {
-    fetchServico()
-  }, [params.id])
-
-  const fetchServico = async () => {
-    const id = params.id as string
-    
-    try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') throw new Error()
-      
-      const { supabase } = await import("@/lib/supabase")
-      const { data, error } = await supabase
-        .from("servicos")
-        .select("*, clientes (nome)")
-        .eq("id", id)
-        .single()
-        
-      if (error || !data) throw new Error()
-      processServicoData({
-        ...data,
-        cliente_nome: data.clientes?.nome || data.cliente_nome
-      })
-    } catch {
+    if (!isConfigured) {
       const servicos = getStorageData("servicos", [])
       const servicoData = servicos.find((s: any) => s.id === id)
       
@@ -76,13 +48,25 @@ export default function ServicoDetailsPage() {
         return
       }
       processServicoData(servicoData)
+    } else {
+      if (!realtimeLoading) {
+        if (!realtimeServico) {
+          setServicoNaoEncontrado(true)
+          setLoading(false)
+        } else {
+          processServicoData(realtimeServico)
+        }
+      }
     }
-  }
+  }, [realtimeServico, realtimeLoading, id])
 
   const processServicoData = (servicoData: any) => {
+    // Only update state if we are not currently saving (to avoid race conditions/jumpy UI)
+    if (saving) return;
+
     setServico({
       ...servicoData,
-      cliente_nome: servicoData.cliente_nome || "Desconhecido",
+      cliente_nome: servicoData.clientes?.nome || servicoData.cliente_nome || "Desconhecido",
       documentos: servicoData.documentos || []
     })
     
@@ -439,8 +423,15 @@ export default function ServicoDetailsPage() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 truncate">Detalhes do Serviço</h1>
-          <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base truncate">{servico.cliente_nome} - {servico.tipo_servico}</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 truncate">Detalhes do Serviço</h1>
+            {isConfigured && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-black bg-emerald-50 text-emerald-600 border border-emerald-100 uppercase tracking-tighter animate-pulse">
+                Real-time
+              </span>
+            )}
+          </div>
+          <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base truncate">{servico?.cliente_nome} - {servico?.tipo_servico}</p>
         </div>
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
           <Dialog open={isPagamentoModalOpen} onOpenChange={setIsPagamentoModalOpen}>

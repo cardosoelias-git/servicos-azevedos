@@ -155,7 +155,7 @@ export default function ServicosPage() {
       const vTotal = parseFloat(valorTotal.replace(",", ".")) || 0
       const vPago = parseFloat(valorPago.replace(",", ".")) || 0
 
-      const { error } = await (await import("@/lib/supabase")).supabase
+      const { data: createdServico, error } = await (await import("@/lib/supabase")).supabase
         .from("servicos")
         .insert([{ 
           cliente_id: clienteId, 
@@ -165,6 +165,9 @@ export default function ServicosPage() {
           valor_receber: Math.max(0, vTotal - vPago),
           status: "Em Andamento"
         }])
+        .select()
+        .single()
+
       if (error) throw error
 
       // Create initial transactions
@@ -173,7 +176,7 @@ export default function ServicosPage() {
         transacoesIniciais.push({
           data: new Date().toISOString(),
           cliente_id: clienteId,
-          servico_id: null, // We'll link this if possible, or leave it for later
+          servico_id: createdServico?.id || null,
           cliente_nome: clientName,
           servico_nome: tipoServico,
           tipo: "Entrada" as const,
@@ -185,7 +188,7 @@ export default function ServicosPage() {
         transacoesIniciais.push({
           data: new Date().toISOString(),
           cliente_id: clienteId,
-          servico_id: null,
+          servico_id: createdServico?.id || null,
           cliente_nome: clientName,
           servico_nome: tipoServico,
           tipo: "A Receber" as const,

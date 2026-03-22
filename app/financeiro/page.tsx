@@ -43,7 +43,9 @@ const mockTransacoes = [
 
 export default function FinanceiroPage() {
   const { data: realtimeTransacoes, loading: realtimeLoading } = useRealtime<any>("transacoes")
+  const { data: realtimeServicos, loading: realtimeServicosLoading } = useRealtime<any>("servicos")
   const [localTransacoes, setLocalTransacoes] = useState<any[]>([])
+  const [localServicos, setLocalServicos] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState("todos")
   const [loading, setLoading] = useState(true)
@@ -62,26 +64,33 @@ export default function FinanceiroPage() {
   const [novoStatus, setNovoStatus] = useState("Pendente")
 
   const transacoes = isLocalMode ? localTransacoes : realtimeTransacoes
+  const servicos = isLocalMode ? localServicos : realtimeServicos
 
   useEffect(() => {
     if (!isConfigured) {
       const localData = getStorageData("transacoes", mockTransacoes)
       localData.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
       setLocalTransacoes(localData)
+      
+      const localServicosData = getStorageData("servicos", [])
+      setLocalServicos(localServicosData)
+      
       setIsLocalMode(true)
       setLoading(false)
     } else {
       setIsLocalMode(false)
-      if (!realtimeLoading) {
+      if (!realtimeLoading && !realtimeServicosLoading) {
         setLoading(false)
       }
     }
-  }, [realtimeTransacoes, realtimeLoading])
+  }, [realtimeTransacoes, realtimeLoading, realtimeServicos, realtimeServicosLoading])
 
   const fetchTransacoes = async () => {
     if (!isConfigured) {
       const localData = getStorageData("transacoes", mockTransacoes)
       setLocalTransacoes(localData)
+      const localServicosData = getStorageData("servicos", [])
+      setLocalServicos(localServicosData)
     }
   }
 
@@ -132,8 +141,21 @@ export default function FinanceiroPage() {
     return matchesSearch && matchesFilter
   })
 
-  const totalRecebido = transacoes.filter(t => t.tipo === "Entrada").reduce((acc, curr) => acc + curr.valor, 0)
-  const totalReceber = transacoes.filter(t => t.tipo === "A Receber").reduce((acc, curr) => acc + curr.valor, 0)
+  // Improved calculation logic:
+  // totalReceber: Sum of actual remaining balances from the services table
+  const totalReceberFromServicos = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_receber || 0)), 0)
+  
+  // totalRecebido: Sum of all completed "Entrada" transactions
+  const totalRecebido = transacoes
+    .filter(t => t.tipo === "Entrada" && t.status === "Pago")
+    .reduce((acc, curr) => acc + (parseFloat(curr.valor || 0)), 0)
+
+  // Fallback for totalReceber if there are manual "A Receber" entries in transacoes (not linked to servicos)
+  const manualAReceber = transacoes
+    .filter(t => t.tipo === "A Receber" && !t.servico_id)
+    .reduce((acc, curr) => acc + (parseFloat(curr.valor || 0)), 0)
+
+  const totalReceber = totalReceberFromServicos + manualAReceber
 
   const handleAdicionarTransacao = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -388,7 +410,7 @@ export default function FinanceiroPage() {
                 <div className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-1">
                   R$ {totalReceber.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </div>
-                <p className="text-slate-500 text-xs font-medium">{transacoes.filter(t => t.tipo === "A Receber" || (t.tipo === "Entrada" && t.status === "Pendente")).length} pendências</p>
+                <p className="text-slate-500 text-xs font-medium">{servicos.filter(s => parseFloat(s.valor_receber || 0) > 0).length + transacoes.filter(t => t.tipo === "A Receber" && !t.servico_id).length} pendências</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -481,23 +503,50 @@ export default function FinanceiroPage() {
                     <TableCell className="font-bold text-slate-900 py-3.5 text-sm">{transacao.cliente_nome || transacao.cliente}</TableCell>
                     <TableCell className="text-slate-800 py-3.5 font-bold text-xs">{transacao.servico_nome || transacao.servico}</TableCell>
                     <TableCell className="py-3.5">
-                      <span className={cn(
-                        "inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider",
-                        transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-700'
-                      )}>
-                        {transacao.tipo === "Entrada" ? (
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        ) : (
-                          <ArrowDownRight className="h-3.5 w-3.5" />
-                        )}
-                        {transacao.tipo}
-                      </span>
+                      {(() => {
+                        // Find if this transaction is linked to a service
+                        const matchedServico = servicos.find(s => 
+                          (s.id === transacao.servico_id) || 
+                          (s.cliente_nome === (transacao.cliente_nome || transacao.cliente) && s.tipo_servico === (transacao.servico_nome || transacao.servico))
+                        );
+                        
+                        const displayValor = (transacao.tipo === "A Receber" && matchedServico) 
+                          ? matchedServico.valor_receber 
+                          : transacao.valor;
+                        
+                        return (
+                          <>
+                            <span className={cn(
+                              "inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider",
+                              transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-700'
+                            )}>
+                              {transacao.tipo === "Entrada" ? (
+                                <ArrowUpRight className="h-3.5 w-3.5" />
+                              ) : (
+                                <ArrowDownRight className="h-3.5 w-3.5" />
+                              )}
+                              {transacao.tipo}
+                            </span>
+                          </>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className={cn(
                       "text-right font-black py-3.5 text-lg",
                       transacao.tipo === "Entrada" ? 'text-emerald-800' : 'text-orange-900'
                     )}>
-                    R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      {(() => {
+                        const matchedServico = servicos.find(s => 
+                          (s.id === transacao.servico_id) || 
+                          (s.cliente_nome === (transacao.cliente_nome || transacao.cliente) && s.tipo_servico === (transacao.servico_nome || transacao.servico))
+                        );
+                        
+                        const displayValor = (transacao.tipo === "A Receber" && matchedServico) 
+                          ? parseFloat(matchedServico.valor_receber || 0)
+                          : parseFloat(transacao.valor || 0);
+
+                        return `R$ ${displayValor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+                      })()}
                   </TableCell>
                   <TableCell className="py-3.5">
                     <span className={cn(
@@ -570,7 +619,18 @@ export default function FinanceiroPage() {
                   "text-lg sm:text-xl font-black tracking-tight",
                   transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-800'
                 )}>
-                  R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  {(() => {
+                        const matchedServico = servicos.find(s => 
+                          (s.id === transacao.servico_id) || 
+                          (s.cliente_nome === (transacao.cliente_nome || transacao.cliente) && s.tipo_servico === (transacao.servico_nome || transacao.servico))
+                        );
+                        
+                        const displayValor = (transacao.tipo === "A Receber" && matchedServico) 
+                          ? parseFloat(matchedServico.valor_receber || 0)
+                          : parseFloat(transacao.valor || 0);
+
+                        return `R$ ${displayValor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+                      })()}
                 </div>
               </div>
 
