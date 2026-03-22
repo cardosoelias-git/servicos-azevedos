@@ -233,7 +233,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="xl:col-span-2 space-y-3 sm:space-y-4"
+          className="xl:col-span-2 space-y-3 sm:space-y-4 order-2 xl:order-1"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Atividades Recentes</h2>
@@ -271,6 +271,23 @@ export default function Dashboard() {
               </motion.div>
             ))}
           </div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
+            className="hidden xl:flex items-center justify-center py-10 pointer-events-none select-none overflow-hidden"
+          >
+            <div className="relative w-72 h-72 lg:w-96 lg:h-96 drop-shadow-2xl">
+              <Image 
+                src={DASHBOARD_LOGO_URL}
+                alt="Azevedos Logo Desktop"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Quick Actions */}
@@ -278,32 +295,32 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="space-y-3 sm:space-y-4"
+          className="space-y-3 sm:space-y-4 order-1 xl:order-2"
         >
           <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Ações Rápidas</h2>
           <div className="grid gap-3">
-            <Button asChild variant="premium" className="h-auto p-0 border-none shadow-none hover:shadow-none hover:scale-100 ring-0 focus-visible:ring-0">
+            <Button asChild variant="premium" className="h-auto p-0 border-none shadow-none hover:shadow-none hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
               <Link href="/servicos" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
-                <span className="text-sm font-bold">Novo Serviço</span>
-                <div className="bg-white/20 p-2 rounded-full transition-colors shadow-sm">
+                <span className="text-sm font-bold uppercase tracking-wider">Novo Serviço</span>
+                <div className="bg-white/20 p-2 rounded-full transition-colors shadow-sm shrink-0 ml-4">
                   <IdCard className="w-4 h-4 shadow-glow" />
                 </div>
               </Link>
             </Button>
             
-            <Button asChild variant="dark" className="h-auto p-0 border-none shadow-sm hover:shadow-md hover:scale-100 ring-0 focus-visible:ring-0">
+            <Button asChild variant="dark" className="h-auto p-0 border-none shadow-sm hover:shadow-md hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
               <Link href="/clientes" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
-                <span className="text-sm font-bold">Cadastrar Cliente</span>
-                <div className="bg-white/10 p-2 rounded-full transition-colors shadow-sm">
+                <span className="text-sm font-bold uppercase tracking-wider">Cadastrar Cliente</span>
+                <div className="bg-white/10 p-2 rounded-full transition-colors shadow-sm shrink-0 ml-4">
                   <User className="w-4 h-4" />
                 </div>
               </Link>
             </Button>
 
-            <Button asChild variant="outline" className="h-auto p-0 border-2 hover:border-orange-500/50 hover:bg-orange-50/50 hover:scale-100 ring-0 focus-visible:ring-0">
+            <Button asChild variant="outline" className="h-auto p-0 border-2 hover:border-orange-500/50 hover:bg-orange-50/50 hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
               <Link href="/financeiro" className="flex items-center justify-between w-full p-4 px-5 rounded-xl group">
-                <span className="text-sm font-bold">Financeiro</span>
-                <div className="bg-slate-50 p-2 rounded-full group-hover:bg-orange-100 transition-colors shadow-sm">
+                <span className="text-sm font-bold uppercase tracking-wider">Financeiro</span>
+                <div className="bg-slate-50 p-2 rounded-full group-hover:bg-orange-100 transition-colors shadow-sm shrink-0 ml-4">
                   <DollarSign className="w-4 h-4 text-slate-400 group-hover:text-orange-600 transition-colors" />
                 </div>
               </Link>
@@ -337,17 +354,17 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* Logo at the bottom - Well visible especially on mobile */}
+      {/* Logo at the bottom - Well visible especially on mobile (Hidden on Desktop as requested) */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
-        className="flex items-center justify-center py-10 sm:py-14 xl:py-20 pointer-events-none select-none overflow-hidden"
+        className="xl:hidden flex items-center justify-center py-10 sm:py-14 pointer-events-none select-none overflow-hidden"
       >
-        <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-[450px] md:h-[450px] drop-shadow-2xl">
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 drop-shadow-2xl">
           <Image 
             src={DASHBOARD_LOGO_URL}
-            alt="Azevedos Logo Footer"
+            alt="Azevedos Logo Mobile Footer"
             fill
             className="object-contain"
             priority
