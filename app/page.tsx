@@ -271,23 +271,6 @@ export default function Dashboard() {
               </motion.div>
             ))}
           </div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
-            className="flex items-center justify-center py-12 sm:py-20 select-none"
-          >
-            <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 drop-shadow-2xl">
-              <Image 
-                src={DASHBOARD_LOGO_URL}
-                alt="Azevedos Logo Dashboard"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </motion.div>
         </motion.div>
 
         {/* Quick Actions */}
@@ -353,6 +336,24 @@ export default function Dashboard() {
           </div>
         </motion.div>
       </div>
+
+      {/* Logo at the bottom - Well visible especially on mobile */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
+        className="flex items-center justify-center py-20 pointer-events-none select-none overflow-hidden"
+      >
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-[450px] md:h-[450px] drop-shadow-2xl">
+          <Image 
+            src={DASHBOARD_LOGO_URL}
+            alt="Azevedos Logo Footer"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+      </motion.div>
     </div>
   )
 }
