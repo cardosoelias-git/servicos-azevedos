@@ -30,6 +30,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useRouter } from "next/navigation"
+import { useRealtime } from "@/hooks/useRealtime"
+import { isConfigured } from "@/lib/supabase"
 
 const mockTransacoes = [
   { id: "1", data: "2023-10-25", cliente: "João Silva", servico: "Habilitação", tipo: "Entrada", valor: 500, status: "Pago" },
@@ -40,7 +42,8 @@ const mockTransacoes = [
 ]
 
 export default function FinanceiroPage() {
-  const [transacoes, setTransacoes] = useState<any[]>([])
+  const { data: realtimeTransacoes, loading: realtimeLoading } = useRealtime<any>("transacoes")
+  const [localTransacoes, setLocalTransacoes] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState("todos")
   const [loading, setLoading] = useState(true)
@@ -58,29 +61,27 @@ export default function FinanceiroPage() {
   const [novoValor, setNovoValor] = useState("")
   const [novoStatus, setNovoStatus] = useState("Pendente")
 
-  useEffect(() => {
-    fetchTransacoes()
-  }, [])
+  const transacoes = isLocalMode ? localTransacoes : realtimeTransacoes
 
-  const fetchTransacoes = async () => {
-    setLoading(true)
-    try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-        throw new Error("Local mode")
-      }
-      const { supabase } = await import("@/lib/supabase")
-      const { data, error } = await supabase.from("transacoes").select("*").order("data", { ascending: false })
-      if (error) throw error
-      setTransacoes(data || [])
-      setIsLocalMode(false)
-    } catch (err) {
-      console.warn("Using local storage for Transacoes:", err)
+  useEffect(() => {
+    if (!isConfigured) {
       const localData = getStorageData("transacoes", mockTransacoes)
       localData.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
-      setTransacoes(localData)
+      setLocalTransacoes(localData)
       setIsLocalMode(true)
-    } finally {
       setLoading(false)
+    } else {
+      setIsLocalMode(false)
+      if (!realtimeLoading) {
+        setLoading(false)
+      }
+    }
+  }, [realtimeTransacoes, realtimeLoading])
+
+  const fetchTransacoes = async () => {
+    if (!isConfigured) {
+      const localData = getStorageData("transacoes", mockTransacoes)
+      setLocalTransacoes(localData)
     }
   }
 
@@ -119,7 +120,8 @@ export default function FinanceiroPage() {
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
-      matchesSearch = t.cliente?.toLowerCase().includes(query) || t.servico?.toLowerCase().includes(query)
+      matchesSearch = (t.cliente_nome || t.cliente)?.toLowerCase().includes(query) || 
+                     (t.servico_nome || t.servico)?.toLowerCase().includes(query)
     }
 
     if (filterType !== "todos") {
@@ -149,8 +151,8 @@ export default function FinanceiroPage() {
     const novaTransacao = {
       id: Math.random().toString(36).substr(2, 9),
       data: new Date().toISOString(),
-      cliente: novoCliente,
-      servico: novoServico,
+      cliente_nome: novoCliente,
+      servico_nome: novoServico,
       tipo: novoTipo,
       valor: valor,
       status: novoStatus
@@ -166,7 +168,9 @@ export default function FinanceiroPage() {
       console.error(err)
     }
 
-    setTransacoes([novaTransacao, ...transacoes])
+    if (isLocalMode) {
+      setLocalTransacoes([novaTransacao, ...localTransacoes])
+    }
 
     toast({
       title: "Sucesso",
@@ -192,7 +196,9 @@ export default function FinanceiroPage() {
       console.error(err)
     }
 
-    setTransacoes(transacoes.filter(t => t.id !== id))
+    if (isLocalMode) {
+      setLocalTransacoes(localTransacoes.filter(t => t.id !== id))
+    }
     toast({
       title: "Sucesso",
       description: "✅ Transação excluída com sucesso!",
@@ -472,8 +478,8 @@ export default function FinanceiroPage() {
                     <TableCell className="text-slate-500 py-3.5 text-xs font-medium">
                       {new Date(transacao.data).toLocaleDateString("pt-BR")}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-900 py-3.5 text-sm">{transacao.cliente}</TableCell>
-                    <TableCell className="text-slate-700 py-3.5 font-medium text-xs">{transacao.servico}</TableCell>
+                    <TableCell className="font-bold text-slate-900 py-3.5 text-sm">{transacao.cliente_nome || transacao.cliente}</TableCell>
+                    <TableCell className="text-slate-800 py-3.5 font-bold text-xs">{transacao.servico_nome || transacao.servico}</TableCell>
                     <TableCell className="py-3.5">
                       <span className={cn(
                         "inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider",
@@ -488,8 +494,8 @@ export default function FinanceiroPage() {
                       </span>
                     </TableCell>
                     <TableCell className={cn(
-                      "text-right font-black py-3.5 text-base",
-                      transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-700'
+                      "text-right font-black py-3.5 text-lg",
+                      transacao.tipo === "Entrada" ? 'text-emerald-800' : 'text-orange-900'
                     )}>
                     R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </TableCell>
@@ -540,8 +546,8 @@ export default function FinanceiroPage() {
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">{transacao.cliente}</h3>
-                  <p className="text-[10px] sm:text-xs text-slate-500 font-medium">{transacao.servico}</p>
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">{transacao.cliente_nome || transacao.cliente}</h3>
+                  <p className="text-[10px] sm:text-xs text-slate-600 font-bold">{transacao.servico_nome || transacao.servico}</p>
                 </div>
                 <span className={cn(
                   "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider",
@@ -562,7 +568,7 @@ export default function FinanceiroPage() {
                 </div>
                 <div className={cn(
                   "text-lg sm:text-xl font-black tracking-tight",
-                  transacao.tipo === "Entrada" ? 'text-emerald-600' : 'text-orange-600'
+                  transacao.tipo === "Entrada" ? 'text-emerald-700' : 'text-orange-800'
                 )}>
                   R$ {transacao.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </div>

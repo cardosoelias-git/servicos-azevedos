@@ -188,8 +188,8 @@ export default function ServicoDetailsPage() {
     addStorageItem("transacoes", {
       id: Math.random().toString(36).substr(2, 9),
       data: new Date().toISOString(),
-      cliente: servico.cliente_nome,
-      servico: servico.tipo_servico,
+      cliente_nome: servico.cliente_nome,
+      servico_nome: servico.tipo_servico,
       tipo: "Entrada",
       valor: valor,
       status: "Pago"
@@ -210,8 +210,8 @@ export default function ServicoDetailsPage() {
         .from("transacoes")
         .insert([{
           data: new Date().toISOString(),
-          cliente: servico.cliente_nome,
-          servico: servico.tipo_servico,
+          cliente_nome: servico.cliente_nome,
+          servico_nome: servico.tipo_servico,
           tipo: "Entrada",
           valor: valor,
           status: "Pago"
