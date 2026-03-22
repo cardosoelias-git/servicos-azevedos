@@ -163,14 +163,14 @@ CREATE POLICY "Permitir atualização configuracoes" ON configuracoes
 -- FUNÇÕES ÚTEIS
 -- ============================================
 
--- Função para atualizar updated_at automaticamente
-CREATE OR REPLACE FUNCTION update_updated_at_column()
+-- Function to update the updated_at column
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
-  RETURN NEW;
+    NEW.updated_at = NOW();
+    RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ language 'plpgsql' SET search_path = public;
 
 -- Trigger para clientes
 DROP TRIGGER IF EXISTS update_clientes_updated_at ON clientes;
