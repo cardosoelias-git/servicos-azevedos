@@ -19,10 +19,13 @@ npm run deploy
 - **Commit & Push**: Cria um registro e envia tudo para o GitHub em um único passo.
 
 ## 🌐 2. Configuração no Painel
+Para detalhes completos de acesso e IDs de projeto, consulte:
+👉 **[CONEXOES.md](./CONEXOES.md)**
+
 Certifique-se de que as **Variáveis de Ambiente** estão configuradas no seu serviço de hospedagem:
 
 - `NEXT_PUBLIC_SUPABASE_URL`: `https://vfbcboddmqcgzpyyscjs.supabase.co`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: (Sua chave Anon)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: (Sua chave Anon - veja .env.local)
 
 ## 🗄️ 3. Banco de Dados
 Lembre-se: o banco de dados oficial está integrado ao projeto. Se precisar mexer no esquema, use o arquivo:

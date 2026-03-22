@@ -54,7 +54,11 @@ try {
   run('git push origin main');
   console.log('\n✨ CONFIGURAÇÃO DE DEPLOY SALVA E EXECUTADA!');
   console.log('✅ DEPLOY REALIZADO COM SUCESSO!');
-  console.log('🌐 Suas alterações estarão no ar em alguns instantes.');
+  console.log('\n🔗 [INFORMAÇÕES DE INFRAESTRUTURA]');
+  console.log('🌐 App URL: https://servicosazevedo.vercel.app');
+  console.log('🔥 Supabase: https://supabase.com/dashboard/project/vfbcboddmqcgzpyyscjs');
+  console.log('🐙 GitHub: https://github.com/cardosoelias-git/servicos-azevedos');
+  console.log('\n💡 Dica: Consulte o arquivo CONEXOES.md para mais detalhes.');
 } catch (error) {
   console.error('\n❌ Erro crítico ao enviar para o GitHub.');
   process.exit(1);

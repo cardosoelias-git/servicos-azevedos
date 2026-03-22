@@ -14,6 +14,7 @@
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias](#tecnologias)
 - [Começando](#começando)
+- [Infraestrutura e Conexões](#infraestrutura-e-conexões)
 - [Configuração](#configuração)
 - [Deploy](#deploy)
 - [Estrutura](#estrutura)
@@ -73,6 +74,16 @@ npm run dev
 ```
 
 A aplicação estará disponível em `http://localhost:3000`
+
+## 🔗 Infraestrutura e Conexões
+
+Para gerenciar o sistema, consulte o arquivo central de conexões:
+👉 **[CONEXOES.md](./CONEXOES.md)**
+
+Lá você encontrará links diretos para:
+- Dashboard do Supabase (Banco de Dados)
+- Dashboard da Vercel (Hospedagem)
+- Repositório GitHub (Código Fonte)
 
 ## ⚙️ Configuração
 
