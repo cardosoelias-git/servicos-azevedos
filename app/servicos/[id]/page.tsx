@@ -661,13 +661,18 @@ export default function ServicoDetailsPage() {
                           value={etapa.status_etapa} 
                           onValueChange={(val) => handleUpdateEtapa(index, "status_etapa", val)}
                         >
-                          <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm font-medium rounded-lg">
+                          <SelectTrigger className={cn(
+                            "h-9 sm:h-10 text-xs sm:text-sm font-bold rounded-lg border-2 shadow-sm transition-all",
+                            etapa.status_etapa === "Apto" ? "text-emerald-600 bg-emerald-50 border-emerald-100" :
+                            etapa.status_etapa === "Inapto" ? "text-red-600 bg-red-50 border-red-100" :
+                            "text-orange-600 bg-orange-50 border-orange-100"
+                          )}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="rounded-lg">
-                            <SelectItem value="Pendente">Pendente</SelectItem>
-                            <SelectItem value="Apto">Apto</SelectItem>
-                            <SelectItem value="Inapto">Inapto</SelectItem>
+                          <SelectContent className="rounded-xl p-1 shadow-xl border-slate-200">
+                            <SelectItem value="Pendente" className="rounded-lg font-bold text-orange-600 focus:bg-orange-50 focus:text-orange-700">Pendente</SelectItem>
+                            <SelectItem value="Apto" className="rounded-lg font-bold text-emerald-600 focus:bg-emerald-50 focus:text-emerald-700">Apto</SelectItem>
+                            <SelectItem value="Inapto" className="rounded-lg font-bold text-red-600 focus:bg-red-50 focus:text-red-700">Inapto</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

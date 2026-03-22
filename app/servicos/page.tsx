@@ -333,9 +333,15 @@ export default function ServicosPage() {
   const handleGerarRecibo = (servico: any) => {
     const nomeCliente = servico.clientes?.nome || servico.cliente_nome || (clientes.find(c => c.id === servico.cliente_id)?.nome) || "Cliente Desconhecido"
     const dataAtual = new Date().toLocaleDateString('pt-BR')
+    
+    // Calculate values in real-time from etapas if available
+    const valorPagoCalculado = (servico.etapas || []).reduce((acc: number, e: any) => acc + (Number(e.valor_pago_etapa) || 0), 0)
+    const currentPaid = servico.etapas ? valorPagoCalculado : (servico.valor_pago || 0)
+    const currentRemaining = Math.max(0, (servico.valor_total || 0) - currentPaid)
+
     const valorTotal = (servico.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-    const valorPago = (servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-    const valorReceber = (servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    const valorPago = currentPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    const valorReceber = currentRemaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
 
     const win = window.open('', '_blank')
     if (!win) {
@@ -616,6 +622,11 @@ export default function ServicosPage() {
             ) : (
               filteredServicos.map((servico, index) => {
                 const progress = Math.round(((servico.etapas_completas || 0) / (servico.total_etapas || 9)) * 100);
+                
+                // Real-time financial calculations for the list
+                const calculatedPaid = (servico.etapas || []).reduce((acc: number, e: any) => acc + (Number(e.valor_pago_etapa) || 0), 0);
+                const currentPaid = servico.etapas ? calculatedPaid : (servico.valor_pago || 0);
+                const currentRemaining = Math.max(0, (servico.valor_total || 0) - currentPaid);
                 return (
                   <motion.tr 
                     key={servico.id}
@@ -660,10 +671,10 @@ export default function ServicosPage() {
                     <TableCell className="text-right py-3">
                       <div className="space-y-0.5">
                         <div className="text-emerald-700 font-bold text-xs">
-                          R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          R$ {currentPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
                         <div className="text-orange-600 font-medium text-[10px]">
-                          Faltam R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          Faltam R$ {currentRemaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
                       </div>
                     </TableCell>
@@ -737,6 +748,11 @@ export default function ServicosPage() {
         ) : (
           filteredServicos.map((servico, index) => {
             const progress = Math.round(((servico.etapas_completas || 0) / (servico.total_etapas || 9)) * 100);
+            
+            // Real-time financial calculations for the mobile list
+            const calculatedPaid = (servico.etapas || []).reduce((acc: number, e: any) => acc + (Number(e.valor_pago_etapa) || 0), 0);
+            const currentPaid = servico.etapas ? calculatedPaid : (servico.valor_pago || 0);
+            const currentRemaining = Math.max(0, (servico.valor_total || 0) - currentPaid);
             return (
               <motion.div
                 key={servico.id}
@@ -794,11 +810,11 @@ export default function ServicosPage() {
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="p-2 sm:p-3 bg-emerald-50 rounded-lg">
                     <p className="text-[9px] text-emerald-600 font-black uppercase">Pago</p>
-                    <p className="font-bold text-emerald-600 text-xs sm:text-sm">R$ {(servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                    <p className="font-bold text-emerald-600 text-xs sm:text-sm">R$ {currentPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <div className="p-2 sm:p-3 bg-orange-50 rounded-lg">
                     <p className="text-[9px] text-orange-600 font-black uppercase">A Receber</p>
-                    <p className="font-bold text-orange-600 text-xs sm:text-sm">R$ {(servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                    <p className="font-bold text-orange-600 text-xs sm:text-sm">R$ {currentRemaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                 </div>
 
