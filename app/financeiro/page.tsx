@@ -142,14 +142,19 @@ export default function FinanceiroPage() {
   })
 
   // Improved calculation logic:
+  // totalRecebido: Sum of all valor_pago from the services table (canonical source)
+  const totalRecebidoFromServicos = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_pago || 0)), 0)
+  
+  // totalRecebido manual: Sum of all manual "Entrada" transactions without a servico_id
+  const manualEntradas = transacoes
+    .filter(t => t.tipo === "Entrada" && t.status === "Pago" && !t.servico_id)
+    .reduce((acc, curr) => acc + (parseFloat(curr.valor || 0)), 0)
+
+  const totalRecebido = totalRecebidoFromServicos + manualEntradas
+
   // totalReceber: Sum of actual remaining balances from the services table
   const totalReceberFromServicos = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_receber || 0)), 0)
   
-  // totalRecebido: Sum of all completed "Entrada" transactions
-  const totalRecebido = transacoes
-    .filter(t => t.tipo === "Entrada" && t.status === "Pago")
-    .reduce((acc, curr) => acc + (parseFloat(curr.valor || 0)), 0)
-
   // Fallback for totalReceber if there are manual "A Receber" entries in transacoes (not linked to servicos)
   const manualAReceber = transacoes
     .filter(t => t.tipo === "A Receber" && !t.servico_id)
