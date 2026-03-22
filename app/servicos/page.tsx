@@ -58,9 +58,9 @@ export default function ServicosPage() {
   const { data: realtimeServicos, loading: servicosLoading } = useRealtime<any>("servicos")
   const { data: realtimeClientes, loading: clientesLoading } = useRealtime<any>("clientes")
   
-  const [servicos, setServicos] = useState<any[]>([])
+  const [localServicos, setLocalServicos] = useState<any[]>([])
+  const [localClientes, setLocalClientes] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [clientes, setClientes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isLocalMode, setIsLocalMode] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
@@ -75,19 +75,21 @@ export default function ServicosPage() {
   const [valorTotal, setValorTotal] = useState("")
   const [valorPago, setValorPago] = useState("")
 
+  // Estados derivados
+  const servicos = isLocalMode ? localServicos : realtimeServicos
+  const clientes = isLocalMode ? localClientes : realtimeClientes
+
   useEffect(() => {
     if (!isConfigured) {
       const sData = getStorageData("servicos", mockServicos)
       const cData = getStorageData("clientes", [])
-      setServicos(sData)
-      setClientes(cData)
+      setLocalServicos(sData)
+      setLocalClientes(cData)
       setIsLocalMode(true)
       setLoading(false)
     } else {
       setIsLocalMode(false)
       if (!servicosLoading && !clientesLoading) {
-        setServicos(realtimeServicos)
-        setClientes(realtimeClientes)
         setLoading(false)
       }
     }
@@ -108,15 +110,15 @@ export default function ServicosPage() {
     if (!isConfigured) {
       const sData = getStorageData("servicos", mockServicos)
       const cData = getStorageData("clientes", [])
-      setServicos(sData)
-      setClientes(cData)
+      setLocalServicos(sData)
+      setLocalClientes(cData)
     }
   }
 
   const handleSyncLocalData = async () => {
     setIsSyncing(true)
     try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+      if (!isConfigured) {
         throw new Error("Supabase não configurado")
       }
       
@@ -146,7 +148,7 @@ export default function ServicosPage() {
     e.preventDefault()
     
     try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+      if (!isConfigured) {
         throw new Error("Local mode")
       }
       const clientName = clientes.find(c => c.id === clienteId)?.nome || "Cliente Desconhecido"
@@ -193,7 +195,6 @@ export default function ServicosPage() {
       }
 
       toast({ title: "Sucesso", description: "✅ Serviço criado com sucesso e financeiro integrado!" })
-      fetchData()
     } catch (error) {
       console.error("Erro ao criar no Supabase (Servicos):", error)
       const vTotal = parseFloat(valorTotal.replace(",", ".")) || 0
@@ -239,18 +240,17 @@ export default function ServicosPage() {
         })
       }
 
-      setServicos([updatedData, ...servicos])
+      setLocalServicos([updatedData, ...localServicos])
       toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço criado com sucesso!" })
     } finally {
       setIsModalOpen(false)
       resetForm()
-      router.refresh()
     }
   }
 
   const handleDeleteServico = async (id: string) => {
     try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+      if (!isConfigured) {
         throw new Error("Local mode")
       }
       const serviceToDelete = servicos.find(s => s.id === id)
@@ -267,7 +267,6 @@ export default function ServicosPage() {
           .eq("servico", serviceType)
       }
 
-      setServicos(servicos.filter(s => s.id !== id))
       toast({ title: "Sucesso", description: "✅ Serviço excluído com sucesso!" })
     } catch {
       const serviceToDelete = servicos.find(s => s.id === id)
@@ -289,12 +288,11 @@ export default function ServicosPage() {
       }
 
       deleteStorageItem("servicos", id)
-      setServicos(servicos.filter(s => s.id !== id))
+      setLocalServicos(localServicos.filter(s => s.id !== id))
       toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço excluído!" })
     } finally {
       setIsDeleteModalOpen(false)
       setSelectedServico(null)
-      router.refresh()
     }
   }
 

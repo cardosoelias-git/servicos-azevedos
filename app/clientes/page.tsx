@@ -46,7 +46,7 @@ const mockClientes = [
 
 export default function ClientesPage() {
   const { data: realtimeClientes, loading: realtimeLoading } = useRealtime<any>("clientes")
-  const [clientes, setClientes] = useState<any[]>([])
+  const [localClientes, setLocalClientes] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
   const [isLocalMode, setIsLocalMode] = useState(false)
@@ -65,16 +65,18 @@ export default function ClientesPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedCliente, setSelectedCliente] = useState<any>(null)
 
+  // O estado 'clientes' agora é derivado
+  const clientes = isLocalMode ? localClientes : realtimeClientes
+
   useEffect(() => {
     if (!isConfigured) {
-      const localData = getStorageData("clientes", mockClientes)
-      setClientes(localData)
+      const data = getStorageData("clientes", mockClientes)
+      setLocalClientes(data)
       setIsLocalMode(true)
       setLoading(false)
     } else {
       setIsLocalMode(false)
       if (!realtimeLoading) {
-        setClientes(realtimeClientes)
         setLoading(false)
       }
     }
@@ -88,11 +90,10 @@ export default function ClientesPage() {
            c.telefone?.includes(query)
   })
 
-  // Esta função agora apenas recarrega se for local ou força sync
   const fetchClientes = async () => {
     if (!isConfigured) {
-      const localData = getStorageData("clientes", mockClientes)
-      setClientes(localData)
+      const data = getStorageData("clientes", mockClientes)
+      setLocalClientes(data)
     }
   }
 
@@ -144,7 +145,7 @@ export default function ClientesPage() {
     }
 
     try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+      if (!isConfigured) {
         throw new Error("Local mode")
       }
       const { error } = await (await import("@/lib/supabase")).supabase
@@ -152,8 +153,6 @@ export default function ClientesPage() {
         .insert([{ nome, cpf, telefone, renach, data_inicio: dataInicio }])
       if (error) throw error
       
-      const newlyCreated = { id: Math.random().toString(), nome, cpf, telefone, renach, data_inicio: dataInicio, created_at: new Date().toISOString() }
-      setClientes([newlyCreated, ...clientes])
       toast({ title: "Sucesso", description: "✅ Cliente criado com sucesso!" })
     } catch (error) {
       console.error("Erro ao criar no Supabase (Clientes):", error)
@@ -167,12 +166,11 @@ export default function ClientesPage() {
         created_at: new Date().toISOString()
       }
       const updatedData = addStorageItem("clientes", newCliente)
-      setClientes([updatedData, ...clientes])
+      setLocalClientes([updatedData, ...localClientes])
       toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente criado com sucesso!" })
     } finally {
       setIsModalOpen(false)
       resetForm()
-      router.refresh()
     }
   }
 
@@ -203,7 +201,7 @@ export default function ClientesPage() {
     }
 
     try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
+      if (!isConfigured) {
         throw new Error("Local mode")
       }
       const { error } = await (await import("@/lib/supabase")).supabase
@@ -213,12 +211,6 @@ export default function ClientesPage() {
 
       if (error) throw error
       
-      const updatedClientes = clientes.map(c => 
-        c.id === selectedCliente.id 
-          ? { ...c, nome, cpf, telefone, renach, data_inicio: dataInicio }
-          : c
-      )
-      setClientes(updatedClientes)
       toast({ title: "Sucesso", description: "✅ Cliente atualizado com sucesso!" })
     } catch (error) {
       console.error("Erro ao atualizar no Supabase (Clientes):", error)
@@ -238,16 +230,14 @@ export default function ClientesPage() {
         setStorageData("clientes", newLocalData)
       }
 
-      const updatedClientes = clientes.map(c => 
+      setLocalClientes(localClientes.map(c => 
         c.id === selectedCliente.id ? updatedCliente : c
-      )
-      setClientes(updatedClientes)
+      ))
       toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente atualizado com sucesso!" })
     } finally {
       setIsEditModalOpen(false)
       setSelectedCliente(null)
       resetForm()
-      router.refresh()
     }
   }
 
@@ -257,11 +247,10 @@ export default function ClientesPage() {
         throw new Error("Local mode")
       }
       await (await import("@/lib/supabase")).supabase.from("clientes").delete().eq("id", id)
-      setClientes(clientes.filter(c => c.id !== id))
       toast({ title: "Sucesso", description: "✅ Cliente excluído com sucesso!" })
     } catch (error) {
       console.error("Erro ao deletar no Supabase (Clientes):", error)
-      const clientToDelete = clientes.find(c => c.id === id)
+      const clientToDelete = localClientes.find(c => c.id === id)
       const clientName = clientToDelete?.nome
 
       // Cascade Delete in Local Storage
@@ -282,7 +271,7 @@ export default function ClientesPage() {
       }
 
       deleteStorageItem("clientes", id)
-      setClientes(clientes.filter(c => c.id !== id))
+      setLocalClientes(localClientes.filter(c => c.id !== id))
       toast({ title: "Sucesso (Modo Local)", description: "✅ Cliente excluído!" })
     } finally {
       setIsDeleteModalOpen(false)
