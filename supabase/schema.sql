@@ -172,18 +172,21 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger para clientes
+DROP TRIGGER IF EXISTS update_clientes_updated_at ON clientes;
 CREATE TRIGGER update_clientes_updated_at
   BEFORE UPDATE ON clientes
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Trigger para servicos
+DROP TRIGGER IF EXISTS update_servicos_updated_at ON servicos;
 CREATE TRIGGER update_servicos_updated_at
   BEFORE UPDATE ON servicos
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Trigger para transacoes
+DROP TRIGGER IF EXISTS update_transacoes_updated_at ON transacoes;
 CREATE TRIGGER update_transacoes_updated_at
   BEFORE UPDATE ON transacoes
   FOR EACH ROW
