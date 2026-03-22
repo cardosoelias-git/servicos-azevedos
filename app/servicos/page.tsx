@@ -277,7 +277,7 @@ export default function ServicosPage() {
       }
       const serviceToDelete = servicos.find(s => s.id === id)
       const serviceType = serviceToDelete?.tipo_servico
-      const clientName = serviceToDelete?.cliente_nome || serviceToDelete?.clientes?.nome
+      const clientName = serviceToDelete?.cliente_nome || serviceToDelete?.clientes?.nome || (clientes.find(c => c.id === serviceToDelete?.cliente_id)?.nome)
 
       const { supabase } = await import("@/lib/supabase")
       await supabase.from("servicos").delete().eq("id", id)
@@ -293,7 +293,7 @@ export default function ServicosPage() {
     } catch {
       const serviceToDelete = servicos.find(s => s.id === id)
       const serviceType = serviceToDelete?.tipo_servico
-      const clientName = serviceToDelete?.cliente_nome || serviceToDelete?.clientes?.nome
+      const clientName = serviceToDelete?.cliente_nome || serviceToDelete?.clientes?.nome || (clientes.find(c => c.id === serviceToDelete?.cliente_id)?.nome)
 
       // Cascade Delete in Local Storage
       if (typeof window !== "undefined") {
@@ -328,6 +328,95 @@ export default function ServicosPage() {
     setTipoServico("")
     setValorTotal("")
     setValorPago("")
+  }
+
+  const handleGerarRecibo = (servico: any) => {
+    const nomeCliente = servico.clientes?.nome || servico.cliente_nome || (clientes.find(c => c.id === servico.cliente_id)?.nome) || "Cliente Desconhecido"
+    const dataAtual = new Date().toLocaleDateString('pt-BR')
+    const valorTotal = (servico.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    const valorPago = (servico.valor_pago || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    const valorReceber = (servico.valor_receber || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+
+    const win = window.open('', '_blank')
+    if (!win) {
+      toast({ variant: "destructive", title: "Erro", description: "Bloqueador de pop-ups impediu a abertura do recibo." })
+      return
+    }
+
+    win.document.write(`
+      <html>
+        <head>
+          <title>Recibo - ${nomeCliente}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+            body { font-family: 'Inter', sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+            .header { text-align: center; border-bottom: 3px solid #f97316; padding-bottom: 20px; margin-bottom: 30px; }
+            .header h1 { margin: 0; color: #f97316; font-size: 32px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; }
+            .header p { margin: 5px 0 0; color: #64748b; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+            .content { margin-bottom: 40px; background: #f8fafc; padding: 30px; rounded-xl: 16px; border: 1px solid #e2e8f0; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 8px; }
+            .label { font-weight: 700; color: #64748b; font-size: 13px; text-transform: uppercase; }
+            .value { font-weight: 800; color: #0f172a; font-size: 15px; }
+            .footer { margin-top: 60px; text-align: center; color: #94a3b8; font-size: 11px; }
+            .signature-area { display: flex; justify-content: space-around; margin-top: 80px; }
+            .signature { border-top: 1px solid #0f172a; width: 220px; padding-top: 8px; font-size: 12px; font-weight: 900; text-transform: uppercase; text-align: center; }
+            .price-row { border-bottom: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #e2e8f0; }
+            .price-total { font-size: 24px; color: #f97316; font-weight: 900; }
+            .no-print { display: flex; justify-content: center; margin-top: 40px; }
+            @media print { .no-print { display: none; } body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>SERVIÇOS AZEVEDO</h1>
+            <p>Comprovante Oficial de Prestação de Serviços</p>
+          </div>
+          <div class="content">
+            <div class="row"><span class="label">Emitido em:</span> <span class="value">${dataAtual}</span></div>
+            <div class="row"><span class="label">Cliente:</span> <span class="value">${nomeCliente}</span></div>
+            <div class="row"><span class="label">Serviço Solicitado:</span> <span class="value">${servico.tipo_servico}</span></div>
+            <div class="row"><span class="label">Situação do Processo:</span> <span class="value">${servico.status}</span></div>
+            
+            <div class="price-row row">
+              <span class="label" style="font-size: 16px; align-self: center;">Valor Total:</span> 
+              <span class="value" style="font-size: 18px;">R$ ${valorTotal}</span>
+            </div>
+            <div class="row">
+              <span class="label" style="font-size: 16px; align-self: center;">Valor Pago:</span> 
+              <span class="value" style="font-size: 18px; color: #059669;">R$ ${valorPago}</span>
+            </div>
+            <div class="row" style="border-bottom: none;">
+              <span class="label" style="font-size: 16px; align-self: center; color: #f97316;">Saldo Devedor:</span> 
+              <span class="value price-total">R$ ${valorReceber}</span>
+            </div>
+          </div>
+          
+          <div class="signature-area">
+            <div class="signature">Responsável Azevedo</div>
+            <div class="signature">Assinatura do Cliente</div>
+          </div>
+          
+          <div class="footer">
+            Este recibo é gerado eletronicamente e tem validade como comprovante de pagamentos parciais ou totais.
+          </div>
+          
+          <div class="no-print">
+            <button onclick="window.print()" style="background: #f97316; color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); transition: all 0.2s;">🖨️ IMPRIMIR RECIBO</button>
+          </div>
+          <script>
+            window.onload = () => { 
+              setTimeout(() => {
+                // Check if user is on mobile to maybe not auto-print immediately
+                if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                  window.print();
+                }
+              }, 600);
+            };
+          </script>
+        </body>
+      </html>
+    `)
+    win.document.close()
   }
 
   return (
@@ -536,7 +625,12 @@ export default function ServicosPage() {
                     className="group hover:bg-orange-50/30 transition-colors border-b last:border-0"
                   >
                     <TableCell className="font-bold text-slate-900 py-3 text-sm">
-                      {servico.clientes?.nome || servico.cliente_nome}
+                      <Link 
+                        href={`/servicos/${servico.id}`}
+                        className="hover:text-orange-500 hover:underline transition-colors"
+                      >
+                        {servico.clientes?.nome || servico.cliente_nome || (clientes.find(c => c.id === servico.cliente_id)?.nome) || "Cliente Desconhecido"}
+                      </Link>
                     </TableCell>
                     <TableCell className="py-3">
                       <div className="flex items-center gap-2">
@@ -604,8 +698,11 @@ export default function ServicosPage() {
                               <Eye className="mr-2 h-4 w-4 text-orange-400" /> Ver Detalhes
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="rounded-lg py-2.5 font-medium cursor-pointer hover:bg-orange-50">
-                            <FileText className="mr-2 h-4 w-4 text-slate-400" /> Gerar Recibo
+                          <DropdownMenuItem 
+                            className="rounded-lg py-2.5 font-medium cursor-pointer hover:bg-orange-50"
+                            onClick={() => handleGerarRecibo(servico)}
+                          >
+                            <FileText className="mr-2 h-4 w-4 text-orange-400" /> Gerar Recibo
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="my-1" />
                           <DropdownMenuItem 
@@ -650,7 +747,11 @@ export default function ServicosPage() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm sm:text-base">{servico.clientes?.nome || servico.cliente_nome}</h3>
+                    <Link href={`/servicos/${servico.id}`}>
+                      <h3 className="font-bold text-slate-900 text-sm sm:text-base hover:text-orange-500 transition-colors">
+                        {servico.clientes?.nome || servico.cliente_nome || (clientes.find(c => c.id === servico.cliente_id)?.nome) || "Cliente Desconhecido"}
+                      </h3>
+                    </Link>
                     <p className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
                       <ClipboardList className="w-3 h-3" /> {servico.tipo_servico}
                     </p>
@@ -704,8 +805,15 @@ export default function ServicosPage() {
                 <div className="flex gap-2">
                   <Button variant="outline" asChild className="flex-1 h-9 text-[11px] font-bold rounded-lg border-slate-200">
                     <Link href={`/servicos/${servico.id}`}>
-                      <Eye className="w-3.5 h-3.5 mr-1.5" /> Ver Detalhes
+                      <Eye className="w-3.5 h-3.5 mr-1.5" /> Detalhes
                     </Link>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 h-9 text-[11px] font-bold rounded-lg border-orange-200 text-orange-600 hover:bg-orange-50"
+                    onClick={() => handleGerarRecibo(servico)}
+                  >
+                    <FileText className="w-3.5 h-3.5 mr-1.5" /> Recibo
                   </Button>
                   <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => confirmDelete(servico)}>
                     <Trash2 className="w-3.5 h-3.5" />
@@ -722,7 +830,7 @@ export default function ServicosPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-black text-slate-900">Confirmar Cancelamento</DialogTitle>
             <DialogDescription className="text-slate-500 py-2">
-              Deseja cancelar o serviço de <strong>{selectedServico?.tipo_servico}</strong> para <strong>{selectedServico?.cliente_nome || selectedServico?.clientes?.nome}</strong>?
+              Deseja cancelar o serviço de <strong>{selectedServico?.tipo_servico}</strong> para <strong>{selectedServico?.cliente_nome || selectedServico?.clientes?.nome || (clientes.find(c => c.id === selectedServico?.cliente_id)?.nome)}</strong>?
               <br /><br />
               <span className="text-red-500 text-xs font-bold uppercase tracking-wider">⚠️ Esta ação removerá o processo e todos os registros financeiros vinculados localmente.</span>
             </DialogDescription>

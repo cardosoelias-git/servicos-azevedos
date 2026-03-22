@@ -114,9 +114,7 @@ export default function ServicoDetailsPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const etapasConcluidas = etapas.filter(e => e.concluido).length
-      const valorPagoMensurado = etapas.reduce((acc, e) => acc + (e.valor_pago_etapa || 0), 0)
-      const valorPagoReal = Math.max(servico.valor_pago, valorPagoMensurado)
+      const valorPagoReal = etapas.reduce((acc, e) => acc + (Number(e.valor_pago_etapa) || 0), 0)
       const novoStatus = etapasConcluidas === etapas.length ? "Concluído" : "Em Andamento"
       
       const updatedServico = {
@@ -429,6 +427,10 @@ export default function ServicoDetailsPage() {
 
   const etapasConcluidas = etapas.filter(e => e.concluido).length
   const progresso = Math.round((etapasConcluidas / etapas.length) * 100)
+  
+  // Real-time financial calculations
+  const valorPagoRealTime = etapas.reduce((acc, e) => acc + (Number(e.valor_pago_etapa) || 0), 0)
+  const valorReceberRealTime = Math.max(0, (servico.valor_total || 0) - valorPagoRealTime)
 
   return (
     <div className="space-y-4 md:space-y-6 max-w-5xl mx-auto">
@@ -468,15 +470,15 @@ export default function ServicoDetailsPage() {
                 <div className="bg-slate-50 p-4 rounded-xl space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Valor Total:</span>
-                    <span className="font-bold">R$ {servico.valor_total.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold">R$ {(servico.valor_total || 0).toFixed(2).replace(".", ",")}</span>
                   </div>
                   <div className="flex justify-between text-sm text-emerald-600">
                     <span>Já Pago:</span>
-                    <span className="font-bold">R$ {servico.valor_pago.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold">R$ {valorPagoRealTime.toFixed(2).replace(".", ",")}</span>
                   </div>
                   <div className="flex justify-between text-sm text-orange-500">
                     <span>Falta:</span>
-                    <span className="font-bold">R$ {servico.valor_receber.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold">R$ {valorReceberRealTime.toFixed(2).replace(".", ",")}</span>
                   </div>
                 </div>
               </div>
@@ -535,15 +537,15 @@ export default function ServicoDetailsPage() {
             <CardContent className="space-y-3 md:space-y-5">
               <div className="p-3 sm:p-4 bg-slate-50 rounded-lg sm:rounded-xl">
                 <p className="text-xs sm:text-sm text-slate-500 font-medium">Valor Total</p>
-                <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {servico.valor_total.toFixed(2).replace(".", ",")}</p>
+                <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {(servico.valor_total || 0).toFixed(2).replace(".", ",")}</p>
               </div>
               <div className="p-3 sm:p-4 bg-emerald-50 rounded-lg sm:rounded-xl border border-emerald-100">
                 <p className="text-xs sm:text-sm text-emerald-600 font-medium">Valor Pago</p>
-                <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {servico.valor_pago.toFixed(2).replace(".", ",")}</p>
+                <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {valorPagoRealTime.toFixed(2).replace(".", ",")}</p>
               </div>
               <div className="p-3 sm:p-4 bg-orange-50 rounded-lg sm:rounded-xl border border-orange-100">
                 <p className="text-xs sm:text-sm text-orange-600 font-medium">A Receber</p>
-                <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {servico.valor_receber.toFixed(2).replace(".", ",")}</p>
+                <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {valorReceberRealTime.toFixed(2).replace(".", ",")}</p>
               </div>
             </CardContent>
           </Card>
@@ -643,12 +645,15 @@ export default function ServicoDetailsPage() {
                     <div className="grid grid-cols-2 gap-2 sm:gap-4">
                       <div className="space-y-1">
                         <Label className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Valor Pago (R$)</Label>
-                        <Input 
-                          type="number" 
-                          className="h-9 sm:h-10 text-xs sm:text-sm font-medium rounded-lg border-slate-200 focus:ring-orange-500" 
-                          value={etapa.valor_pago_etapa}
-                          onChange={(e) => handleUpdateEtapa(index, "valor_pago_etapa", parseFloat(e.target.value) || 0)}
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs font-bold text-slate-400">R$</span>
+                          <Input 
+                            type="number" 
+                            className="h-9 sm:h-10 pl-8 text-xs sm:text-sm font-medium rounded-lg border-slate-200 focus:ring-orange-500" 
+                            value={etapa.valor_pago_etapa || ""}
+                            onChange={(e) => handleUpdateEtapa(index, "valor_pago_etapa", e.target.value)}
+                          />
+                        </div>
                       </div>
                       <div className="space-y-1">
                         <Label className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</Label>
