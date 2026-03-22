@@ -94,7 +94,7 @@ export default function Dashboard() {
     if (servicos.length > 0) {
       const recent = servicos.slice(0, 4).map((s: any) => ({
         id: s.id,
-        user: s.cliente_nome || "Cliente", // No Supabase Realtime, dependendo da query, clientes (nome) pode ser retornado
+        user: s.cliente_nome || "Cliente",
         action: `Processo de ${s.tipo_servico}`,
         time: s.created_at ? new Date(s.created_at).toLocaleDateString('pt-BR') : "Recentemente",
         status: s.status === "Concluído" ? "success" : s.status === "Cancelado" ? "warning" : "info"
@@ -107,7 +107,22 @@ export default function Dashboard() {
     }
   }, [servicos, clientes, mounted, loadingServicos, loadingClientes])
 
-  if (!mounted) return null
+  if (!mounted) {
+    return (
+      <div className="space-y-4 lg:space-y-6 animate-pulse">
+        <div className="h-10 w-64 bg-slate-200 rounded-lg mb-8" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="h-32 bg-slate-100 rounded-2xl" />
+          <div className="h-32 bg-slate-100 rounded-2xl" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="h-24 bg-slate-50 rounded-xl" />
+          <div className="h-24 bg-slate-50 rounded-xl" />
+          <div className="h-24 bg-slate-50 rounded-xl" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-2.5 sm:space-y-4 lg:space-y-6">
@@ -115,16 +130,17 @@ export default function Dashboard() {
       <div className="flex flex-col gap-2 relative mb-8 pl-4 sm:pl-6">
         <div className="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-glow-hover"></div>
         <motion.h1 
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-slate-900 leading-none"
         >
           Seja Bem-vindo<span className="text-orange-600">.</span>
         </motion.h1>
         <motion.p 
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ delay: 0.05, duration: 0.2 }}
           className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium max-w-2xl"
         >
           Sua central de <span className="text-slate-900 font-bold">Gestão Inteligente</span>. Acompanhe seus serviços e clientes com precisão.
@@ -202,9 +218,9 @@ export default function Dashboard() {
         {dashboardStats.map((stat, index) => (
           <motion.div
             key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.3 }}
+            transition={{ delay: index * 0.05 + 0.1 }}
             className="group"
           >
             <Card className="bento-card relative overflow-hidden h-full border-slate-200">
@@ -230,9 +246,9 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
         {/* Activities */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.2 }}
           className="xl:col-span-2 space-y-3 sm:space-y-4 order-2 xl:order-1"
         >
           <div className="flex items-center justify-between">
@@ -246,10 +262,10 @@ export default function Dashboard() {
             {activities.map((activity, index) => (
               <motion.div 
                 key={activity.id}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
-                className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 hover:shadow-sm transition-all duration-300 group"
+                transition={{ delay: 0.25 + index * 0.05 }}
+                className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 hover:shadow-sm transition-all duration-200 group"
               >
                 <div className={cn(
                   "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300",
@@ -283,7 +299,7 @@ export default function Dashboard() {
                 src={DASHBOARD_LOGO_URL}
                 alt="Azevedos Logo Desktop"
                 fill
-                className="object-contain"
+                className="object-contain transition-all duration-700"
                 priority
               />
             </div>
@@ -299,27 +315,27 @@ export default function Dashboard() {
         >
           <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Ações Rápidas</h2>
           <div className="grid gap-3">
-            <Button asChild variant="premium" className="h-auto p-0 border-none shadow-none hover:shadow-none hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
+            <Button asChild variant="premium" className="h-auto p-0 border-none shadow-none hover:shadow-none hover:scale-100 ring-0 focus-visible:ring-0 justify-between overflow-hidden">
               <Link href="/servicos" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
-                <span className="text-sm font-bold uppercase tracking-wider">Novo Serviço</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-white">Novo Serviço</span>
                 <div className="bg-white/20 p-2 rounded-full transition-colors shadow-sm shrink-0 ml-4">
-                  <IdCard className="w-4 h-4 shadow-glow" />
+                  <IdCard className="w-4 h-4 text-white shadow-glow" />
                 </div>
               </Link>
             </Button>
             
             <Button asChild variant="dark" className="h-auto p-0 border-none shadow-sm hover:shadow-md hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
               <Link href="/clientes" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
-                <span className="text-sm font-bold uppercase tracking-wider">Cadastrar Cliente</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-white">Cadastrar Cliente</span>
                 <div className="bg-white/10 p-2 rounded-full transition-colors shadow-sm shrink-0 ml-4">
-                  <User className="w-4 h-4" />
+                  <User className="w-4 h-4 text-white" />
                 </div>
               </Link>
             </Button>
-
-            <Button asChild variant="outline" className="h-auto p-0 border-2 hover:border-orange-500/50 hover:bg-orange-50/50 hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
+            
+            <Button asChild variant="outline" className="h-auto p-0 border-2 border-slate-200 hover:border-orange-500/50 hover:bg-orange-50/50 hover:scale-100 ring-0 focus-visible:ring-0 justify-between">
               <Link href="/financeiro" className="flex items-center justify-between w-full p-4 px-5 rounded-xl group">
-                <span className="text-sm font-bold uppercase tracking-wider">Financeiro</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-slate-700 transition-colors group-hover:text-orange-600">Financeiro</span>
                 <div className="bg-slate-50 p-2 rounded-full group-hover:bg-orange-100 transition-colors shadow-sm shrink-0 ml-4">
                   <DollarSign className="w-4 h-4 text-slate-400 group-hover:text-orange-600 transition-colors" />
                 </div>
@@ -328,12 +344,12 @@ export default function Dashboard() {
           </div>
 
           {/* Overview Card */}
-          <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 text-slate-900 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-2 sm:mb-3">
               <div className="bg-orange-500 p-1.5 rounded-lg text-white">
                 <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
-              <span className="font-bold text-sm sm:text-base truncate">Visão Geral</span>
+              <span className="font-bold text-sm sm:text-base truncate text-slate-900">Visão Geral</span>
             </div>
             <div className="space-y-2 sm:space-y-2.5">
               <div className="flex justify-between items-center">
@@ -366,7 +382,7 @@ export default function Dashboard() {
             src={DASHBOARD_LOGO_URL}
             alt="Azevedos Logo Mobile Footer"
             fill
-            className="object-contain"
+            className="object-contain transition-all duration-700"
             priority
           />
         </div>

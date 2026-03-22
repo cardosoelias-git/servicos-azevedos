@@ -33,7 +33,6 @@
   
   --breakpoint-xs: 480px;
 
-  /* Custom Effects for Buttons */
   --shadow-glow: 0 0 15px rgba(249, 115, 22, 0.5);
   --shadow-glow-hover: 0 0 25px rgba(249, 115, 22, 0.7);
   
@@ -92,12 +91,12 @@
   h1, h2, h3, h4, h5, h6 {
     font-weight: 800; /* Mais negrito */
     line-height: 1.25;
-    color: #0f172a;
+    color: hsl(var(--foreground));
   }
 
   /* Melhora readability de textos secundários */
   .text-muted-foreground {
-    color: #475569 !important;
+    color: hsl(var(--muted-foreground)) !important;
   }
 
   /* Garante que classes slate comuns sejam bem legíveis */
@@ -111,14 +110,14 @@
 
 @layer utilities {
   .glass {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(var(--background), 0.9);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(249, 115, 22, 0.15);
+    border: 1px solid rgba(var(--primary), 0.15);
   }
-  
+
   .bento-card {
-    background-color: #ffffff !important;
+    background-color: hsl(var(--card)) !important;
     border: 1px solid hsl(var(--border)) !important;
     box-shadow: 0 4px 12px -2px rgba(0,0,0,0.03);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
