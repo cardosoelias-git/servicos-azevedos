@@ -154,8 +154,20 @@ export default function ClientesPage() {
       if (error) throw error
       
       toast({ title: "Sucesso", description: "✅ Cliente criado com sucesso!" })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao criar no Supabase (Clientes):", error)
+      
+      // If Supabase is configured but fails, we should explicitly tell the user
+      // why it failed (e.g. schema mismatch) instead of just falling back silently.
+      if (isConfigured) {
+        toast({ 
+          variant: "destructive", 
+          title: "Erro no Servidor", 
+          description: `❌ Não foi possível salvar no Supabase: ${error.message || 'Erro desconhecido'}. Verifique se a coluna 'data_inicio' existe na tabela 'clientes'.` 
+        })
+        return // Stop here if we expect Supabase to work
+      }
+
       const newCliente = {
         id: Math.random().toString(),
         nome,
@@ -212,8 +224,18 @@ export default function ClientesPage() {
       if (error) throw error
       
       toast({ title: "Sucesso", description: "✅ Cliente atualizado com sucesso!" })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao atualizar no Supabase (Clientes):", error)
+
+      if (isConfigured) {
+        toast({ 
+          variant: "destructive", 
+          title: "Erro ao Atualizar", 
+          description: `❌ Não foi possível atualizar no Supabase: ${error.message || 'Erro desconhecido'}.` 
+        })
+        return
+      }
+
       const updatedCliente = {
         ...selectedCliente,
         nome,

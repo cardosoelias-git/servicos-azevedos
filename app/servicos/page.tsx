@@ -172,31 +172,53 @@ export default function ServicosPage() {
       if (vPago > 0) {
         transacoesIniciais.push({
           data: new Date().toISOString(),
-          cliente: clientName,
-          servico: tipoServico,
-          tipo: "Entrada",
+          cliente_id: clienteId,
+          servico_id: null, // We'll link this if possible, or leave it for later
+          cliente_nome: clientName,
+          servico_nome: tipoServico,
+          tipo: "Entrada" as const,
           valor: vPago,
-          status: "Pago"
+          status: "Pago" as const
         })
       }
       if (vTotal - vPago > 0) {
         transacoesIniciais.push({
           data: new Date().toISOString(),
-          cliente: clientName,
-          servico: tipoServico,
-          tipo: "A Receber",
+          cliente_id: clienteId,
+          servico_id: null,
+          cliente_nome: clientName,
+          servico_nome: tipoServico,
+          tipo: "A Receber" as const,
           valor: vTotal - vPago,
-          status: "Pendente"
+          status: "Pendente" as const
         })
       }
 
       if (transacoesIniciais.length > 0) {
-        await (await import("@/lib/supabase")).supabase.from("transacoes").insert(transacoesIniciais)
+        const { error: transError } = await (await import("@/lib/supabase")).supabase
+          .from("transacoes")
+          .insert(transacoesIniciais)
+        if (transError) {
+          console.error("Erro ao criar transações no Supabase:", transError)
+          toast({ 
+            title: "Serviço Criado com Aviso", 
+            description: "✅ Serviço criado, mas as transações financeiras iniciais falharam ao salvar no Supabase." 
+          })
+        }
       }
 
       toast({ title: "Sucesso", description: "✅ Serviço criado com sucesso e financeiro integrado!" })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao criar no Supabase (Servicos):", error)
+      
+      if (isConfigured) {
+        toast({ 
+          variant: "destructive", 
+          title: "Erro no Servidor", 
+          description: `❌ Não foi possível salvar no Supabase: ${error.message || 'Erro desconhecido'}.` 
+        })
+        return
+      }
       const vTotal = parseFloat(valorTotal.replace(",", ".")) || 0
       const vPago = parseFloat(valorPago.replace(",", ".")) || 0
       const totalEtapas = ETAPAS_POR_TIPO[tipoServico as keyof typeof ETAPAS_POR_TIPO]?.length || 4
