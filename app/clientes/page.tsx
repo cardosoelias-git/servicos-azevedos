@@ -681,7 +681,12 @@ export default function ClientesPage() {
                       <div className="w-8 h-8 bg-orange-100 text-orange-700 rounded-lg flex items-center justify-center font-bold text-xs">
                         {cliente.nome.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-sm">{cliente.nome}</span>
+                      <button 
+                        onClick={() => openEditModal(cliente)}
+                        className="text-sm hover:text-orange-600 hover:underline transition-all text-left"
+                      >
+                        {cliente.nome}
+                      </button>
                     </div>
                   </TableCell>
                   <TableCell className="text-slate-700 py-3.5 font-mono text-xs">{cliente.cpf}</TableCell>
@@ -755,8 +760,11 @@ export default function ClientesPage() {
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">
                   {cliente.nome.charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-900">{cliente.nome}</h3>
+                <div 
+                  className="cursor-pointer group/name"
+                  onClick={() => openEditModal(cliente)}
+                >
+                  <h3 className="font-bold text-slate-900 group-hover/name:text-orange-600 group-hover/name:underline transition-all">{cliente.nome}</h3>
                   <p className="text-sm text-slate-500 font-mono">{cliente.cpf}</p>
                 </div>
               </div>

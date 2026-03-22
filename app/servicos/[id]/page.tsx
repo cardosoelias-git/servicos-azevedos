@@ -470,15 +470,15 @@ export default function ServicoDetailsPage() {
                 <div className="bg-slate-50 p-4 rounded-xl space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Valor Total:</span>
-                    <span className="font-bold">R$ {(servico.valor_total || 0).toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold">R$ {(servico.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-sm text-emerald-600">
                     <span>Já Pago:</span>
-                    <span className="font-bold">R$ {valorPagoRealTime.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold">R$ {valorPagoRealTime.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-sm text-orange-500">
                     <span>Falta:</span>
-                    <span className="font-bold">R$ {valorReceberRealTime.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold">R$ {valorReceberRealTime.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                 </div>
               </div>
@@ -537,15 +537,15 @@ export default function ServicoDetailsPage() {
             <CardContent className="space-y-3 md:space-y-5">
               <div className="p-3 sm:p-4 bg-slate-50 rounded-lg sm:rounded-xl">
                 <p className="text-xs sm:text-sm text-slate-500 font-medium">Valor Total</p>
-                <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {(servico.valor_total || 0).toFixed(2).replace(".", ",")}</p>
+                <p className="text-lg sm:text-2xl font-black text-slate-900">R$ {(servico.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </div>
               <div className="p-3 sm:p-4 bg-emerald-50 rounded-lg sm:rounded-xl border border-emerald-100">
                 <p className="text-xs sm:text-sm text-emerald-600 font-medium">Valor Pago</p>
-                <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {valorPagoRealTime.toFixed(2).replace(".", ",")}</p>
+                <p className="text-lg sm:text-2xl font-black text-emerald-600">R$ {valorPagoRealTime.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </div>
               <div className="p-3 sm:p-4 bg-orange-50 rounded-lg sm:rounded-xl border border-orange-100">
                 <p className="text-xs sm:text-sm text-orange-600 font-medium">A Receber</p>
-                <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {valorReceberRealTime.toFixed(2).replace(".", ",")}</p>
+                <p className="text-xl sm:text-3xl font-black text-orange-600">R$ {valorReceberRealTime.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </div>
             </CardContent>
           </Card>
