@@ -35,6 +35,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { motion } from "motion/react"
 import { getStorageData, addStorageItem, deleteStorageItem } from "@/lib/storage"
+import { useRealtime } from "@/hooks/useRealtime"
+import { isConfigured } from "@/lib/supabase"
 
 const mockClientes = [
   { id: "1", nome: "João Silva", cpf: "111.222.333-44", telefone: "(11) 99999-8888", renach: "12345678900" },
@@ -43,6 +45,7 @@ const mockClientes = [
 ]
 
 export default function ClientesPage() {
+  const { data: realtimeClientes, loading: realtimeLoading } = useRealtime<any>("clientes")
   const [clientes, setClientes] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
@@ -63,8 +66,19 @@ export default function ClientesPage() {
   const [selectedCliente, setSelectedCliente] = useState<any>(null)
 
   useEffect(() => {
-    fetchClientes()
-  }, [])
+    if (!isConfigured) {
+      const localData = getStorageData("clientes", mockClientes)
+      setClientes(localData)
+      setIsLocalMode(true)
+      setLoading(false)
+    } else {
+      setIsLocalMode(false)
+      if (!realtimeLoading) {
+        setClientes(realtimeClientes)
+        setLoading(false)
+      }
+    }
+  }, [realtimeClientes, realtimeLoading])
 
   const filteredClientes = clientes.filter(c => {
     if (!searchQuery.trim()) return true
@@ -74,23 +88,11 @@ export default function ClientesPage() {
            c.telefone?.includes(query)
   })
 
+  // Esta função agora apenas recarrega se for local ou força sync
   const fetchClientes = async () => {
-    setLoading(true)
-    try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-        throw new Error("Local mode")
-      }
-      const { data, error } = await (await import("@/lib/supabase")).supabase.from("clientes").select("*").order("created_at", { ascending: false })
-      if (error) throw error
-      setClientes(data || [])
-      setIsLocalMode(false)
-    } catch (err) {
-      console.warn("Using local storage for Clientes:", err)
+    if (!isConfigured) {
       const localData = getStorageData("clientes", mockClientes)
       setClientes(localData)
-      setIsLocalMode(true)
-    } finally {
-      setLoading(false)
     }
   }
 

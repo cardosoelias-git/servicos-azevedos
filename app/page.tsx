@@ -5,10 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Car, DollarSign, Users, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, IdCard } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { getStorageData } from "@/lib/storage"
+import { useRealtime } from "@/hooks/useRealtime"
 
 export default function Dashboard() {
+  const { data: servicos, loading: loadingServicos } = useRealtime<any>("servicos")
+  const { data: clientes, loading: loadingClientes } = useRealtime<any>("clientes")
+  
   const [dashboardStats, setDashboardStats] = useState([
     {
       title: "Serviços Ativos",
@@ -40,18 +44,18 @@ export default function Dashboard() {
   ])
 
   const [activities, setActivities] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-
   const [mounted, setMounted] = useState(false)
   
   useEffect(() => {
     setMounted(true)
-    const servicos = getStorageData("servicos", [])
-    const clientes = getStorageData("clientes", [])
-    const transacoes = getStorageData("transacoes", [])
+  }, [])
+
+  // Atualizar estatísticas sempre que os dados mudarem (Realtime)
+  useEffect(() => {
+    if (!mounted || loadingServicos || loadingClientes) return
 
     const servicosAtivos = servicos.filter((s: any) => s.status === "Em Andamento").length
-    const totalReceber = servicos.reduce((acc: number, curr: any) => acc + (curr.valor_receber || 0), 0)
+    const totalReceber = servicos.reduce((acc: number, curr: any) => acc + (parseFloat(curr.valor_total || 0) - parseFloat(curr.valor_pago || 0)), 0)
     
     setDashboardStats([
       {
@@ -84,9 +88,9 @@ export default function Dashboard() {
     ])
 
     if (servicos.length > 0) {
-      const recent = servicos.slice(0, 4).map((s: any, i: number) => ({
+      const recent = servicos.slice(0, 4).map((s: any) => ({
         id: s.id,
-        user: s.cliente_nome,
+        user: s.cliente_nome || "Cliente", // No Supabase Realtime, dependendo da query, clientes (nome) pode ser retornado
         action: `Processo de ${s.tipo_servico}`,
         time: s.created_at ? new Date(s.created_at).toLocaleDateString('pt-BR') : "Recentemente",
         status: s.status === "Concluído" ? "success" : s.status === "Cancelado" ? "warning" : "info"
@@ -97,8 +101,7 @@ export default function Dashboard() {
         { id: 1, user: "Bem-vindo", action: "Comece adicionando clientes e serviços", time: "Hoje", status: "info" },
       ])
     }
-    setLoading(false)
-  }, [])
+  }, [servicos, clientes, mounted, loadingServicos, loadingClientes])
 
   if (!mounted) return null
 

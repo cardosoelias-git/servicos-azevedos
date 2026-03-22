@@ -45,6 +45,8 @@ import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { getStorageData, addStorageItem, deleteStorageItem } from "@/lib/storage"
 import { TIPOS_SERVICO, ETAPAS_POR_TIPO } from "@/lib/constants"
+import { useRealtime } from "@/hooks/useRealtime"
+import { isConfigured } from "@/lib/supabase"
 
 const mockServicos = [
   { id: "1", cliente_id: "1", cliente_nome: "João Silva", tipo_servico: "Habilitação", etapas_completas: 2, total_etapas: 9, valor_pago: 500, valor_receber: 1500, status: "Em Andamento" },
@@ -53,6 +55,9 @@ const mockServicos = [
 ]
 
 export default function ServicosPage() {
+  const { data: realtimeServicos, loading: servicosLoading } = useRealtime<any>("servicos")
+  const { data: realtimeClientes, loading: clientesLoading } = useRealtime<any>("clientes")
+  
   const [servicos, setServicos] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [clientes, setClientes] = useState<any[]>([])
@@ -71,49 +76,40 @@ export default function ServicosPage() {
   const [valorPago, setValorPago] = useState("")
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!isConfigured) {
+      const sData = getStorageData("servicos", mockServicos)
+      const cData = getStorageData("clientes", [])
+      setServicos(sData)
+      setClientes(cData)
+      setIsLocalMode(true)
+      setLoading(false)
+    } else {
+      setIsLocalMode(false)
+      if (!servicosLoading && !clientesLoading) {
+        setServicos(realtimeServicos)
+        setClientes(realtimeClientes)
+        setLoading(false)
+      }
+    }
+  }, [realtimeServicos, realtimeClientes, servicosLoading, clientesLoading])
 
   const filteredServicos = servicos.filter(s => {
     if (!searchQuery.trim()) return true
     const query = searchQuery.toLowerCase()
-    return s.cliente_nome?.toLowerCase().includes(query) || 
-           s.clientes?.nome?.toLowerCase().includes(query) ||
+    
+    // Buscar nome do cliente se necessário (lookup)
+    const clientName = s.cliente_nome || clientes.find(c => c.id === s.cliente_id)?.nome || ""
+    
+    return clientName.toLowerCase().includes(query) || 
            s.tipo_servico?.toLowerCase().includes(query)
   })
 
   const fetchData = async () => {
-    setLoading(true)
-    try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-        throw new Error("Local mode")
-      }
-      const { data: servicosData, error: sError } = await (await import("@/lib/supabase")).supabase
-        .from("servicos")
-        .select(`*, clientes (nome)`)
-        .order("created_at", { ascending: false })
-      if (sError) throw sError
-
-      const { data: clientesData, error: cError } = await (await import("@/lib/supabase")).supabase
-        .from("clientes")
-        .select("id, nome")
-      if (cError) throw cError
-
-      setServicos(servicosData || [])
-      setClientes(clientesData || [])
-      setIsLocalMode(false)
-    } catch (err) {
-      console.warn("Using local storage for Servicos:", err)
-      const localServicos = getStorageData("servicos", mockServicos)
-      const localClientes = getStorageData("clientes", [
-        { id: "1", nome: "João Silva" },
-        { id: "2", nome: "Maria Oliveira" },
-      ])
-      setServicos(localServicos)
-      setClientes(localClientes)
-      setIsLocalMode(true)
-    } finally {
-      setLoading(false)
+    if (!isConfigured) {
+      const sData = getStorageData("servicos", mockServicos)
+      const cData = getStorageData("clientes", [])
+      setServicos(sData)
+      setClientes(cData)
     }
   }
 
