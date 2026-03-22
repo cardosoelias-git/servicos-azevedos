@@ -342,7 +342,7 @@ export default function Dashboard() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
-        className="flex items-center justify-center py-20 pointer-events-none select-none overflow-hidden"
+        className="flex items-center justify-center py-10 sm:py-14 xl:py-20 pointer-events-none select-none overflow-hidden"
       >
         <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-[450px] md:h-[450px] drop-shadow-2xl">
           <Image 
