@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, DollarSign, Users, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, IdCard } from "lucide-react"
+import { Car, DollarSign, Users, User, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, IdCard, Plus } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect, useMemo } from "react"
 import { getStorageData } from "@/lib/storage"
 import { useRealtime } from "@/hooks/useRealtime"
+import { Button } from "@/components/ui/button"
 
 export default function Dashboard() {
   const { data: servicos, loading: loadingServicos } = useRealtime<any>("servicos")
@@ -108,21 +109,22 @@ export default function Dashboard() {
   return (
     <div className="space-y-2.5 sm:space-y-4 lg:space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-1 sm:gap-1.5 relative mb-2">
+      <div className="flex flex-col gap-2 relative mb-8 pl-4 sm:pl-6">
+        <div className="absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-glow-hover"></div>
         <motion.h1 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-slate-900 leading-none"
         >
-          Seja Bem-vindo
+          Seja Bem-vindo<span className="text-orange-600">.</span>
         </motion.h1>
         <motion.p 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-slate-500 text-xs sm:text-sm lg:text-base animate-in fade-in slide-in-from-left-4 duration-1000 delay-300"
+          className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium max-w-2xl"
         >
-          Resumo geral da <strong>SERVICOS AZEVEDO</strong> hoje.
+          Sua central de <span className="text-slate-900 font-bold">Gestão Inteligente</span>. Acompanhe seus serviços e clientes com precisão.
         </motion.p>
       </div>
 
@@ -134,7 +136,8 @@ export default function Dashboard() {
         className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4"
       >
         {/* Card Serviços H - Habilitação */}
-        <Link href="/servicos?tipo=habilitacao" className="group">
+        <Link href="/servicos?tipo=habilitacao" className="group relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition duration-500"></div>
           <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-100 p-5 sm:p-6 h-full min-h-[140px] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300">
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div className="flex items-start justify-between">
@@ -162,7 +165,8 @@ export default function Dashboard() {
         </Link>
 
         {/* Card Serviços V - Veículos */}
-        <Link href="/servicos?tipo=veiculos" className="group">
+        <Link href="/servicos?tipo=veiculos" className="group relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition duration-500"></div>
           <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-100 p-5 sm:p-6 h-full min-h-[140px] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300">
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div className="flex items-start justify-between">
@@ -201,7 +205,7 @@ export default function Dashboard() {
             className="group"
           >
             <Card className="bento-card relative overflow-hidden h-full border-slate-200">
-              <div className={`absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br ${stat.gradient} opacity-5 rounded-full blur-xl sm:blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
+              <div className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br ${stat.gradient} opacity-10 rounded-full blur-2xl sm:blur-3xl group-hover:opacity-20 transition-opacity duration-500`}></div>
               <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10 p-4 sm:p-5">
                 <CardTitle className="font-semibold text-slate-500 text-xs sm:text-sm">{stat.title}</CardTitle>
                 <div className={cn(stat.bg, "p-2 rounded-lg transition-transform duration-300 group-hover:scale-105")}>
@@ -274,25 +278,33 @@ export default function Dashboard() {
           className="space-y-3 sm:space-y-4"
         >
           <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Ações Rápidas</h2>
-          <div className="grid gap-2.5">
-            <Link href="/servicos" className="group flex items-center justify-between p-3.5 sm:p-4 bg-orange-500 text-white rounded-xl shadow-sm hover:bg-orange-600 hover:-translate-y-0.5 transition-all duration-300 font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-              <span className="text-sm">Novo Serviço</span>
-              <div className="bg-white/20 p-2 rounded-lg transition-colors">
-                <IdCard className="w-4 h-4" />
-              </div>
-            </Link>
-            <Link href="/clientes" className="group flex items-center justify-between p-3.5 sm:p-4 bg-slate-800 text-white rounded-xl shadow-sm hover:bg-slate-900 hover:-translate-y-0.5 transition-all duration-300 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-800 focus:ring-offset-2">
-              <span className="text-sm">Cadastrar Cliente</span>
-              <div className="bg-white/10 p-2 rounded-lg transition-colors">
-                <Users className="w-4 h-4" />
-              </div>
-            </Link>
-            <Link href="/financeiro" className="group flex items-center justify-between p-3.5 sm:p-4 bg-white text-slate-700 border border-slate-200 rounded-xl hover:border-orange-500/50 hover:bg-orange-50/50 hover:-translate-y-0.5 transition-all duration-300 font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-              <span className="text-sm">Financeiro</span>
-              <div className="bg-slate-50 p-2 rounded-lg group-hover:bg-orange-100 transition-colors">
-                <DollarSign className="w-4 h-4 text-slate-400 group-hover:text-orange-600 transition-colors" />
-              </div>
-            </Link>
+          <div className="grid gap-3">
+            <Button asChild variant="premium" className="h-auto p-0 border-none shadow-none hover:shadow-none hover:scale-100 ring-0 focus-visible:ring-0">
+              <Link href="/servicos" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
+                <span className="text-sm font-bold">Novo Serviço</span>
+                <div className="bg-white/20 p-2 rounded-full transition-colors shadow-sm">
+                  <IdCard className="w-4 h-4 shadow-glow" />
+                </div>
+              </Link>
+            </Button>
+            
+            <Button asChild variant="dark" className="h-auto p-0 border-none shadow-sm hover:shadow-md hover:scale-100 ring-0 focus-visible:ring-0">
+              <Link href="/clientes" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
+                <span className="text-sm font-bold">Cadastrar Cliente</span>
+                <div className="bg-white/10 p-2 rounded-full transition-colors shadow-sm">
+                  <User className="w-4 h-4" />
+                </div>
+              </Link>
+            </Button>
+
+            <Button asChild variant="outline" className="h-auto p-0 border-2 hover:border-orange-500/50 hover:bg-orange-50/50 hover:scale-100 ring-0 focus-visible:ring-0">
+              <Link href="/financeiro" className="flex items-center justify-between w-full p-4 px-5 rounded-xl group">
+                <span className="text-sm font-bold">Financeiro</span>
+                <div className="bg-slate-50 p-2 rounded-full group-hover:bg-orange-100 transition-colors shadow-sm">
+                  <DollarSign className="w-4 h-4 text-slate-400 group-hover:text-orange-600 transition-colors" />
+                </div>
+              </Link>
+            </Button>
           </div>
 
           {/* Overview Card */}

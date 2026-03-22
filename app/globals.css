@@ -32,6 +32,17 @@
   --radius-sm: 0.5rem;
   
   --breakpoint-xs: 480px;
+
+  /* Custom Effects for Buttons */
+  --shadow-glow: 0 0 15px rgba(249, 115, 22, 0.5);
+  --shadow-glow-hover: 0 0 25px rgba(249, 115, 22, 0.7);
+  
+  --animate-shine: shine 3s infinite linear;
+}
+
+@keyframes shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @layer base {

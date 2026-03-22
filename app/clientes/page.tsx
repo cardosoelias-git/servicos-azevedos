@@ -349,7 +349,7 @@ export default function ClientesPage() {
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto bg-orange-500 text-white font-semibold px-4 py-2.5 sm:px-6 sm:py-5 rounded-xl hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 shadow-sm">
+            <Button variant="premium" className="w-full sm:w-auto font-semibold px-4 py-2.5 sm:px-6 sm:py-5 rounded-xl transition-all duration-300">
               <UserPlus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Cliente</span>
             </Button>
           </DialogTrigger>
@@ -459,7 +459,8 @@ export default function ClientesPage() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-12 flex-[2] font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+                  variant="premium"
+                  className="rounded-xl h-12 flex-[2] font-semibold"
                 >
                   Confirmar Cadastro
                 </Button>
@@ -585,7 +586,8 @@ export default function ClientesPage() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-12 flex-[2] font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+                  variant="premium"
+                  className="rounded-xl h-12 flex-[2] font-semibold"
                 >
                   Salvar Alterações
                 </Button>

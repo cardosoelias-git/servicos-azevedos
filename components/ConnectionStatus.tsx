@@ -61,7 +61,7 @@ export function ConnectionStatus() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 rounded-full border border-emerald-100 text-emerald-600 text-[10px] font-bold uppercase tracking-wider"
+            className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50/50 rounded-full border border-emerald-100/50 text-emerald-600 text-[10px] font-bold uppercase tracking-wider shadow-[0_0_12px_rgba(16,185,129,0.1)]"
           >
             <Wifi className="w-3 h-3 text-emerald-500" />
             <span>Sincronizado</span>
@@ -74,11 +74,11 @@ export function ConnectionStatus() {
             exit={{ opacity: 0, scale: 0.9 }}
             className="flex flex-col sm:flex-row items-center gap-2"
           >
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-full border border-red-100 text-red-600 text-[10px] font-bold uppercase tracking-wider group relative cursor-help">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50/50 rounded-full border border-red-100/50 text-red-600 text-[10px] font-bold uppercase tracking-wider group relative cursor-help shadow-[0_0_12px_rgba(239,68,68,0.1)]">
               <WifiOff className="w-3 h-3 text-red-500" />
               <span>Erro de Sincronia</span>
               {errorMessage && (
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 p-2 bg-slate-900 text-white text-[9px] normal-case rounded-lg shadow-xl z-50">
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 p-2 bg-slate-900/95 backdrop-blur-sm text-white text-[9px] normal-case rounded-lg shadow-xl z-50">
                   {errorMessage}
                 </div>
               )}
