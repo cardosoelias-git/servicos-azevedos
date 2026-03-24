@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS servicos (
   data_inicio DATE DEFAULT CURRENT_DATE,
   data_conclusao DATE,
   observacoes TEXT,
+  documentos JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -198,6 +199,7 @@ CREATE TRIGGER update_transacoes_updated_at
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_servicos_cliente_id ON servicos(cliente_id);
 CREATE INDEX IF NOT EXISTS idx_servicos_status ON servicos(status);
+CREATE INDEX IF NOT EXISTS idx_servicos_documentos ON servicos(documentos);
 CREATE INDEX IF NOT EXISTS idx_transacoes_cliente_id ON transacoes(cliente_id);
 CREATE INDEX IF NOT EXISTS idx_transacoes_servico_id ON transacoes(servico_id);
 CREATE INDEX IF NOT EXISTS idx_transacoes_tipo ON transacoes(tipo);

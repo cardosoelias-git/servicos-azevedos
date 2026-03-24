@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, CheckCircle2, Circle, Save, DollarSign, AlertCircle, Upload, FileText, Image as ImageIcon, Download, Trash2, X } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Circle, Save, DollarSign, AlertCircle, Upload, FileText, Image as ImageIcon, Download, Trash2, X, Eye, Maximize2, Video, File } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -32,38 +32,34 @@ export default function ServicoDetailsPage() {
   const [servicoNaoEncontrado, setServicoNaoEncontrado] = useState(false)
   const [isPagamentoModalOpen, setIsPagamentoModalOpen] = useState(false)
   const [valorPagamento, setValorPagamento] = useState("")
+  const [previewDoc, setPreviewDoc] = useState<any>(null)
+  const [pendingUpload, setPendingUpload] = useState<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   const [servico, setServico] = useState<any>(null)
   const [etapas, setEtapas] = useState<any[]>([])
 
   useEffect(() => {
-    if (!isConfigured) {
+    const loadServico = () => {
       const servicos = getStorageData("servicos", [])
-      const servicoData = servicos.find((s: any) => s.id === id)
+      const servicoLocal = servicos.find((s: any) => s.id === id)
       
-      if (!servicoData) {
+      if (servicoLocal) {
+        processServicoData(servicoLocal)
+      } else if (realtimeServico) {
+        processServicoData(realtimeServico)
+      } else {
         setServicoNaoEncontrado(true)
         setLoading(false)
-        return
-      }
-      processServicoData(servicoData)
-    } else {
-      if (!realtimeLoading) {
-        if (!realtimeServico) {
-          setServicoNaoEncontrado(true)
-          setLoading(false)
-        } else {
-          processServicoData(realtimeServico)
-        }
       }
     }
-  }, [realtimeServico, realtimeLoading, id])
+    
+    if (!realtimeLoading) {
+      loadServico()
+    }
+  }, [id, realtimeServico, realtimeLoading])
 
   const processServicoData = (servicoData: any) => {
-    // Only update state if we are not currently saving (to avoid race conditions/jumpy UI)
-    if (saving) return;
-
     setServico({
       ...servicoData,
       cliente_nome: servicoData.clientes?.nome || servicoData.cliente_nome || "Desconhecido",
@@ -74,7 +70,7 @@ export default function ServicoDetailsPage() {
     const tipo = servicoData.tipo_servico as keyof typeof ETAPAS_POR_TIPO
     const nomesEtapas = ETAPAS_POR_TIPO[tipo] || ETAPAS_POR_TIPO["Habilitação"]
     
-    const etapasFormatadas = nomesEtapas.map((nome, index) => {
+    const etapasFormatadas = nomesEtapas.map((nome: any, index: any) => {
       const etapaSalva = etapasSalvas[index]
       return {
         id: index.toString(),
@@ -248,98 +244,58 @@ export default function ServicoDetailsPage() {
     })
   }
 
-  const resizeImage = (file: File, maxSize: number): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const img = new Image()
-        img.onload = () => {
-          const canvas = document.createElement("canvas")
-          let { width, height } = img
-          if (width > maxSize || height > maxSize) {
-            if (width > height) {
-              height = Math.round((height * maxSize) / width)
-              width = maxSize
-            } else {
-              width = Math.round((width * maxSize) / height)
-              height = maxSize
-            }
-          }
-          canvas.width = width
-          canvas.height = height
-          const ctx = canvas.getContext("2d")
-          ctx?.drawImage(img, 0, 0, width, height)
-          resolve(canvas.toDataURL(file.type || "image/jpeg", 0.7)) // 0.7 quality to save space
-        }
-        img.src = e.target?.result as string
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => resolve(e.target?.result as string)
-      reader.readAsDataURL(file)
-    })
-  }
-
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    setLoading(true) // Show loading state briefly while crunching base64
     try {
-      let base64 = ""
-      if (file.type.startsWith("image/")) {
-        base64 = await resizeImage(file, 1200)
-      } else {
-        base64 = await fileToBase64(file)
+      const { supabase } = await import("@/lib/supabase")
+      
+      console.log("📤 Iniciando upload:", file.name)
+      console.log("📤 Tipo:", file.type)
+      console.log("📤 Tamanho:", file.size)
+      
+      const fileName = `${Date.now()}-${file.name}`
+      const filePath = `uploads/${fileName}`
+      
+      const { data, error } = await supabase.storage
+        .from("documentos")
+        .upload(filePath, file)
+      
+      console.log("📤 Resultado upload:", { data, error })
+      
+      if (error) {
+        console.error("❌ Erro upload:", error)
+        console.error("❌ Mensagem:", error.message)
+        toast({ variant: "destructive", title: "Erro", description: error.message })
+        return
       }
-
+      
+      console.log("📤 Upload OK, obtendo URL...")
+      
+      const { data: urlData } = supabase.storage
+        .from("documentos")
+        .getPublicUrl(filePath)
+      
+      console.log("📤 URL gerada:", urlData.publicUrl)
+      
       const novoDoc = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: Date.now().toString(),
         name: file.name,
         type: file.type,
-        size: file.size,
-        base64,
+        url: urlData.publicUrl,
         uploaded_at: new Date().toISOString()
       }
 
-      const updatedServico = {
-        ...servico,
-        documentos: [...(servico.documentos || []), novoDoc]
-      }
-
-      updateStorageItem("servicos", servico.id, updatedServico)
-      setServico(updatedServico)
+      setPendingUpload(novoDoc)
+      setPreviewDoc(novoDoc)
       
-      // Sync to Supabase
-      try {
-        const { supabase } = await import("@/lib/supabase")
-        await supabase
-          .from("servicos")
-          .update({ documentos: updatedServico.documentos })
-          .eq("id", servico.id)
-      } catch(err) {
-        console.warn("Could not sync doc to supabase: Is the JSONB column missing?", err)
-      }
-
-      toast({
-        title: "Upload",
-        description: "✅ Documento salvo com sucesso e enviado ao banco!",
-      })
     } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Erro de Upload",
-        description: "❌ Não foi possível salvar o arquivo.",
-      })
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = ""
-      setLoading(false)
+      console.error("❌ Erro geral:", err)
+      toast({ variant: "destructive", title: "Erro", description: "Falha no upload" })
     }
+    
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   const handleDeleteDocument = async (docId: string) => {
@@ -351,7 +307,6 @@ export default function ServicoDetailsPage() {
     updateStorageItem("servicos", servico.id, updatedServico)
     setServico(updatedServico)
     
-    // Sync to Supabase
     try {
       const { supabase } = await import("@/lib/supabase")
       await supabase
@@ -360,27 +315,47 @@ export default function ServicoDetailsPage() {
         .eq("id", servico.id)
     } catch(err) {}
 
-    toast({
-      title: "Excluído",
-      description: "✅ Documento removido do banco de dados.",
-    })
+    toast({ title: "Excluído", description: "Documento removido." })
   }
 
-  const handleDownloadDocument = async (doc: any) => {
-    try {
-      const res = await fetch(doc.base64)
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = doc.name
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erro", description: "Falha ao abrir documento."})
+  const handleConfirmUpload = async () => {
+    if (!pendingUpload || !servico) return
+
+    const updatedServico = {
+      ...servico,
+      documentos: [...(servico.documentos || []), pendingUpload]
     }
+
+    updateStorageItem("servicos", servico.id, updatedServico)
+    
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      await supabase
+        .from("servicos")
+        .update({ documentos: updatedServico.documentos })
+        .eq("id", servico.id)
+    } catch(err) {
+      console.error("Erro sync:", err)
+    }
+
+    setServico(updatedServico)
+    setPendingUpload(null)
+    setPreviewDoc(null)
+
+    toast({ title: "Sucesso", description: "✅ Documento salvo!" })
+  }
+
+  const handleCancelUpload = () => {
+    setPendingUpload(null)
+    setPreviewDoc(null)
+  }
+
+  const handleDownloadDocument = (doc: any) => {
+    const link = document.createElement("a")
+    link.href = doc.url || doc.base64
+    link.download = doc.name
+    link.target = "_blank"
+    link.click()
   }
 
   if (loading) {
@@ -565,16 +540,31 @@ export default function ServicoDetailsPage() {
                 servico.documentos.map((doc: any) => (
                   <div key={doc.id} className="group flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 hover:border-orange-200 hover:shadow-sm transition-all duration-300">
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center shrink-0 border border-slate-100 text-slate-500 group-hover:text-orange-500 group-hover:bg-orange-50 transition-colors">
-                        {doc.type.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                      <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 text-slate-500 group-hover:text-orange-500 group-hover:bg-orange-50 transition-colors overflow-hidden">
+                        {doc.type.startsWith("image/") ? (
+                          <img src={doc.url} alt={doc.name} className="w-full h-full object-cover" />
+                        ) : doc.type.startsWith("video/") ? (
+                          <Video className="w-6 h-6 text-purple-500" />
+                        ) : doc.type.includes("pdf") ? (
+                          <FileText className="w-6 h-6 text-red-500" />
+                        ) : doc.type.includes("word") || doc.type.includes("document") ? (
+                          <FileText className="w-6 h-6 text-blue-500" />
+                        ) : doc.type.includes("sheet") || doc.type.includes("excel") ? (
+                          <FileText className="w-6 h-6 text-green-500" />
+                        ) : (
+                          <FileText className="w-5 h-5" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold text-slate-900 truncate" title={doc.name}>{doc.name}</p>
-                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider mt-0.5">{(doc.size / 1024).toFixed(0)} KB</p>
+                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider mt-0.5">{doc.type}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity pl-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-emerald-50 hover:text-emerald-600" onClick={() => handleDownloadDocument(doc)} title="Baixar / Abrir">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-orange-50 hover:text-orange-500" onClick={() => setPreviewDoc(doc)} title="Visualizar">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-emerald-50 hover:text-emerald-600" onClick={() => handleDownloadDocument(doc)} title="Baixar">
                         <Download className="w-4 h-4" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-50 hover:text-red-500" onClick={() => handleDeleteDocument(doc.id)} title="Excluir">
@@ -681,6 +671,96 @@ export default function ServicoDetailsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={!!previewDoc} onOpenChange={(open) => !open && setPreviewDoc(null)}>
+        <DialogContent className="max-w-4xl w-[95vw] h-[90vh] flex flex-col p-1 sm:p-2 overflow-hidden bg-slate-900 border-slate-800 animate-in fade-in zoom-in-95 duration-300">
+          <DialogHeader className="px-4 py-2 border-b border-slate-800 flex flex-row items-center justify-between space-y-0">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-slate-800 rounded-lg text-orange-500">
+                {previewDoc?.type?.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : previewDoc?.type?.startsWith("video/") ? <Video className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+              </div>
+              <div className="min-w-0">
+                <DialogTitle className="text-white text-base font-bold truncate pr-4">{previewDoc?.name}</DialogTitle>
+                <p className="text-slate-400 text-[10px] uppercase font-black tracking-widest">{previewDoc?.type} • {(previewDoc?.size / 1024).toFixed(0)} KB</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pr-8">
+              {pendingUpload ? (
+                <>
+                  <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300 hover:bg-red-900/30" onClick={handleCancelUpload} title="Cancelar">
+                    <X className="w-5 h-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/30" onClick={handleConfirmUpload} title="Confirmar Upload">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </Button>
+                </>
+              ) : (
+                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hover:bg-slate-800" onClick={() => handleDownloadDocument(previewDoc)}>
+                  <Download className="w-5 h-5" />
+                </Button>
+              )}
+            </div>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-auto flex items-center justify-center bg-black/40 rounded-lg m-1">
+            {previewDoc?.type?.startsWith("image/") ? (
+              <motion.img 
+                src={previewDoc.url} 
+                alt={previewDoc.name} 
+                className="max-w-full max-h-full object-contain shadow-2xl"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            ) : previewDoc?.type?.startsWith("video/") ? (
+              <motion.video 
+                src={previewDoc.url}
+                controls
+                className="max-w-full max-h-full rounded-lg shadow-2xl"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            ) : previewDoc?.type?.includes("pdf") ? (
+              <motion.iframe 
+                src={previewDoc.url} 
+                className="w-full h-full border-0 rounded-lg bg-white"
+                title={previewDoc.name}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            ) : (
+              <div className="text-center p-8 bg-slate-800/50 rounded-2xl border border-slate-700">
+                <File className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                <h3 className="text-white font-bold text-lg">Pré-visualização indisponível</h3>
+                <p className="text-slate-400 mt-2">Este tipo de arquivo não pode ser visualizado diretamente.</p>
+                <Button variant="outline" className="mt-6 border-slate-700 text-slate-300 hover:bg-slate-700" onClick={() => handleDownloadDocument(previewDoc)}>
+                  Baixar para ver
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          {pendingUpload && (
+            <div className="flex justify-center gap-3 pb-4">
+              <Button 
+                variant="outline" 
+                onClick={handleCancelUpload}
+                className="border-red-500/50 text-red-400 hover:bg-red-900/30 hover:border-red-400"
+              >
+                <X className="w-4 h-4 mr-2" /> Cancelar
+              </Button>
+              <Button 
+                onClick={handleConfirmUpload}
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
+              >
+                <CheckCircle2 className="w-4 h-4 mr-2" /> Confirmar Upload
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
