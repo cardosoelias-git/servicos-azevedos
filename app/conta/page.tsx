@@ -251,46 +251,50 @@ export default function ContaPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
-          </Link>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Painel Administrativo</h1>
-            <p className="text-sm text-slate-500 mt-0.5">Gerencie veículos, serviços e mais</p>
+    <div className="min-h-screen bg-slate-50">
+      {/* Admin Header */}
+      <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 shadow-xl">
+        <div className="w-full px-4 sm:px-6 flex items-center justify-between h-16">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-black text-white">SERVIÇOS <span className="text-orange-400">AZEVEDO</span></h1>
+              <p className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Painel Administrativo</p>
+            </div>
           </div>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="text-slate-300 hover:text-white hover:bg-white/10 rounded-xl font-bold"
+          >
+            <LogOut className="w-4 h-4 mr-2" /> Sair da Conta
+          </Button>
         </div>
-        <Button
-          onClick={handleLogout}
-          variant="outline"
-          className="rounded-xl font-bold text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300"
-        >
-          <LogOut className="w-4 h-4 mr-2" /> Sair
-        </Button>
-      </div>
+      </header>
 
-      {/* Tabs de navegação */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 h-auto p-1 bg-slate-100 rounded-2xl gap-1">
-          <TabsTrigger value="dashboard" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <LayoutDashboard className="w-4 h-4 mr-1.5 hidden sm:block" /> Dashboard
-          </TabsTrigger>
-          <TabsTrigger value="veiculos" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Car className="w-4 h-4 mr-1.5 hidden sm:block" /> Veículos
-          </TabsTrigger>
-          <TabsTrigger value="servicos" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Wrench className="w-4 h-4 mr-1.5 hidden sm:block" /> Serviços
-          </TabsTrigger>
-          <TabsTrigger value="relatorios" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm hidden sm:flex">
-            <BarChart3 className="w-4 h-4 mr-1.5" /> Relatórios
-          </TabsTrigger>
-          <TabsTrigger value="config" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm hidden sm:flex">
-            <Settings className="w-4 h-4 mr-1.5" /> Config
-          </TabsTrigger>
-        </TabsList>
+      {/* Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Tabs de navegação */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 h-auto p-1 bg-slate-100 rounded-2xl gap-1">
+            <TabsTrigger value="dashboard" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <LayoutDashboard className="w-4 h-4 mr-1.5 hidden sm:block" /> Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="veiculos" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Car className="w-4 h-4 mr-1.5 hidden sm:block" /> Veículos
+            </TabsTrigger>
+            <TabsTrigger value="servicos" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Wrench className="w-4 h-4 mr-1.5 hidden sm:block" /> Serviços
+            </TabsTrigger>
+            <TabsTrigger value="relatorios" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm hidden sm:flex">
+              <BarChart3 className="w-4 h-4 mr-1.5" /> Relatórios
+            </TabsTrigger>
+            <TabsTrigger value="config" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm hidden sm:flex">
+              <Settings className="w-4 h-4 mr-1.5" /> Config
+            </TabsTrigger>
+          </TabsList>
 
         {/* Dashboard */}
         <TabsContent value="dashboard" className="mt-4">
@@ -660,6 +664,7 @@ export default function ContaPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   )
 }
