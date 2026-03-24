@@ -60,8 +60,22 @@ export function useRealtime<T extends { id: string | number }>(
       )
       .subscribe();
 
+    // 3. Sincronização entre abas em modo Local (localStorage)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === `azevedo_${table}` && e.newValue) {
+        try {
+          setData(JSON.parse(e.newValue));
+        } catch (err) {
+          console.error(`Erro ao sincronizar aba para ${table}:`, err);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [table]);
 

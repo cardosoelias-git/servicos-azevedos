@@ -161,6 +161,39 @@ CREATE POLICY "Permitir atualização configuracoes" ON configuracoes
   FOR UPDATE USING (true);
 
 -- ============================================
+-- TABELA: VEÍCULOS
+-- ============================================
+CREATE TABLE IF NOT EXISTS veiculos (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  placa VARCHAR(20) UNIQUE NOT NULL,
+  modelo VARCHAR(255),
+  proprietario VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'Regular',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Habilitar RLS
+ALTER TABLE veiculos ENABLE ROW LEVEL SECURITY;
+
+-- Políticas
+DROP POLICY IF EXISTS "Permitir leitura veiculos" ON veiculos;
+CREATE POLICY "Permitir leitura veiculos" ON veiculos
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Permitir inserção veiculos" ON veiculos;
+CREATE POLICY "Permitir inserção veiculos" ON veiculos
+  FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Permitir atualização veiculos" ON veiculos;
+CREATE POLICY "Permitir atualização veiculos" ON veiculos
+  FOR UPDATE USING (true);
+
+DROP POLICY IF EXISTS "Permitir exclusão veiculos" ON veiculos;
+CREATE POLICY "Permitir exclusão veiculos" ON veiculos
+  FOR DELETE USING (true);
+
+-- ============================================
 -- FUNÇÕES ÚTEIS
 -- ============================================
 
@@ -194,6 +227,13 @@ CREATE TRIGGER update_transacoes_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger para veiculos
+DROP TRIGGER IF EXISTS update_veiculos_updated_at ON veiculos;
+CREATE TRIGGER update_veiculos_updated_at
+  BEFORE UPDATE ON veiculos
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================
 -- ÍNDICES PARA PERFORMANCE
 -- ============================================
@@ -205,6 +245,7 @@ CREATE INDEX IF NOT EXISTS idx_transacoes_servico_id ON transacoes(servico_id);
 CREATE INDEX IF NOT EXISTS idx_transacoes_tipo ON transacoes(tipo);
 CREATE INDEX IF NOT EXISTS idx_transacoes_status ON transacoes(status);
 CREATE INDEX IF NOT EXISTS idx_transacoes_data ON transacoes(data);
+CREATE INDEX IF NOT EXISTS idx_veiculos_placa ON veiculos(placa);
 
 -- ============================================
 -- MENSAGEM DE SUCESSO

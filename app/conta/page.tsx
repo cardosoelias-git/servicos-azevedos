@@ -14,8 +14,11 @@ import { getStorageData, updateStorageItem, addStorageItem, deleteStorageItem } 
 import {
   Lock, LogOut, Car, Settings, Plus, Trash2, Edit2, Save,
   CheckCircle2, Clock, DollarSign, Shield, Database, LayoutDashboard,
-  Wrench, BarChart3, TrendingUp, AlertCircle, BadgeCheck, IdCard
+  Wrench, BarChart3, TrendingUp, AlertCircle, BadgeCheck, IdCard, RefreshCw
 } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { useRealtime } from "@/hooks/useRealtime"
+import { isConfigured } from "@/lib/supabase"
 
 const ADMIN_CREDENTIALS = {
   email: "azevedo@azevedo.com",
@@ -35,13 +38,23 @@ const VEICULO_SERVICOS = [
 
 export default function ContaPage() {
   const { toast } = useToast()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { isLoggedIn, login, logout } = useAuth()
+  const { data: realtimeVeiculos, loading: veiculosLoading } = useRealtime<any>("veiculos")
+  const [localVeiculos, setLocalVeiculos] = useState<any[]>([])
+  const [isLocalMode, setIsLocalMode] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [activeTab, setActiveTab] = useState("dashboard")
   const [loading, setLoading] = useState(true)
 
-  const [veiculos, setVeiculos] = useState<any[]>([])
+  const [placa, setPlaca] = useState("")
+  const [modelo, setModelo] = useState("")
+  const [proprietario, setProprietario] = useState("")
+
+  const veiculos = isLocalMode ? localVeiculos : realtimeVeiculos
+
   const [veiculoModalOpen, setVeiculoModalOpen] = useState(false)
   const [editingVeiculo, setEditingVeiculo] = useState<any>(null)
   const [veiculoForm, setVeiculoForm] = useState({
@@ -63,16 +76,21 @@ export default function ContaPage() {
   })
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("conta_logged_in")
-    if (loggedIn === "true") setIsLoggedIn(true)
-    setVeiculos(getStorageData("veiculos", []))
-    setLoading(false)
-  }, [])
+    if (!isConfigured) {
+      setLocalVeiculos(getStorageData("veiculos", []))
+      setIsLocalMode(true)
+      setLoading(false)
+    } else {
+      setIsLocalMode(false)
+      if (!veiculosLoading) {
+        setLoading(false)
+      }
+    }
+  }, [realtimeVeiculos, veiculosLoading])
 
   const handleLogin = () => {
     if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-      localStorage.setItem("conta_logged_in", "true")
-      setIsLoggedIn(true)
+      login()
       toast({ title: "Sucesso", description: "Login realizado!" })
     } else {
       toast({ variant: "destructive", title: "Erro", description: "Email ou senha incorretos." })
@@ -80,33 +98,67 @@ export default function ContaPage() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("conta_logged_in")
-    setIsLoggedIn(false)
+    logout()
     setEmail("")
     setPassword("")
   }
 
-  const handleSaveVeiculo = () => {
+  const handleSaveVeiculo = async () => {
     if (!veiculoForm.cliente_nome || !veiculoForm.placa) {
       toast({ variant: "destructive", title: "Erro", description: "Preencha cliente e placa." })
       return
     }
-    if (editingVeiculo !== null) {
-      const updated = [...veiculos]
-      updated[editingVeiculo] = { ...veiculoForm, id: updated[editingVeiculo].id, updated_at: new Date().toISOString() }
-      setVeiculos(updated)
-      updateStorageItem("veiculos", updated[editingVeiculo].id, updated[editingVeiculo])
-      toast({ title: "Sucesso", description: "Veículo atualizado!" })
-    } else {
-      const novoVeiculo = { ...veiculoForm, id: Date.now().toString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-      const updated = [...veiculos, novoVeiculo]
-      setVeiculos(updated)
-      addStorageItem("veiculos", novoVeiculo)
-      toast({ title: "Sucesso", description: "Veículo cadastrado!" })
+
+    const veiculoData = {
+      cliente_nome: veiculoForm.cliente_nome,
+      placa: veiculoForm.placa.toUpperCase(),
+      modelo: veiculoForm.modelo,
+      ano: veiculoForm.ano,
+      cor: veiculoForm.cor,
+      servicos: veiculoForm.servicos,
     }
-    setVeiculoModalOpen(false)
-    setEditingVeiculo(null)
-    setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", cor: "", servicos: [] })
+
+    try {
+      if (isLocalMode) throw new Error("Local mode") // Force local storage if in local mode
+
+      const { supabase } = await import("@/lib/supabase")
+      if (editingVeiculo !== null && veiculos[editingVeiculo]?.id) {
+        // Update existing vehicle
+        const { error } = await supabase
+          .from("veiculos")
+          .update({ ...veiculoData, updated_at: new Date().toISOString() })
+          .eq("id", veiculos[editingVeiculo].id)
+
+        if (error) throw error
+        toast({ title: "Sucesso", description: "Veículo atualizado no sistema!" })
+      } else {
+        // Add new vehicle
+        const { error } = await supabase
+          .from("veiculos")
+          .insert([{ ...veiculoData, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }])
+
+        if (error) throw error
+        toast({ title: "Sucesso", description: "Veículo cadastrado no sistema!" })
+      }
+    } catch (err: any) {
+      if (editingVeiculo !== null && veiculos[editingVeiculo]?.id) {
+        // Update local storage
+        const updated = { ...veiculoData, id: veiculos[editingVeiculo].id, updated_at: new Date().toISOString() }
+        updateStorageItem("veiculos", updated.id, updated)
+        setLocalVeiculos(prev => prev.map(v => v.id === updated.id ? updated : v))
+        toast({ title: "Sucesso (Local)", description: "Veículo atualizado no navegador!" })
+      } else {
+        // Add to local storage
+        const novoVeiculo = { ...veiculoData, id: Date.now().toString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+        addStorageItem("veiculos", novoVeiculo)
+        setLocalVeiculos(prev => [...prev, novoVeiculo])
+        toast({ title: "Sucesso (Local)", description: "Veículo cadastrado no navegador!" })
+      }
+    } finally {
+      setVeiculoModalOpen(false)
+      setEditingVeiculo(null)
+      setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", cor: "", servicos: [] })
+    }
   }
 
   const handleEditVeiculo = (index: number) => {
@@ -115,12 +167,25 @@ export default function ContaPage() {
     setVeiculoModalOpen(true)
   }
 
-  const handleDeleteVeiculo = (id: string) => {
+  const handleDeleteVeiculo = async (id: string) => {
     if (!confirm("Excluir este veículo?")) return
-    const updated = veiculos.filter(v => v.id !== id)
-    setVeiculos(updated)
-    deleteStorageItem("veiculos", id)
-    toast({ title: "Excluído", description: "Veículo removido." })
+
+    try {
+      if (isLocalMode) throw new Error("Local mode") // Force local storage if in local mode
+
+      const { supabase } = await import("@/lib/supabase")
+      const { error } = await supabase
+        .from("veiculos")
+        .delete()
+        .eq("id", id)
+
+      if (error) throw error
+      toast({ title: "Excluído", description: "Veículo removido do sistema." })
+    } catch (err) {
+      deleteStorageItem("veiculos", id)
+      setLocalVeiculos(prev => prev.filter(v => v.id !== id))
+      toast({ title: "Excluído (Local)", description: "Veículo removido do navegador." })
+    }
   }
 
   const handleOpenServico = (veiculoIndex: number) => {
@@ -129,7 +194,7 @@ export default function ContaPage() {
     setServicoModalOpen(true)
   }
 
-  const handleAddServico = () => {
+  const handleAddServico = async () => {
     if (!servicoForm.servico_id || servicoVeiculoIndex === null) {
       toast({ variant: "destructive", title: "Erro", description: "Selecione um serviço." })
       return
@@ -142,21 +207,80 @@ export default function ContaPage() {
       valor: parseFloat(servicoForm.valor) || servicoPadrao?.preco_padrao || 0,
       created_at: new Date().toISOString()
     }
-    const updated = [...veiculos]
-    updated[servicoVeiculoIndex].servicos = [...(updated[servicoVeiculoIndex].servicos || []), novoServico]
-    setVeiculos(updated)
-    updateStorageItem("veiculos", updated[servicoVeiculoIndex].id, updated[servicoVeiculoIndex])
-    toast({ title: "Sucesso", description: "Serviço adicionado!" })
-    setServicoModalOpen(false)
+
+    const veiculoToUpdate = veiculos[servicoVeiculoIndex]
+    const updatedServicos = [...(veiculoToUpdate.servicos || []), novoServico]
+
+    try {
+      if (isLocalMode) throw new Error("Local mode") // Force local storage if in local mode
+
+      const { supabase } = await import("@/lib/supabase")
+      const { error } = await supabase
+        .from("veiculos")
+        .update({ servicos: updatedServicos, updated_at: new Date().toISOString() })
+        .eq("id", veiculoToUpdate.id)
+
+      if (error) throw error
+      toast({ title: "Sucesso", description: "Serviço adicionado ao sistema!" })
+    } catch (err) {
+      // Update local storage
+      const updatedVeiculo = { ...veiculoToUpdate, servicos: updatedServicos }
+      updateStorageItem("veiculos", updatedVeiculo.id, updatedVeiculo)
+      setLocalVeiculos(prev => prev.map(v => v.id === updatedVeiculo.id ? updatedVeiculo : v))
+      toast({ title: "Sucesso (Local)", description: "Serviço adicionado no navegador!" })
+    } finally {
+      setServicoModalOpen(false)
+    }
   }
 
-  const handleDeleteServico = (veiculoIndex: number, servicoId: string) => {
+  const handleDeleteServico = async (veiculoIndex: number, servicoId: string) => {
     if (!confirm("Excluir este serviço?")) return
-    const updated = [...veiculos]
-    updated[veiculoIndex].servicos = updated[veiculoIndex].servicos.filter((s: any) => s.id !== servicoId)
-    setVeiculos(updated)
-    updateStorageItem("veiculos", updated[veiculoIndex].id, updated[veiculoIndex])
-    toast({ title: "Excluído", description: "Serviço removido." })
+
+    const veiculoToUpdate = veiculos[veiculoIndex]
+    const updatedServicos = veiculoToUpdate.servicos.filter((s: any) => s.id !== servicoId)
+
+    try {
+      if (isLocalMode) throw new Error("Local mode") // Force local storage if in local mode
+
+      const { supabase } = await import("@/lib/supabase")
+      const { error } = await supabase
+        .from("veiculos")
+        .update({ servicos: updatedServicos, updated_at: new Date().toISOString() })
+        .eq("id", veiculoToUpdate.id)
+
+      if (error) throw error
+      toast({ title: "Excluído", description: "Serviço removido do sistema." })
+    } catch (err) {
+      // Update local storage
+      const updatedVeiculo = { ...veiculoToUpdate, servicos: updatedServicos }
+      updateStorageItem("veiculos", updatedVeiculo.id, updatedVeiculo)
+      setLocalVeiculos(prev => prev.map(v => v.id === updatedVeiculo.id ? updatedVeiculo : v))
+      toast({ title: "Excluído (Local)", description: "Serviço removido do navegador." })
+    }
+  }
+
+  const handleSyncVeiculos = async () => {
+    setIsSyncing(true)
+    try {
+      if (!isConfigured) throw new Error("Supabase não configurado")
+      const localData = getStorageData("veiculos", [])
+      if (localData.length === 0) {
+        toast({ title: "Nada para sincronizar", description: "Não há dados locais." })
+        return
+      }
+      const { supabase } = await import("@/lib/supabase")
+      for (const v of localData) {
+        const { id, ...vData } = v
+        await supabase.from("veiculos").upsert([vData], { onConflict: 'placa' })
+      }
+      localStorage.removeItem("azevedo_veiculos") // Clear local storage after sync
+      setLocalVeiculos([]) // Clear local state
+      toast({ title: "Sincronizado", description: "Dados enviados para o servidor." })
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Erro na sincronização", description: err.message })
+    } finally {
+      setIsSyncing(false)
+    }
   }
 
   const totalVeiculos = veiculos.length
@@ -310,6 +434,24 @@ export default function ContaPage() {
             {/* Veículos */}
             {activeTab === "veiculos" && (
               <div className="space-y-3">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">Frota Azevedo</h3>
+                    <p className="text-slate-500 text-sm font-medium">Controle os veículos autorizados para serviços.</p>
+                  </div>
+                  {isLocalMode && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="bg-amber-50 text-amber-600 hover:bg-amber-100"
+                      onClick={handleSyncVeiculos}
+                      disabled={isSyncing}
+                    >
+                      <RefreshCw className={cn("w-4 h-4 mr-2", isSyncing && "animate-spin")} />
+                      Sincronizar
+                    </Button>
+                  )}
+                </div>
                 <Button onClick={() => { setEditingVeiculo(null); setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", cor: "", servicos: [] }); setVeiculoModalOpen(true) }}
                   className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-2xl font-bold shadow-lg shadow-orange-500/25">
                   <Plus className="w-5 h-5 mr-2" /> Cadastrar Veículo
@@ -455,7 +597,7 @@ export default function ContaPage() {
                   <div className="flex items-center gap-3 mb-3"><Database className="w-5 h-5 text-slate-600" /><p className="font-bold text-slate-800">Dados</p></div>
                   <p className="text-sm text-slate-500">Veículos: {totalVeiculos} | Serviços: {totalServicos}</p>
                 </div>
-                <button onClick={() => { if (confirm("Limpar TODOS os dados?")) { localStorage.removeItem("azevedo_veiculos"); setVeiculos([]); toast({ title: "Limpo" }) } }}
+                <button onClick={() => { if (confirm("Limpar TODOS os dados?")) { localStorage.removeItem("azevedo_veiculos"); setLocalVeiculos([]); toast({ title: "Limpo" }) } }}
                   className="w-full bg-red-50 border border-red-200 rounded-2xl p-4 text-left">
                   <div className="flex items-center gap-3"><AlertCircle className="w-5 h-5 text-red-600" /><p className="font-bold text-red-800">Limpar Dados</p></div>
                 </button>

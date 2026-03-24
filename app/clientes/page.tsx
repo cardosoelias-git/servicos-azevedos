@@ -298,7 +298,6 @@ export default function ClientesPage() {
     } finally {
       setIsDeleteModalOpen(false)
       setSelectedCliente(null)
-      router.refresh()
     }
   }
 

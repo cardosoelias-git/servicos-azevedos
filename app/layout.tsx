@@ -78,6 +78,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
 }
 
+import { AuthProvider } from '@/lib/auth-context';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
@@ -134,8 +136,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="antialiased">
-        <ClientLayout>{children}</ClientLayout>
+        <AuthProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+
+

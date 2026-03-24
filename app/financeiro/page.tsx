@@ -195,22 +195,16 @@ export default function FinanceiroPage() {
       console.error(err)
     }
 
-    if (isLocalMode) {
-      setLocalTransacoes([novaTransacao, ...localTransacoes])
-    }
-
     toast({
       title: "Sucesso",
       description: `✅ Transação adicionada com sucesso!`,
     })
-
     setIsModalOpen(false)
     setNovoCliente("")
     setNovoServico("")
     setNovoTipo("Entrada")
     setNovoValor("")
     setNovoStatus("Pendente")
-    router.refresh()
   }
 
   const handleExcluirTransacao = async (id: string) => {
@@ -232,7 +226,6 @@ export default function FinanceiroPage() {
     })
     setIsDeleteModalOpen(false)
     setSelectedTransacao(null)
-    router.refresh()
   }
 
   const confirmDelete = (transacao: any) => {

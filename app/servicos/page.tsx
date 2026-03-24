@@ -265,7 +265,6 @@ export default function ServicosPage() {
         })
       }
 
-      setLocalServicos([updatedData, ...localServicos])
       toast({ title: "Sucesso (Modo Local)", description: "✅ Serviço criado com sucesso!" })
     } finally {
       setIsModalOpen(false)
