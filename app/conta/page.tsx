@@ -230,7 +230,7 @@ export default function ContaPage() {
               <Shield className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-black text-white">AZEVEDO <span className="text-orange-400">ADMIN</span></h1>
+              <h1 className="text-sm sm:text-base font-black text-white">HABILITAÇÃO <span className="text-orange-400">AZEVEDO</span></h1>
             </div>
           </div>
           <Button onClick={handleLogout} size="sm" variant="ghost"
