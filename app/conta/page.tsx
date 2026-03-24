@@ -14,7 +14,7 @@ import { getStorageData, updateStorageItem, addStorageItem, deleteStorageItem } 
 import {
   Lock, LogOut, Car, Settings, Plus, Trash2, Edit2, Save,
   CheckCircle2, Clock, DollarSign, Shield, Database, LayoutDashboard,
-  Wrench, BarChart3, TrendingUp, AlertCircle, BadgeCheck
+  Wrench, BarChart3, TrendingUp, AlertCircle, BadgeCheck, IdCard
 } from "lucide-react"
 
 const ADMIN_CREDENTIALS = {
@@ -183,7 +183,7 @@ export default function ContaPage() {
                 className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Shield className="w-10 h-10" />
               </motion.div>
-              <CardTitle className="text-2xl font-black tracking-tight">SERVIÇOS AZEVEDO</CardTitle>
+              <CardTitle className="text-2xl font-black tracking-tight">CARDOSO AZEVEDO</CardTitle>
               <CardDescription className="text-orange-100 mt-2 text-sm font-medium">Painel Administrativo</CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
@@ -215,7 +215,7 @@ export default function ContaPage() {
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "veiculos", label: "Veículos", icon: Car },
-    { id: "servicos", label: "Serviços", icon: Wrench },
+    { id: "servicos", label: "Habilitação", icon: IdCard },
     { id: "relatorios", label: "Relatórios", icon: BarChart3 },
     { id: "config", label: "Config", icon: Settings },
   ]
@@ -286,7 +286,7 @@ export default function ContaPage() {
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { label: "Veículos", value: totalVeiculos, icon: Car, color: "blue" },
-                    { label: "Serviços", value: totalServicos, icon: Wrench, color: "purple" },
+                    { label: "Habilitação", value: totalServicos, icon: IdCard, color: "purple" },
                     { label: "Pendentes", value: servicosPendentes, icon: Clock, color: "orange" },
                     { label: "Total", value: `R$ ${valorTotalServicos.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`, icon: DollarSign, color: "emerald" },
                   ].map((stat) => (
@@ -350,7 +350,7 @@ export default function ContaPage() {
                       </div>
                       {veiculo.servicos?.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-slate-100">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Serviços ({veiculo.servicos.length})</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Habilitação ({veiculo.servicos.length})</p>
                           <div className="space-y-1.5">
                             {veiculo.servicos.map((servico: any) => (
                               <div key={servico.id} className="flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2">
@@ -381,7 +381,7 @@ export default function ContaPage() {
                 {totalServicos === 0 ? (
                   <div className="text-center py-12 bg-white rounded-2xl">
                     <Wrench className="w-16 h-16 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500 font-bold">Nenhum serviço registrado</p>
+                    <p className="text-slate-500 font-bold">Nenhuma habilitação registrada</p>
                   </div>
                 ) : (
                   veiculos.map((veiculo) =>
@@ -496,9 +496,9 @@ export default function ContaPage() {
       {/* Modal Serviço */}
       <Dialog open={servicoModalOpen} onOpenChange={setServicoModalOpen}>
         <DialogContent className="rounded-2xl max-w-sm mx-4">
-          <DialogHeader><DialogTitle className="text-lg font-black">Adicionar Serviço</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-lg font-black">Adicionar Habilitação</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
-            <div><Label className="text-xs font-bold text-slate-500">Tipo de Serviço *</Label>
+            <div><Label className="text-xs font-bold text-slate-500">Tipo de Habilitação *</Label>
               <Select value={servicoForm.servico_id} onValueChange={(val) => {
                 const servico = VEICULO_SERVICOS.find(s => s.id === val)
                 setServicoForm({ ...servicoForm, servico_id: val, valor: servico?.preco_padrao.toString() || "" })

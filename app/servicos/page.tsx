@@ -432,14 +432,14 @@ export default function ServicosPage() {
     <div className="space-y-3.5 sm:space-y-5 lg:space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Serviços</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Habilitação</h1>
           <p className="text-slate-500 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o progresso de cada processo de habilitação.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button variant="premium" className="w-full sm:w-auto font-semibold px-4 py-2.5 sm:px-6 sm:py-5 rounded-xl transition-all duration-300">
-              <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Serviço</span>
+              <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Nova Habilitação</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px] p-0 border border-slate-100 rounded-3xl overflow-hidden shadow-xl bg-white">

@@ -18,7 +18,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Habilitação', href: '/servicos', icon: BadgeCheck },
+  { name: 'Habilitação', href: '/servicos', icon: IdCard },
   { name: 'Clientes', href: '/clientes', icon: Users },
   { name: 'Financeiro', href: '/financeiro', icon: CreditCard },
 ];

@@ -177,7 +177,7 @@ export default function Dashboard() {
               </div>
               
               <div className="mt-4 sm:mt-5">
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">Serviços H</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">Habilitação</h3>
                 <p className="text-slate-500 text-xs font-medium mt-1 leading-relaxed">
                   Habilitação: CNH, Adição e Mudança de Categoria
                 </p>
