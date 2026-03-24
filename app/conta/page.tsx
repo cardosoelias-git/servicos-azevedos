@@ -5,19 +5,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { motion, AnimatePresence } from "motion/react"
 import { cn } from "@/lib/utils"
 import { getStorageData, updateStorageItem, addStorageItem, deleteStorageItem } from "@/lib/storage"
-import Link from "next/link"
 import {
-  Lock, LogOut, User, Car, Settings, ChevronRight, Plus, Trash2, Edit2, Save,
-  ArrowLeft, CheckCircle2, Clock, DollarSign, FileText, CreditCard, Palette,
-  Shield, Bell, Database, LayoutDashboard, Wrench, Users, BarChart3, Circle, TrendingUp,
-  Calendar, Tag, AlertCircle, Download, Eye, Filter, Search, X, RefreshCw, MoreHorizontal
+  Lock, LogOut, Car, Settings, Plus, Trash2, Edit2, Save,
+  CheckCircle2, Clock, DollarSign, Shield, Database, LayoutDashboard,
+  Wrench, BarChart3, TrendingUp, AlertCircle, BadgeCheck
 } from "lucide-react"
 
 const ADMIN_CREDENTIALS = {
@@ -44,7 +41,6 @@ export default function ContaPage() {
   const [activeTab, setActiveTab] = useState("dashboard")
   const [loading, setLoading] = useState(true)
 
-  // Veículos
   const [veiculos, setVeiculos] = useState<any[]>([])
   const [veiculoModalOpen, setVeiculoModalOpen] = useState(false)
   const [editingVeiculo, setEditingVeiculo] = useState<any>(null)
@@ -57,7 +53,6 @@ export default function ContaPage() {
     servicos: [] as any[]
   })
 
-  // Serviço do veículo
   const [servicoModalOpen, setServicoModalOpen] = useState(false)
   const [servicoVeiculoIndex, setServicoVeiculoIndex] = useState<number | null>(null)
   const [servicoForm, setServicoForm] = useState({
@@ -69,9 +64,7 @@ export default function ContaPage() {
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("conta_logged_in")
-    if (loggedIn === "true") {
-      setIsLoggedIn(true)
-    }
+    if (loggedIn === "true") setIsLoggedIn(true)
     setVeiculos(getStorageData("veiculos", []))
     setLoading(false)
   }, [])
@@ -80,7 +73,7 @@ export default function ContaPage() {
     if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
       localStorage.setItem("conta_logged_in", "true")
       setIsLoggedIn(true)
-      toast({ title: "Sucesso", description: "Login realizado com sucesso!" })
+      toast({ title: "Sucesso", description: "Login realizado!" })
     } else {
       toast({ variant: "destructive", title: "Erro", description: "Email ou senha incorretos." })
     }
@@ -93,13 +86,11 @@ export default function ContaPage() {
     setPassword("")
   }
 
-  // Veículos
   const handleSaveVeiculo = () => {
     if (!veiculoForm.cliente_nome || !veiculoForm.placa) {
       toast({ variant: "destructive", title: "Erro", description: "Preencha cliente e placa." })
       return
     }
-
     if (editingVeiculo !== null) {
       const updated = [...veiculos]
       updated[editingVeiculo] = { ...veiculoForm, id: updated[editingVeiculo].id, updated_at: new Date().toISOString() }
@@ -107,18 +98,12 @@ export default function ContaPage() {
       updateStorageItem("veiculos", updated[editingVeiculo].id, updated[editingVeiculo])
       toast({ title: "Sucesso", description: "Veículo atualizado!" })
     } else {
-      const novoVeiculo = {
-        ...veiculoForm,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
+      const novoVeiculo = { ...veiculoForm, id: Date.now().toString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
       const updated = [...veiculos, novoVeiculo]
       setVeiculos(updated)
       addStorageItem("veiculos", novoVeiculo)
       toast({ title: "Sucesso", description: "Veículo cadastrado!" })
     }
-
     setVeiculoModalOpen(false)
     setEditingVeiculo(null)
     setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", cor: "", servicos: [] })
@@ -138,7 +123,6 @@ export default function ContaPage() {
     toast({ title: "Excluído", description: "Veículo removido." })
   }
 
-  // Serviços do veículo
   const handleOpenServico = (veiculoIndex: number) => {
     setServicoVeiculoIndex(veiculoIndex)
     setServicoForm({ servico_id: "", valor: "", status: "Pendente", observacoes: "" })
@@ -150,7 +134,6 @@ export default function ContaPage() {
       toast({ variant: "destructive", title: "Erro", description: "Selecione um serviço." })
       return
     }
-
     const servicoPadrao = VEICULO_SERVICOS.find(s => s.id === servicoForm.servico_id)
     const novoServico = {
       ...servicoForm,
@@ -159,12 +142,10 @@ export default function ContaPage() {
       valor: parseFloat(servicoForm.valor) || servicoPadrao?.preco_padrao || 0,
       created_at: new Date().toISOString()
     }
-
     const updated = [...veiculos]
     updated[servicoVeiculoIndex].servicos = [...(updated[servicoVeiculoIndex].servicos || []), novoServico]
     setVeiculos(updated)
     updateStorageItem("veiculos", updated[servicoVeiculoIndex].id, updated[servicoVeiculoIndex])
-
     toast({ title: "Sucesso", description: "Serviço adicionado!" })
     setServicoModalOpen(false)
   }
@@ -178,7 +159,6 @@ export default function ContaPage() {
     toast({ title: "Excluído", description: "Serviço removido." })
   }
 
-  // Estatísticas
   const totalVeiculos = veiculos.length
   const totalServicos = veiculos.reduce((acc, v) => acc + (v.servicos?.length || 0), 0)
   const servicosPendentes = veiculos.reduce((acc, v) => acc + (v.servicos?.filter((s: any) => s.status === "Pendente").length || 0), 0)
@@ -187,62 +167,44 @@ export default function ContaPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-orange-500"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+        <div className="animate-spin rounded-full h-14 w-14 border-4 border-orange-200 border-t-orange-500"></div>
       </div>
     )
   }
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
-          <Card className="border-0 shadow-2xl shadow-orange-500/10 rounded-2xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white text-center py-8 sm:py-12">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Lock className="w-8 h-8 sm:w-10 sm:h-10" />
-              </div>
-              <CardTitle className="text-2xl sm:text-3xl font-black">Área da Conta</CardTitle>
-              <CardDescription className="text-orange-100 mt-2">Faça login para acessar o painel administrativo</CardDescription>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm">
+          <Card className="border-0 shadow-2xl rounded-3xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white text-center py-10">
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }}
+                className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Shield className="w-10 h-10" />
+              </motion.div>
+              <CardTitle className="text-2xl font-black tracking-tight">SERVIÇOS AZEVEDO</CardTitle>
+              <CardDescription className="text-orange-100 mt-2 text-sm font-medium">Painel Administrativo</CardDescription>
             </CardHeader>
-            <CardContent className="p-6 sm:p-8 space-y-5">
+            <CardContent className="p-6 space-y-4">
               <div>
-                <Label className="text-sm font-bold text-slate-700">Email</Label>
-                <Input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
+                <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email</Label>
+                <Input type="email" placeholder="azevedo@azevedo.com" value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 h-12 rounded-xl border-slate-200 focus:ring-orange-500"
-                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                />
+                  className="mt-1 h-12 rounded-xl border-slate-200 focus:ring-orange-500 text-base"
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
               </div>
               <div>
-                <Label className="text-sm font-bold text-slate-700">Senha</Label>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
+                <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Senha</Label>
+                <Input type="password" placeholder="••••••••" value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 h-12 rounded-xl border-slate-200 focus:ring-orange-500"
-                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                />
+                  className="mt-1 h-12 rounded-xl border-slate-200 focus:ring-orange-500 text-base"
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
               </div>
-              <Button
-                onClick={handleLogin}
-                className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl font-bold text-base shadow-lg shadow-orange-500/25"
-              >
+              <Button onClick={handleLogin}
+                className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl font-bold text-base shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:scale-[1.02]">
                 Entrar
               </Button>
-              <div className="text-center">
-                <Link href="/" className="text-sm text-slate-500 hover:text-orange-500 transition-colors">
-                  ← Voltar ao site
-                </Link>
-              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -250,217 +212,184 @@ export default function ContaPage() {
     )
   }
 
+  const tabs = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "veiculos", label: "Veículos", icon: Car },
+    { id: "servicos", label: "Serviços", icon: Wrench },
+    { id: "relatorios", label: "Relatórios", icon: BarChart3 },
+    { id: "config", label: "Config", icon: Settings },
+  ]
+
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Admin Header */}
-      <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 shadow-xl">
-        <div className="w-full px-4 sm:px-6 flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Shield className="w-5 h-5 text-white" />
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 shadow-xl">
+        <div className="flex items-center justify-between px-4 h-14 sm:h-16">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black text-white">SERVIÇOS <span className="text-orange-400">AZEVEDO</span></h1>
-              <p className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Painel Administrativo</p>
+              <h1 className="text-sm sm:text-base font-black text-white">AZEVEDO <span className="text-orange-400">ADMIN</span></h1>
             </div>
           </div>
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            className="text-slate-300 hover:text-white hover:bg-white/10 rounded-xl font-bold"
-          >
-            <LogOut className="w-4 h-4 mr-2" /> Sair da Conta
+          <Button onClick={handleLogout} size="sm" variant="ghost"
+            className="text-slate-300 hover:text-white hover:bg-white/10 rounded-xl font-semibold text-xs">
+            <LogOut className="w-4 h-4 mr-1" /> Sair
           </Button>
         </div>
       </header>
 
+      {/* Mobile Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] sm:hidden">
+        <div className="flex items-center justify-around py-1">
+          {tabs.map((tab) => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[55px]",
+                activeTab === tab.id ? "text-orange-600" : "text-slate-400"
+              )}>
+              <tab.icon className={cn("w-5 h-5", activeTab === tab.id && "stroke-[2.5px]")} />
+              <span className="text-[9px] font-bold">{tab.label}</span>
+              {activeTab === tab.id && <motion.div layoutId="tab-indicator" className="w-5 h-0.5 bg-orange-500 rounded-full mt-0.5" />}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Desktop Tabs */}
+      <div className="hidden sm:block bg-white border-b border-slate-200 sticky top-14 sm:top-16 z-40">
+        <div className="max-w-6xl mx-auto flex items-center gap-1 px-4 py-2">
+          {tabs.map((tab) => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all",
+                activeTab === tab.id
+                  ? "bg-orange-50 text-orange-600 shadow-sm border border-orange-100"
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+              )}>
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        {/* Tabs de navegação */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 h-auto p-1 bg-slate-100 rounded-2xl gap-1">
-            <TabsTrigger value="dashboard" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <LayoutDashboard className="w-4 h-4 mr-1.5 hidden sm:block" /> Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="veiculos" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Car className="w-4 h-4 mr-1.5 hidden sm:block" /> Veículos
-            </TabsTrigger>
-            <TabsTrigger value="servicos" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Wrench className="w-4 h-4 mr-1.5 hidden sm:block" /> Serviços
-            </TabsTrigger>
-            <TabsTrigger value="relatorios" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm hidden sm:flex">
-              <BarChart3 className="w-4 h-4 mr-1.5" /> Relatórios
-            </TabsTrigger>
-            <TabsTrigger value="config" className="rounded-xl py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm hidden sm:flex">
-              <Settings className="w-4 h-4 mr-1.5" /> Config
-            </TabsTrigger>
-          </TabsList>
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-24 sm:pb-6">
+        <AnimatePresence mode="wait">
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
 
-        {/* Dashboard */}
-        <TabsContent value="dashboard" className="mt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100">
-              <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                    <Car className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-blue-600 font-bold uppercase tracking-wider">Veículos</p>
-                    <p className="text-2xl sm:text-3xl font-black text-blue-700">{totalVeiculos}</p>
-                  </div>
+            {/* Dashboard */}
+            {activeTab === "dashboard" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: "Veículos", value: totalVeiculos, icon: Car, color: "blue" },
+                    { label: "Serviços", value: totalServicos, icon: Wrench, color: "purple" },
+                    { label: "Pendentes", value: servicosPendentes, icon: Clock, color: "orange" },
+                    { label: "Total", value: `R$ ${valorTotalServicos.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`, icon: DollarSign, color: "emerald" },
+                  ].map((stat) => (
+                    <motion.div key={stat.label} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      className={`p-4 rounded-2xl border-0 shadow-lg bg-gradient-to-br from-${stat.color}-50 to-${stat.color}-100`}>
+                      <div className={`w-10 h-10 bg-${stat.color}-500 rounded-xl flex items-center justify-center mb-2`}>
+                        <stat.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <p className={`text-xs font-bold text-${stat.color}-600 uppercase tracking-wider`}>{stat.label}</p>
+                      <p className={`text-xl sm:text-2xl font-black text-${stat.color}-700`}>{stat.value}</p>
+                    </motion.div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100">
-              <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500 rounded-xl flex items-center justify-center">
-                    <Wrench className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-purple-600 font-bold uppercase tracking-wider">Serviços</p>
-                    <p className="text-2xl sm:text-3xl font-black text-purple-700">{totalServicos}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100">
-              <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-orange-600 font-bold uppercase tracking-wider">Pendentes</p>
-                    <p className="text-2xl sm:text-3xl font-black text-orange-700">{servicosPendentes}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100">
-              <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider">Total</p>
-                    <p className="text-lg sm:text-2xl font-black text-emerald-700">R$ {valorTotalServicos.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                <Button onClick={() => setActiveTab("veiculos")}
+                  className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-2xl font-bold shadow-lg shadow-orange-500/25">
+                  <Plus className="w-5 h-5 mr-2" /> Novo Veículo
+                </Button>
+              </div>
+            )}
 
-        {/* Veículos */}
-        <TabsContent value="veiculos" className="mt-4">
-          <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-lg font-black text-slate-900">Veículos</CardTitle>
-              <Button onClick={() => { setEditingVeiculo(null); setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", cor: "", servicos: [] }); setVeiculoModalOpen(true) }} className="rounded-xl font-bold bg-orange-500 hover:bg-orange-600">
-                <Plus className="w-4 h-4 mr-2" /> Novo Veículo
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {veiculos.length === 0 ? (
-                <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl">
-                  <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500 font-bold text-lg">Nenhum veículo cadastrado</p>
-                  <p className="text-slate-400 text-sm mt-1">Cadastre o primeiro veículo para começar</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {veiculos.map((veiculo, index) => (
-                    <motion.div
-                      key={veiculo.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-4 bg-white border border-slate-200 rounded-2xl hover:shadow-md hover:border-orange-200 transition-all"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
-                            <Car className="w-6 h-6 text-orange-600" />
+            {/* Veículos */}
+            {activeTab === "veiculos" && (
+              <div className="space-y-3">
+                <Button onClick={() => { setEditingVeiculo(null); setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", cor: "", servicos: [] }); setVeiculoModalOpen(true) }}
+                  className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-2xl font-bold shadow-lg shadow-orange-500/25">
+                  <Plus className="w-5 h-5 mr-2" /> Cadastrar Veículo
+                </Button>
+                {veiculos.length === 0 ? (
+                  <div className="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                    <Car className="w-16 h-16 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-500 font-bold">Nenhum veículo cadastrado</p>
+                  </div>
+                ) : (
+                  veiculos.map((veiculo, index) => (
+                    <motion.div key={veiculo.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                      className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                            <Car className="w-5 h-5 text-orange-600" />
                           </div>
                           <div>
-                            <p className="font-bold text-slate-900 text-base">{veiculo.cliente_nome}</p>
-                            <div className="flex flex-wrap items-center gap-2 mt-1">
-                              <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md">{veiculo.placa}</span>
-                              <span className="text-xs text-slate-500">{veiculo.modelo} {veiculo.ano}</span>
-                              {veiculo.cor && <span className="text-xs text-slate-400">• {veiculo.cor}</span>}
+                            <p className="font-bold text-slate-900 text-sm">{veiculo.cliente_nome}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-xs font-bold text-white bg-orange-500 px-2 py-0.5 rounded-md">{veiculo.placa}</span>
+                              <span className="text-xs text-slate-500">{veiculo.modelo}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleOpenServico(index)} className="rounded-lg text-purple-600 hover:bg-purple-50">
-                            <Plus className="w-4 h-4 mr-1" /> Serviço
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleOpenServico(index)} className="h-9 w-9 rounded-xl text-emerald-600 hover:bg-emerald-50">
+                            <BadgeCheck className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleEditVeiculo(index)} className="rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditVeiculo(index)} className="h-9 w-9 rounded-xl text-blue-600 hover:bg-blue-50">
                             <Edit2 className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteVeiculo(veiculo.id)} className="rounded-lg hover:bg-red-50 hover:text-red-500">
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteVeiculo(veiculo.id)} className="h-9 w-9 rounded-xl text-red-500 hover:bg-red-50">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
-
-                      {/* Serviços do veículo */}
-                      {veiculo.servicos && veiculo.servicos.length > 0 && (
+                      {veiculo.servicos?.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-slate-100">
-                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Serviços ({veiculo.servicos.length})</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Serviços ({veiculo.servicos.length})</p>
+                          <div className="space-y-1.5">
                             {veiculo.servicos.map((servico: any) => (
-                              <div key={servico.id} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                              <div key={servico.id} className="flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2">
                                 <div className="flex items-center gap-2">
-                                  <div className={cn(
-                                    "w-2 h-2 rounded-full",
-                                    servico.status === "Concluído" ? "bg-emerald-500" : "bg-orange-400"
-                                  )} />
-                                  <div>
-                                    <p className="text-sm font-semibold text-slate-800">{servico.nome}</p>
-                                    <p className="text-xs text-slate-500">R$ {(servico.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-                                  </div>
+                                  <div className={cn("w-2 h-2 rounded-full", servico.status === "Concluído" ? "bg-emerald-500" : "bg-orange-400")} />
+                                  <span className="text-xs font-semibold text-slate-700">{servico.nome}</span>
                                 </div>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-red-100 hover:text-red-500" onClick={() => handleDeleteServico(index, servico.id)}>
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-slate-600">R$ {(servico.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                  <button onClick={() => handleDeleteServico(index, servico.id)} className="text-red-400 hover:text-red-600 p-0.5">
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
                     </motion.div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  ))
+                )}
+              </div>
+            )}
 
-        {/* Serviços */}
-        <TabsContent value="servicos" className="mt-4">
-          <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-black text-slate-900">Todos os Serviços</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {totalServicos === 0 ? (
-                <div className="text-center py-12">
-                  <Wrench className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500 font-bold text-lg">Nenhum serviço registrado</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {veiculos.map((veiculo) => (
+            {/* Serviços */}
+            {activeTab === "servicos" && (
+              <div className="space-y-3">
+                {totalServicos === 0 ? (
+                  <div className="text-center py-12 bg-white rounded-2xl">
+                    <Wrench className="w-16 h-16 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-500 font-bold">Nenhum serviço registrado</p>
+                  </div>
+                ) : (
+                  veiculos.map((veiculo) =>
                     veiculo.servicos?.map((servico: any) => (
-                      <div key={servico.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:shadow-sm transition-all">
+                      <div key={servico.id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "w-10 h-10 rounded-xl flex items-center justify-center",
-                            servico.status === "Concluído" ? "bg-emerald-100" : "bg-orange-100"
-                          )}>
+                          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center",
+                            servico.status === "Concluído" ? "bg-emerald-100" : "bg-orange-100")}>
                             {servico.status === "Concluído" ? <CheckCircle2 className="w-5 h-5 text-emerald-600" /> : <Clock className="w-5 h-5 text-orange-600" />}
                           </div>
                           <div>
@@ -470,47 +399,41 @@ export default function ContaPage() {
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-slate-900 text-sm">R$ {(servico.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-                          <span className={cn(
-                            "text-xs font-bold",
-                            servico.status === "Concluído" ? "text-emerald-600" : "text-orange-600"
-                          )}>{servico.status}</span>
+                          <span className={cn("text-[10px] font-bold uppercase",
+                            servico.status === "Concluído" ? "text-emerald-600" : "text-orange-600")}>{servico.status}</span>
                         </div>
                       </div>
                     ))
-                  )).flat()}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  )
+                )}
+              </div>
+            )}
 
-        {/* Relatórios */}
-        <TabsContent value="relatorios" className="mt-4">
-          <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-black text-slate-900">Relatórios</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+            {/* Relatórios */}
+            {activeTab === "relatorios" && (
+              <div className="space-y-3">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-5 border border-blue-200">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-white" />
-                    </div>
+                    <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center"><TrendingUp className="w-5 h-5 text-white" /></div>
                     <p className="font-bold text-blue-800">Resumo Geral</p>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between"><span className="text-sm text-blue-700">Total de Veículos</span><span className="font-bold text-blue-900">{totalVeiculos}</span></div>
-                    <div className="flex justify-between"><span className="text-sm text-blue-700">Total de Serviços</span><span className="font-bold text-blue-900">{totalServicos}</span></div>
-                    <div className="flex justify-between"><span className="text-sm text-blue-700">Serviços Pendentes</span><span className="font-bold text-blue-900">{servicosPendentes}</span></div>
-                    <div className="flex justify-between"><span className="text-sm text-blue-700">Serviços Concluídos</span><span className="font-bold text-blue-900">{servicosConcluidos}</span></div>
+                    {[
+                      { label: "Total de Veículos", value: totalVeiculos },
+                      { label: "Total de Serviços", value: totalServicos },
+                      { label: "Pendentes", value: servicosPendentes },
+                      { label: "Concluídos", value: servicosConcluidos },
+                    ].map((item) => (
+                      <div key={item.label} className="flex justify-between">
+                        <span className="text-sm text-blue-700">{item.label}</span>
+                        <span className="font-bold text-blue-900">{item.value}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="p-5 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl border border-emerald-200">
+                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-5 border border-emerald-200">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
-                      <DollarSign className="w-5 h-5 text-white" />
-                    </div>
+                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center"><DollarSign className="w-5 h-5 text-white" /></div>
                     <p className="font-bold text-emerald-800">Financeiro</p>
                   </div>
                   <div className="space-y-2">
@@ -519,87 +442,46 @@ export default function ContaPage() {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            )}
 
-        {/* Config */}
-        <TabsContent value="config" className="mt-4">
-          <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-black text-slate-900">Configurações</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Shield className="w-5 h-5 text-slate-600" />
-                    <p className="font-bold text-slate-800">Segurança</p>
-                  </div>
+            {/* Config */}
+            {activeTab === "config" && (
+              <div className="space-y-3">
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-3"><Shield className="w-5 h-5 text-slate-600" /><p className="font-bold text-slate-800">Segurança</p></div>
                   <p className="text-sm text-slate-500">Email: {ADMIN_CREDENTIALS.email}</p>
-                  <p className="text-sm text-slate-500 mt-1">Para alterar a senha, contate o administrador do sistema.</p>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Database className="w-5 h-5 text-slate-600" />
-                    <p className="font-bold text-slate-800">Dados</p>
-                  </div>
-                  <p className="text-sm text-slate-500">Veículos cadastrados: {totalVeiculos}</p>
-                  <p className="text-sm text-slate-500 mt-1">Serviços registrados: {totalServicos}</p>
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-3"><Database className="w-5 h-5 text-slate-600" /><p className="font-bold text-slate-800">Dados</p></div>
+                  <p className="text-sm text-slate-500">Veículos: {totalVeiculos} | Serviços: {totalServicos}</p>
                 </div>
-                <div className="p-4 bg-red-50 rounded-xl border border-red-200">
-                  <div className="flex items-center gap-3 mb-3">
-                    <AlertCircle className="w-5 h-5 text-red-600" />
-                    <p className="font-bold text-red-800">Zona de Perigo</p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="rounded-xl font-bold text-red-500 border-red-200 hover:bg-red-100"
-                    onClick={() => {
-                      if (confirm("Tem certeza que deseja limpar TODOS os dados de veículos?")) {
-                        localStorage.removeItem("azevedo_veiculos")
-                        setVeiculos([])
-                        toast({ title: "Dados limpos", description: "Todos os veículos foram removidos." })
-                      }
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" /> Limpar Dados de Veículos
-                  </Button>
-                </div>
+                <button onClick={() => { if (confirm("Limpar TODOS os dados?")) { localStorage.removeItem("azevedo_veiculos"); setVeiculos([]); toast({ title: "Limpo" }) } }}
+                  className="w-full bg-red-50 border border-red-200 rounded-2xl p-4 text-left">
+                  <div className="flex items-center gap-3"><AlertCircle className="w-5 h-5 text-red-600" /><p className="font-bold text-red-800">Limpar Dados</p></div>
+                </button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            )}
+
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Modal Veículo */}
       <Dialog open={veiculoModalOpen} onOpenChange={setVeiculoModalOpen}>
-        <DialogContent className="rounded-2xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black">{editingVeiculo !== null ? "Editar Veículo" : "Novo Veículo"}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="font-semibold">Nome do Cliente *</Label>
-              <Input value={veiculoForm.cliente_nome} onChange={(e) => setVeiculoForm({ ...veiculoForm, cliente_nome: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Nome completo" />
-            </div>
-            <div>
-              <Label className="font-semibold">Placa *</Label>
-              <Input value={veiculoForm.placa} onChange={(e) => setVeiculoForm({ ...veiculoForm, placa: e.target.value.toUpperCase() })} className="mt-1 h-11 rounded-xl" placeholder="ABC1D23" />
-            </div>
-            <div>
-              <Label className="font-semibold">Modelo</Label>
-              <Input value={veiculoForm.modelo} onChange={(e) => setVeiculoForm({ ...veiculoForm, modelo: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Fiat Uno, Gol, etc." />
-            </div>
+        <DialogContent className="rounded-2xl max-w-sm mx-4">
+          <DialogHeader><DialogTitle className="text-lg font-black">{editingVeiculo !== null ? "Editar Veículo" : "Novo Veículo"}</DialogTitle></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div><Label className="text-xs font-bold text-slate-500">Nome do Cliente *</Label>
+              <Input value={veiculoForm.cliente_nome} onChange={(e) => setVeiculoForm({ ...veiculoForm, cliente_nome: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Nome completo" /></div>
+            <div><Label className="text-xs font-bold text-slate-500">Placa *</Label>
+              <Input value={veiculoForm.placa} onChange={(e) => setVeiculoForm({ ...veiculoForm, placa: e.target.value.toUpperCase() })} className="mt-1 h-11 rounded-xl" placeholder="ABC1D23" /></div>
+            <div><Label className="text-xs font-bold text-slate-500">Modelo</Label>
+              <Input value={veiculoForm.modelo} onChange={(e) => setVeiculoForm({ ...veiculoForm, modelo: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Fiat Uno" /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="font-semibold">Ano</Label>
-                <Input value={veiculoForm.ano} onChange={(e) => setVeiculoForm({ ...veiculoForm, ano: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="2020" />
-              </div>
-              <div>
-                <Label className="font-semibold">Cor</Label>
-                <Input value={veiculoForm.cor} onChange={(e) => setVeiculoForm({ ...veiculoForm, cor: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Branco" />
-              </div>
+              <div><Label className="text-xs font-bold text-slate-500">Ano</Label>
+                <Input value={veiculoForm.ano} onChange={(e) => setVeiculoForm({ ...veiculoForm, ano: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="2020" /></div>
+              <div><Label className="text-xs font-bold text-slate-500">Cor</Label>
+                <Input value={veiculoForm.cor} onChange={(e) => setVeiculoForm({ ...veiculoForm, cor: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Branco" /></div>
             </div>
           </div>
           <DialogFooter className="gap-2">
@@ -613,47 +495,29 @@ export default function ContaPage() {
 
       {/* Modal Serviço */}
       <Dialog open={servicoModalOpen} onOpenChange={setServicoModalOpen}>
-        <DialogContent className="rounded-2xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black">Adicionar Serviço</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="font-semibold">Tipo de Serviço *</Label>
+        <DialogContent className="rounded-2xl max-w-sm mx-4">
+          <DialogHeader><DialogTitle className="text-lg font-black">Adicionar Serviço</DialogTitle></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div><Label className="text-xs font-bold text-slate-500">Tipo de Serviço *</Label>
               <Select value={servicoForm.servico_id} onValueChange={(val) => {
                 const servico = VEICULO_SERVICOS.find(s => s.id === val)
                 setServicoForm({ ...servicoForm, servico_id: val, valor: servico?.preco_padrao.toString() || "" })
               }}>
-                <SelectTrigger className="mt-1 h-11 rounded-xl">
-                  <SelectValue placeholder="Selecione o serviço" />
-                </SelectTrigger>
-                <SelectContent>
-                  {VEICULO_SERVICOS.map(s => (
-                    <SelectItem key={s.id} value={s.id}>{s.nome} - R$ {s.preco_padrao}</SelectItem>
-                  ))}
-                </SelectContent>
+                <SelectTrigger className="mt-1 h-11 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>{VEICULO_SERVICOS.map(s => (<SelectItem key={s.id} value={s.id}>{s.nome} - R$ {s.preco_padrao}</SelectItem>))}</SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="font-semibold">Valor (R$)</Label>
-              <Input type="number" value={servicoForm.valor} onChange={(e) => setServicoForm({ ...servicoForm, valor: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="0.00" />
-            </div>
-            <div>
-              <Label className="font-semibold">Status</Label>
+            <div><Label className="text-xs font-bold text-slate-500">Valor (R$)</Label>
+              <Input type="number" value={servicoForm.valor} onChange={(e) => setServicoForm({ ...servicoForm, valor: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="0.00" /></div>
+            <div><Label className="text-xs font-bold text-slate-500">Status</Label>
               <Select value={servicoForm.status} onValueChange={(val) => setServicoForm({ ...servicoForm, status: val })}>
-                <SelectTrigger className="mt-1 h-11 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className="mt-1 h-11 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Pendente">Pendente</SelectItem>
                   <SelectItem value="Em Andamento">Em Andamento</SelectItem>
                   <SelectItem value="Concluído">Concluído</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div>
-              <Label className="font-semibold">Observações</Label>
-              <Input value={servicoForm.observacoes} onChange={(e) => setServicoForm({ ...servicoForm, observacoes: e.target.value })} className="mt-1 h-11 rounded-xl" placeholder="Informações adicionais" />
             </div>
           </div>
           <DialogFooter className="gap-2">
@@ -664,7 +528,6 @@ export default function ContaPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      </div>
     </div>
   )
 }
