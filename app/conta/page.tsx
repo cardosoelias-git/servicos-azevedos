@@ -348,44 +348,6 @@ export default function ContaPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Últimos veículos */}
-          <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl mt-4">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-black text-slate-900">Últimos Veículos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {veiculos.length === 0 ? (
-                <div className="text-center py-8">
-                  <Car className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500 font-medium">Nenhum veículo cadastrado</p>
-                  <Button onClick={() => setActiveTab("veiculos")} className="mt-3 rounded-xl font-bold bg-orange-500 hover:bg-orange-600">
-                    <Plus className="w-4 h-4 mr-2" /> Cadastrar
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {veiculos.slice(0, 5).map((v, i) => (
-                    <div key={v.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-orange-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                          <Car className="w-5 h-5 text-orange-600" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900 text-sm">{v.cliente_nome}</p>
-                          <p className="text-xs text-slate-500">{v.placa} - {v.modelo}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500">{v.servicos?.length || 0} serviços</span>
-                        <ChevronRight className="w-4 h-4 text-slate-400" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Veículos */}
