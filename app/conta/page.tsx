@@ -47,7 +47,7 @@ export default function ContaPage() {
   const [editingVeiculo, setEditingVeiculo] = useState<any>(null)
   const [veiculoForm, setVeiculoForm] = useState({
     cliente_nome: "", placa: "", modelo: "", ano: "",
-    renavam: "", crv: "", cpf: "", contato: "", servicos: [] as any[]
+    renavam: "", crv: "", cpf: "", contato: "", servicos: [] as any[], documentos: [] as any[]
   })
 
   const [servicoModalOpen, setServicoModalOpen] = useState(false)
@@ -56,7 +56,7 @@ export default function ContaPage() {
 
   const [clienteModalOpen, setClienteModalOpen] = useState(false)
   const [editingCliente, setEditingCliente] = useState<number | null>(null)
-  const [clienteForm, setClienteForm] = useState({ nome: "", cpf: "", renach: "", contato: "", servicos: [] as string[] })
+  const [clienteForm, setClienteForm] = useState({ nome: "", cpf: "", renach: "", contato: "", servicos: [] as string[], documentos: [] as any[] })
 
   useEffect(() => {
     if (!isConfigured) {
@@ -102,6 +102,7 @@ export default function ContaPage() {
       cpf: veiculoForm.cpf,
       contato: veiculoForm.contato,
       servicos: veiculoForm.servicos,
+      documentos: veiculoForm.documentos,
     }
 
     try {
@@ -131,7 +132,7 @@ export default function ContaPage() {
     } finally {
       setVeiculoModalOpen(false)
       setEditingVeiculo(null)
-      setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", renavam: "", crv: "", cpf: "", contato: "", servicos: [] })
+      setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", renavam: "", crv: "", cpf: "", contato: "", servicos: [], documentos: [] })
     }
   }
 
@@ -264,6 +265,7 @@ export default function ContaPage() {
         telefone: clienteForm.contato,
         servicos: clienteForm.servicos,
         servicos_status: existing.servicos_status || servicosStatus,
+        documentos: clienteForm.documentos,
         updated_at: new Date().toISOString()
       }
       try {
@@ -287,6 +289,7 @@ export default function ContaPage() {
         telefone: clienteForm.contato,
         servicos: clienteForm.servicos,
         servicos_status: servicosStatus,
+        documentos: clienteForm.documentos,
         created_at: new Date().toISOString()
       }
       try {
@@ -302,25 +305,25 @@ export default function ContaPage() {
       }
     }
     setClienteModalOpen(false)
-    setClienteForm({ nome: "", cpf: "", renach: "", contato: "", servicos: [] })
+    setClienteForm({ nome: "", cpf: "", renach: "", contato: "", servicos: [], documentos: [] })
   }
 
   const openNewVeiculo = () => {
     setEditingVeiculo(null)
-    setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", renavam: "", crv: "", cpf: "", contato: "", servicos: [] })
+    setVeiculoForm({ cliente_nome: "", placa: "", modelo: "", ano: "", renavam: "", crv: "", cpf: "", contato: "", servicos: [], documentos: [] })
     setVeiculoModalOpen(true)
   }
 
   const openNewCliente = () => {
     setEditingCliente(null)
-    setClienteForm({ nome: "", cpf: "", renach: "", contato: "", servicos: [] })
+    setClienteForm({ nome: "", cpf: "", renach: "", contato: "", servicos: [], documentos: [] })
     setClienteModalOpen(true)
   }
 
   const handleEditCliente = (index: number) => {
     const c = clientes[index]
     setEditingCliente(index)
-    setClienteForm({ nome: c.nome || "", cpf: c.cpf || "", renach: c.renach || "", contato: c.telefone || "", servicos: c.servicos || [] })
+    setClienteForm({ nome: c.nome || "", cpf: c.cpf || "", renach: c.renach || "", contato: c.telefone || "", servicos: c.servicos || [], documentos: c.documentos || [] })
     setClienteModalOpen(true)
   }
 

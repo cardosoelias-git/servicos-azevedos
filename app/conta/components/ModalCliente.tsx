@@ -1,14 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Save, Check } from "lucide-react"
+import { Save, Check, Upload, FileText, Image as ImageIcon, Trash2, X, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { HABILITACAO_SERVICOS } from "@/lib/conta-constants"
 import { validarCPF } from "@/lib/validations"
+import { uploadFileWithFallback } from "@/lib/upload"
+import type { UploadedDoc } from "@/lib/upload"
 
 interface ClienteForm {
   nome: string
@@ -16,6 +18,7 @@ interface ClienteForm {
   renach: string
   contato: string
   servicos: string[]
+  documentos: UploadedDoc[]
 }
 
 interface Props {
@@ -29,6 +32,8 @@ interface Props {
 
 export default function ModalCliente({ open, onOpenChange, editing, form, onFormChange, onSave }: Props) {
   const [cpfErro, setCpfErro] = useState("")
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!open) setCpfErro("")
@@ -53,6 +58,31 @@ export default function ModalCliente({ open, onOpenChange, editing, form, onForm
     } else {
       update("servicos", [...current, id])
     }
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    const result = await uploadFileWithFallback(file, { folder: "clientes" })
+    setUploading(false)
+
+    if (result.success && result.doc) {
+      update("documentos", [...(form.documentos || []), result.doc])
+    }
+
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const handleDeleteDoc = (docId: string) => {
+    update("documentos", (form.documentos || []).filter(d => d.id !== docId))
+  }
+
+  const getFileTypeIcon = (type: string) => {
+    if (type.startsWith("image/")) return <ImageIcon className="w-4 h-4 text-blue-500" />
+    if (type === "application/pdf") return <FileText className="w-4 h-4 text-red-500" />
+    return <FileText className="w-4 h-4 text-slate-500" />
   }
 
   const cpfDigits = form.cpf.replace(/\D/g, "")
@@ -99,6 +129,33 @@ export default function ModalCliente({ open, onOpenChange, editing, form, onForm
                 )
               })}
             </div>
+          </div>
+
+          <div>
+            <Label className="text-xs font-bold text-slate-500 mb-2 block">Documentos</Label>
+            <input ref={fileInputRef} type="file" accept="image/*,.pdf" onChange={handleFileUpload} className="hidden" />
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+              className="w-full h-10 rounded-xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-orange-400 hover:text-orange-500">
+              <Upload className="w-4 h-4 mr-2" /> {uploading ? "Enviando..." : "Adicionar documento"}
+            </Button>
+            {form.documentos?.length > 0 && (
+              <div className="mt-2 space-y-1.5">
+                {form.documentos.map((doc) => (
+                  <div key={doc.id} className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
+                    {getFileTypeIcon(doc.type)}
+                    <span className="text-xs font-medium text-slate-700 flex-1 truncate">{doc.name}</span>
+                    {doc.url && !doc.url.startsWith("data:") && (
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-500">
+                        <Eye className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <button onClick={() => handleDeleteDoc(doc.id)} className="text-slate-400 hover:text-red-500">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <DialogFooter className="gap-2">
