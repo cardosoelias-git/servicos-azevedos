@@ -113,7 +113,8 @@ export default function ContaPage() {
         if (error) throw error
         toast({ title: "Sucesso", description: "Veículo atualizado no sistema!" })
       } else {
-        const { error } = await supabase.from("veiculos").insert([{ ...veiculoData, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }])
+        // Omite o ID para que o Supabase gere um UUID automaticamente
+        const { error } = await supabase.from("veiculos").insert([{ ...veiculoData }])
         if (error) throw error
         toast({ title: "Sucesso", description: "Veículo cadastrado no sistema!" })
       }
@@ -281,8 +282,7 @@ export default function ContaPage() {
       }
       setEditingCliente(null)
     } else {
-      const newCliente = {
-        id: Math.random().toString(36).substr(2, 9),
+      const clienteData = {
         nome: clienteForm.nome,
         cpf: clienteForm.cpf,
         renach: clienteForm.renach,
@@ -290,15 +290,21 @@ export default function ContaPage() {
         servicos: clienteForm.servicos,
         servicos_status: servicosStatus,
         documentos: clienteForm.documentos,
-        created_at: new Date().toISOString()
       }
+      
       try {
         if (isLocalMode) throw new Error("Local mode")
         const { supabase } = await import("@/lib/supabase")
-        const { error } = await supabase.from("clientes").insert([newCliente])
+        // Omite o ID para que o Supabase gere um UUID automaticamente
+        const { error } = await supabase.from("clientes").insert([clienteData])
         if (error) throw error
         toast({ title: "Sucesso", description: "✅ Cliente cadastrado!" })
       } catch (err) {
+        const newCliente = {
+          ...clienteData,
+          id: Math.random().toString(36).substr(2, 9),
+          created_at: new Date().toISOString()
+        }
         addStorageItem("clientes", newCliente)
         setLocalClientes(prev => [newCliente, ...prev])
         toast({ title: "Sucesso (Local)", description: "✅ Cliente cadastrado!" })
