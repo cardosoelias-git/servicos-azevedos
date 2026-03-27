@@ -14,8 +14,10 @@ import Image from "next/image"
 const DASHBOARD_LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19hemV2ZWRvcy5wbmciLCJpYXQiOjE3NzQxNDQzNDIsImV4cCI6MTgwNTY4MDM0Mn0.OsaN0CzHn_bEC-_d1_yvLABS5gjBxQ6pAoNu3JKlk5U";
 
 export default function Dashboard() {
-  const { data: servicos, loading: loadingServicos } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'geral' })
-  const { data: clientes, loading: loadingClientes } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'geral' })
+  const { data: servicosGerais } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'geral' })
+  const { data: clientesGerais, loading: loadingClientes } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'geral' })
+  const { data: servicosHabilitacao, loading: loadingServicos } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'habilitacao' })
+  const { data: clientesHabilitacao } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'habilitacao' })
   
   const [dashboardStats, setDashboardStats] = useState([
     {
@@ -57,14 +59,15 @@ export default function Dashboard() {
   useEffect(() => {
     if (!mounted || loadingServicos || loadingClientes) return
 
-    const servicosAtivos = servicos.filter((s: any) => s.status === "Em Andamento").length
-    const totalReceber = servicos.reduce((acc: number, curr: any) => acc + (parseFloat(curr.valor_total || 0) - parseFloat(curr.valor_pago || 0)), 0)
+    const hAtivas = servicosHabilitacao.filter((s: any) => s.status === "Em Andamento").length
+    const totalClientes = clientesGerais.length + clientesHabilitacao.length
+    const totalReceber = [...servicosGerais, ...servicosHabilitacao].reduce((acc: number, curr: any) => acc + (parseFloat(curr.valor_total || 0) - parseFloat(curr.valor_pago || 0)), 0)
     
     setDashboardStats([
       {
         title: "Habilitações Ativas",
-        value: servicosAtivos.toString(),
-        description: "Processos em andamento",
+        value: hAtivas.toString(),
+        description: "Processos de conta em andamento",
         icon: IdCard,
         color: "text-orange-600",
         bg: "bg-orange-50",
@@ -72,7 +75,7 @@ export default function Dashboard() {
       },
       {
         title: "Total de Clientes",
-        value: clientes.length.toString(),
+        value: totalClientes.toString(),
         description: "Clientes cadastrados",
         icon: Users,
         color: "text-blue-700",
@@ -90,10 +93,11 @@ export default function Dashboard() {
       }
     ])
 
-    if (servicos && servicos.length > 0) {
+    const allServicos = [...servicosGerais, ...servicosHabilitacao]
+    if (allServicos.length > 0) {
       // Sort by updated_at or created_at if possible, otherwise just take latest
     }
-  }, [servicos, clientes, mounted, loadingServicos, loadingClientes])
+  }, [servicosGerais, servicosHabilitacao, clientesGerais, clientesHabilitacao, mounted, loadingServicos, loadingClientes])
 
   if (!mounted) {
     return (

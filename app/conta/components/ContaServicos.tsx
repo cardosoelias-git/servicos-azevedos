@@ -3,19 +3,21 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { CheckCircle2, Clock, Wrench, UserPlus, ChevronLeft, ChevronRight, Pencil } from "lucide-react"
+import { CheckCircle2, Clock, Wrench, UserPlus, ChevronLeft, ChevronRight, Pencil, Eye, Trash2 } from "lucide-react"
 import { HABILITACAO_SERVICOS } from "@/lib/conta-constants"
 
 interface Props {
   clientes: any[]
   onNewCliente: () => void
   onEditCliente: (index: number) => void
+  onDeleteCliente: (id: string) => void
+  onViewCliente: (id: string) => void
   onToggleServicoStatus: (clienteId: string, servicoId: string) => void
 }
 
 const ITEMS_PER_PAGE = 5
 
-export default function ContaServicos({ clientes, onNewCliente, onEditCliente, onToggleServicoStatus }: Props) {
+export default function ContaServicos({ clientes, onNewCliente, onEditCliente, onDeleteCliente, onViewCliente, onToggleServicoStatus }: Props) {
   const [currentPage, setCurrentPage] = useState(1)
 
   const clientesComServicos = clientes // Mostra todos os clientes na aba Habilitação
@@ -60,10 +62,20 @@ export default function ContaServicos({ clientes, onNewCliente, onEditCliente, o
                     <p className="font-bold text-slate-900 text-sm truncate">{cliente.nome}</p>
                     <p className="text-xs text-slate-500">{cliente.cpf || cliente.telefone || "—"}</p>
                   </div>
-                  <button onClick={() => onEditCliente(originalIndex)}
-                    className="p-2 rounded-xl hover:bg-slate-100 transition-all text-slate-400 hover:text-orange-500">
-                    <Pencil className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => onViewCliente(cliente.id)}
+                      className="p-2 rounded-xl hover:bg-slate-100 transition-all text-slate-400 hover:text-blue-500">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => onEditCliente(originalIndex)}
+                      className="p-2 rounded-xl hover:bg-slate-100 transition-all text-slate-400 hover:text-orange-500">
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => onDeleteCliente(cliente.id)}
+                      className="p-2 rounded-xl hover:bg-slate-100 transition-all text-slate-400 hover:text-red-500">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   {cliente.servicos?.map((servicoId: string) => {

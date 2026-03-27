@@ -338,6 +338,25 @@ export default function ContaPage() {
     setClienteModalOpen(true)
   }
 
+  const handleDeleteCliente = async (id: string) => {
+    if (!confirm("Excluir este cliente de habilitação?")) return
+    try {
+      if (isLocalMode) throw new Error("Local mode")
+      const { supabase } = await import("@/lib/supabase")
+      const { error } = await supabase.from("clientes").delete().eq("id", id)
+      if (error) throw error
+      toast({ title: "Excluído", description: "Cliente removido do sistema." })
+    } catch (err) {
+      deleteStorageItem("clientes", id)
+      setLocalClientes(prev => prev.filter(c => c.id !== id))
+      toast({ title: "Excluído (Local)", description: "Cliente removido." })
+    }
+  }
+
+  const handleViewCliente = (id: string) => {
+    router.push(`/servicos?cliente=${id}`)
+  }
+
   const handleClearData = () => {
     if (confirm("Limpar TODOS os dados?")) {
       localStorage.removeItem("azevedo_veiculos")
@@ -444,19 +463,26 @@ export default function ContaPage() {
           <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
             {activeTab === "dashboard" && <ContaDashboard veiculos={veiculos} onNewVeiculo={openNewVeiculo} />}
             {activeTab === "veiculos" && <ContaVeiculos veiculos={veiculos} isLocalMode={isLocalMode} isSyncing={isSyncing} onNewVeiculo={openNewVeiculo} onEditVeiculo={handleEditVeiculo} onDeleteVeiculo={handleDeleteVeiculo} onOpenServico={handleOpenServico} onDeleteServico={handleDeleteServico} onSync={handleSyncVeiculos} />}
-            {activeTab === "servicos" && <ContaServicos clientes={clientes} onNewCliente={openNewCliente} onEditCliente={handleEditCliente} onToggleServicoStatus={(clienteId, servicoId) => {
-              const updatedClientes = clientes.map(c => {
-                if (c.id !== clienteId) return c
-                const currentStatus = c.servicos_status?.[servicoId] || "Pendente"
-                const newStatus = currentStatus === "Pendente" ? "Concluído" : "Pendente"
-                const newServicosStatus = { ...c.servicos_status, [servicoId]: newStatus }
-                const updated = { ...c, servicos_status: newServicosStatus }
-                updateStorageItem("clientes", c.id, updated)
-                return updated
-              })
-              setLocalClientes(updatedClientes)
-              toast({ title: "Atualizado", description: "Status do serviço alterado!" })
-            }} />}
+            {activeTab === "servicos" && <ContaServicos 
+              clientes={clientes} 
+              onNewCliente={openNewCliente} 
+              onEditCliente={handleEditCliente} 
+              onDeleteCliente={handleDeleteCliente}
+              onViewCliente={handleViewCliente}
+              onToggleServicoStatus={(clienteId, servicoId) => {
+                const updatedClientes = clientes.map(c => {
+                  if (c.id !== clienteId) return c
+                  const currentStatus = c.servicos_status?.[servicoId] || "Pendente"
+                  const newStatus = currentStatus === "Pendente" ? "Concluído" : "Pendente"
+                  const newServicosStatus = { ...c.servicos_status, [servicoId]: newStatus }
+                  const updated = { ...c, servicos_status: newServicosStatus }
+                  updateStorageItem("clientes", c.id, updated)
+                  return updated
+                })
+                setLocalClientes(updatedClientes)
+                toast({ title: "Atualizado", description: "Status do serviço alterado!" })
+              }} 
+            />}
             {activeTab === "relatorios" && <ContaRelatorios veiculos={veiculos} />}
             {activeTab === "config" && <ContaConfig veiculos={veiculos} onClearData={handleClearData} />}
           </motion.div>
