@@ -66,9 +66,12 @@ export default function ContaPage() {
       setLoading(false)
     } else {
       setIsLocalMode(false)
-      if (!veiculosLoading) setLoading(false)
+      // Aguarda ambos os carregamentos finalizarem
+      if (!veiculosLoading && !clientesLoading) {
+        setLoading(false)
+      }
     }
-  }, [realtimeVeiculos, veiculosLoading])
+  }, [realtimeVeiculos, veiculosLoading, realtimeClientes, clientesLoading])
 
   const handleLogin = () => {
     if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
