@@ -15,18 +15,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("conta_logged_in") === "true";
+    const loggedIn = localStorage.getItem("azevedo_admin_logged_in") === "true";
     setIsLoggedIn(loggedIn);
     setMounted(true);
   }, []);
 
   const login = () => {
-    localStorage.setItem("conta_logged_in", "true");
+    localStorage.setItem("azevedo_admin_logged_in", "true");
     setIsLoggedIn(true);
   };
 
   const logout = () => {
-    localStorage.removeItem("conta_logged_in");
+    localStorage.removeItem("azevedo_admin_logged_in");
     setIsLoggedIn(false);
   };
 

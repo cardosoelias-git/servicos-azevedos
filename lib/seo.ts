@@ -54,10 +54,6 @@ export const navigationLinks = [
 ]
 
 export const servicesSEOMetadata = {
-  habilitacao: {
-    title: 'Habilitação de Veículos | Serviços Azevedo',
-    description: 'Processo completo de habilitação de veículos. Acompanhe todas as etapas desde aula teórica até a emissão da CNH.',
-  },
   renovacao: {
     title: 'Renovação de CNH | Serviços Azevedo',
     description: 'Renovação de Carteira Nacional de Habilitação. Processo rápido e descomplicado.',
@@ -70,4 +66,8 @@ export const servicesSEOMetadata = {
     title: 'Mudança de Categoria | Serviços Azevedo',
     description: 'Mude de categoria na sua CNH. Atualize sua habilitação para conduzir novos veículos.',
   },
+  veiculos: {
+    title: "Serviços e Documentação de Veículos",
+    description: "Gestão completa de transferência, emplacamento e licenciamento.",
+  }
 }

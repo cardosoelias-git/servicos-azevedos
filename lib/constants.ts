@@ -1,24 +1,28 @@
 export const TIPOS_SERVICO = [
-  "Habilitação",
-  "Renovação",
-  "Adição de Categoria",
-  "Mudança de Categoria"
+  "Transferência",
+  "Emplacamento",
+  "Licenciamento",
+  "Registro e Documentação",
+  "Consultas Gerais"
 ] as const;
 
 export type TipoServico = typeof TIPOS_SERVICO[number];
 
 export const ETAPAS_POR_TIPO: Record<TipoServico, string[]> = {
-  "Habilitação": [
-    "Aula Teórica", "Certificado", "Laudo", "Digitalização", "Médicos", "Prova de Legislação", "Aula Prática", "Prova Prática", "Gráfica"
+  "Transferência": [
+    "Vistoria", "Digitalização", "Taxas", "Emissão CRV/CRLV"
   ],
-  "Renovação": [
-    "Laudo", "Digitalização", "Médicos", "Gráfica"
+  "Emplacamento": [
+    "Vistoria", "Confecção de Placas", "Instalação", "Atualização Sistema"
   ],
-  "Adição de Categoria": [
-    "Laudo", "Digitalização", "Aula Teórica", "Certificado", "Prova de Legislação", "Aula Prática", "Prova Prática"
+  "Licenciamento": [
+    "Consulta de Débitos", "Pagamento de Taxas", "Emissão CRLV-e"
   ],
-  "Mudança de Categoria": [
-    "Toxicológico", "Laudo", "Médicos", "Aula Teórica", "Certificado", "Prova de Legislação", "Aula Prática", "Prova Prática"
+  "Registro e Documentação": [
+    "Análise de Documentos", "Entrada no Sistema", "Acompanhamento", "Conclusão"
+  ],
+  "Consultas Gerais": [
+    "Pesquisa de Placa", "Histórico de Veículo", "Levantamento de Multas"
   ]
 };
 

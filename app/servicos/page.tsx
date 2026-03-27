@@ -49,9 +49,9 @@ import { useRealtime } from "@/hooks/useRealtime"
 import { isConfigured } from "@/lib/supabase"
 
 const mockServicos = [
-  { id: "1", cliente_id: "1", cliente_nome: "João Silva", tipo_servico: "Habilitação", etapas_completas: 2, total_etapas: 9, valor_pago: 500, valor_receber: 1500, status: "Em Andamento" },
-  { id: "2", cliente_id: "2", cliente_nome: "Maria Oliveira", tipo_servico: "Renovação", etapas_completas: 4, total_etapas: 4, valor_pago: 350, valor_receber: 0, status: "Concluído" },
-  { id: "3", cliente_id: "3", cliente_nome: "Pedro Santos", tipo_servico: "Adição de Categoria", etapas_completas: 1, total_etapas: 7, valor_pago: 200, valor_receber: 800, status: "Em Andamento" },
+  { id: "1", cliente_id: "1", cliente_nome: "João Silva", tipo_servico: "Transferência", etapas_completas: 2, total_etapas: 4, valor_pago: 500, valor_receber: 1500, status: "Em Andamento" },
+  { id: "2", cliente_id: "2", cliente_nome: "Maria Oliveira", tipo_servico: "Emplacamento", etapas_completas: 4, total_etapas: 4, valor_pago: 350, valor_receber: 0, status: "Concluído" },
+  { id: "3", cliente_id: "3", cliente_nome: "Pedro Santos", tipo_servico: "Licenciamento", etapas_completas: 1, total_etapas: 3, valor_pago: 200, valor_receber: 800, status: "Em Andamento" },
 ]
 
 export default function ServicosPage() {
@@ -435,14 +435,14 @@ export default function ServicosPage() {
     <div className="space-y-3.5 sm:space-y-5 lg:space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Habilitação</h1>
-          <p className="text-slate-500 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o progresso de cada processo de habilitação.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Serviços</h1>
+          <p className="text-slate-500 mt-0.5 font-medium text-xs sm:text-sm">Acompanhe o progresso de cada processo de documentação veicular.</p>
         </div>
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button variant="premium" className="w-full sm:w-auto font-semibold px-4 py-2.5 sm:px-6 sm:py-5 rounded-xl transition-all duration-300">
-              <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Nova Habilitação</span>
+              <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> <span className="text-xs sm:text-sm">Novo Serviço</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px] p-0 border border-slate-100 rounded-3xl overflow-hidden shadow-xl bg-white">
