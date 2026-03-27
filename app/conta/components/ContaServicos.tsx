@@ -18,7 +18,7 @@ const ITEMS_PER_PAGE = 5
 export default function ContaServicos({ clientes, onNewCliente, onEditCliente, onToggleServicoStatus }: Props) {
   const [currentPage, setCurrentPage] = useState(1)
 
-  const clientesComServicos = clientes.filter(c => c.servicos?.length > 0)
+  const clientesComServicos = clientes // Mostra todos os clientes na aba Habilitação
   const totalPages = Math.ceil(clientesComServicos.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const paginatedClientes = clientesComServicos.slice(startIndex, startIndex + ITEMS_PER_PAGE)
