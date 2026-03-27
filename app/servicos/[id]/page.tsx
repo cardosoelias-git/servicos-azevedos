@@ -18,6 +18,8 @@ import { ETAPAS_POR_TIPO } from "@/lib/constants"
 import { useRef } from "react"
 import { useRealtimeItem } from "@/hooks/useRealtimeItem"
 import { isConfigured } from "@/lib/supabase"
+import { uploadFileWithFallback, getFileIcon } from "@/lib/upload"
+import type { UploadedDoc } from "@/lib/upload"
 
 export default function ServicoDetailsPage() {
   const params = useParams()
@@ -281,53 +283,15 @@ export default function ServicoDetailsPage() {
     const file = event.target.files?.[0]
     if (!file) return
 
-    try {
-      const { supabase } = await import("@/lib/supabase")
-      
-      console.log("📤 Iniciando upload:", file.name)
-      console.log("📤 Tipo:", file.type)
-      console.log("📤 Tamanho:", file.size)
-      
-      const fileName = `${Date.now()}-${file.name}`
-      const filePath = `uploads/${fileName}`
-      
-      const { data, error } = await supabase.storage
-        .from("documentos")
-        .upload(filePath, file)
-      
-      console.log("📤 Resultado upload:", { data, error })
-      
-      if (error) {
-        console.error("❌ Erro upload:", error)
-        console.error("❌ Mensagem:", error.message)
-        toast({ variant: "destructive", title: "Erro", description: error.message })
-        return
-      }
-      
-      console.log("📤 Upload OK, obtendo URL...")
-      
-      const { data: urlData } = supabase.storage
-        .from("documentos")
-        .getPublicUrl(filePath)
-      
-      console.log("📤 URL gerada:", urlData.publicUrl)
-      
-      const novoDoc = {
-        id: Date.now().toString(),
-        name: file.name,
-        type: file.type,
-        url: urlData.publicUrl,
-        uploaded_at: new Date().toISOString()
-      }
+    const result = await uploadFileWithFallback(file)
 
-      setPendingUpload(novoDoc)
-      setPreviewDoc(novoDoc)
-      
-    } catch (err) {
-      console.error("❌ Erro geral:", err)
-      toast({ variant: "destructive", title: "Erro", description: "Falha no upload" })
+    if (result.success && result.doc) {
+      setPendingUpload(result.doc)
+      setPreviewDoc(result.doc)
+    } else {
+      toast({ variant: "destructive", title: "Erro", description: result.error || "Falha no upload" })
     }
-    
+
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
