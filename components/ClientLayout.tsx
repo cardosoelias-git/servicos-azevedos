@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { LayoutDashboard, Users, IdCard, CreditCard, Settings, User, Menu, X, BadgeCheck } from 'lucide-react';
+import { LayoutDashboard, Users, Car, CreditCard, Settings, User, Menu, X, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -19,7 +19,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Serviços', href: '/servicos', icon: BadgeCheck },
+  { name: 'Serviços', href: '/servicos', icon: Car },
   { name: 'Clientes', href: '/clientes', icon: Users },
   { name: 'Financeiro', href: '/financeiro', icon: CreditCard },
 ];

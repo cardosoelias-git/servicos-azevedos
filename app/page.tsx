@@ -39,7 +39,7 @@ export default function Dashboard() {
     {
       title: "Valores a Receber",
       value: "R$ 0,00",
-      description: "De habilitações ativas",
+      description: "De serviços ativos",
       icon: DollarSign,
       color: "text-emerald-700",
       bg: "bg-emerald-50",
@@ -133,7 +133,7 @@ export default function Dashboard() {
           transition={{ delay: 0.05, duration: 0.2 }}
           className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium max-w-2xl"
         >
-          Sua central de <span className="text-slate-900 font-bold">Gestão Inteligente</span>. Acompanhe suas habilitações e clientes com precisão.
+          Sua central de <span className="text-slate-900 font-bold">Gestão Inteligente</span>. Acompanhe seus serviços e clientes com precisão.
         </motion.p>
       </div>
 

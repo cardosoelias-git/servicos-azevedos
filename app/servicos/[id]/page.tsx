@@ -70,7 +70,7 @@ export default function ServicoDetailsPage() {
     
     const etapasSalvas = servicoData.etapas || []
     const tipo = servicoData.tipo_servico as keyof typeof ETAPAS_POR_TIPO
-    const nomesEtapas = ETAPAS_POR_TIPO[tipo] || ETAPAS_POR_TIPO["Habilitação"]
+    const nomesEtapas = ETAPAS_POR_TIPO[tipo] || ETAPAS_POR_TIPO["Transferência"]
     
     const etapasFormatadas = nomesEtapas.map((nome: any, index: any) => {
       const etapaSalva = etapasSalvas[index]
@@ -533,7 +533,7 @@ export default function ServicoDetailsPage() {
                 <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
                   <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                   <p className="text-sm font-bold text-slate-500">Nenhum documento.</p>
-                  <p className="text-xs text-slate-400 mt-1">Envie FOTO, RENACH, etc.</p>
+                  <p className="text-xs text-slate-400 mt-1">Envie Vistoria, CRLV, CNH, etc.</p>
                 </div>
               ) : (
                 servico.documentos.map((doc: any) => (
