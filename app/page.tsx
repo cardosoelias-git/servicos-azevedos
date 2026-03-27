@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, DollarSign, Users, User, ArrowUpRight, ArrowDownRight, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, Plus, BadgeCheck } from "lucide-react"
+import { Car, DollarSign, Users, User, ArrowUpRight, ArrowDownRight, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, Plus, BadgeCheck, IdCard } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect, useMemo } from "react"
@@ -157,27 +157,27 @@ export default function Dashboard() {
       >
         {/* Card Serviços H - Habilitação */}
 
-        {/* Card Serviços V - Veículos */}
-        <Link href="/servicos?tipo=veiculos" className="group relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition duration-500"></div>
+        {/* Card Serviços H - Habilitação */}
+        <Link href="/servicos" className="group relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition duration-500"></div>
           <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-100 p-5 sm:p-6 h-full min-h-[140px] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300">
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div className="flex items-start justify-between">
-                <div className="bg-emerald-50 p-2.5 sm:p-3 rounded-xl transition-colors group-hover:bg-emerald-500 text-emerald-600 group-hover:text-white">
-                  <Truck className="w-6 h-6 sm:w-8 sm:h-8" />
+                <div className="bg-orange-50 p-2.5 sm:p-3 rounded-xl transition-colors group-hover:bg-orange-500 text-orange-600 group-hover:text-white">
+                  <IdCard className="w-6 h-6 sm:w-8 sm:h-8" />
                 </div>
-                <div className="flex items-center gap-1.5 bg-emerald-50/50 px-2.5 py-1 rounded-full border border-emerald-100/50">
-                  <Award className="w-3.5 h-3.5 text-emerald-500" />
-                  <span className="text-emerald-700 text-[10px] font-bold">Novo</span>
+                <div className="flex items-center gap-1.5 bg-orange-50/50 px-2.5 py-1 rounded-full border border-orange-100/50">
+                  <Award className="w-3.5 h-3.5 text-orange-500" />
+                  <span className="text-orange-700 text-[10px] font-bold">Gestão</span>
                 </div>
               </div>
               
               <div className="mt-4 sm:mt-5">
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight group-hover:text-emerald-600 transition-colors">Veículos</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight group-hover:text-orange-600 transition-colors">Habilitação</h3>
                 <p className="text-slate-500 text-xs font-medium mt-1 leading-relaxed">
-                  Transferência, Licenciamento e Vistoria
+                  Gestão completa de processos e condutores
                 </p>
-                <div className="flex items-center gap-1.5 mt-3 text-emerald-600 text-xs font-semibold">
+                <div className="flex items-center gap-1.5 mt-3 text-orange-600 text-xs font-semibold">
                   <span>Acessar painel</span>
                   <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>

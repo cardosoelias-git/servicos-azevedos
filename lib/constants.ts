@@ -22,7 +22,7 @@ export const ETAPAS_POR_TIPO: Record<TipoServico, string[]> = {
     "Análise de Documentos", "Entrada no Sistema", "Acompanhamento", "Conclusão"
   ],
   "Consultas Gerais": [
-    "Pesquisa de Placa", "Histórico de Veículo", "Levantamento de Multas"
+    "Pesquisa de CNH", "Histórico de Habilitação", "Levantamento de Multas"
   ]
 };
 
