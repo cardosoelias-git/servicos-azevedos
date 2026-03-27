@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, DollarSign, Users, User, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertCircle, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, IdCard, Plus } from "lucide-react"
+import { Car, DollarSign, Users, User, ArrowUpRight, ArrowDownRight, TrendingUp, FileText, Shield, Truck, Star, Award, FileCheck, IdCard, Plus } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect, useMemo } from "react"
@@ -19,7 +19,7 @@ export default function Dashboard() {
   
   const [dashboardStats, setDashboardStats] = useState([
     {
-      title: "Serviços Ativos",
+      title: "Habilitações Ativas",
       value: "0",
       description: "Processos em andamento",
       icon: IdCard,
@@ -39,7 +39,7 @@ export default function Dashboard() {
     {
       title: "Valores a Receber",
       value: "R$ 0,00",
-      description: "De serviços ativos",
+      description: "De habilitações ativas",
       icon: DollarSign,
       color: "text-emerald-700",
       bg: "bg-emerald-50",
@@ -47,7 +47,6 @@ export default function Dashboard() {
     }
   ])
 
-  const [activities, setActivities] = useState<any[]>([])
   const [mounted, setMounted] = useState(false)
   
   useEffect(() => {
@@ -63,7 +62,7 @@ export default function Dashboard() {
     
     setDashboardStats([
       {
-        title: "Serviços Ativos",
+        title: "Habilitações Ativas",
         value: servicosAtivos.toString(),
         description: "Processos em andamento",
         icon: IdCard,
@@ -83,7 +82,7 @@ export default function Dashboard() {
       {
         title: "Valores a Receber",
         value: `R$ ${totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        description: "De serviços ativos",
+        description: "De habilitações ativas",
         icon: DollarSign,
         color: "text-emerald-700",
         bg: "bg-emerald-50",
@@ -93,24 +92,6 @@ export default function Dashboard() {
 
     if (servicos && servicos.length > 0) {
       // Sort by updated_at or created_at if possible, otherwise just take latest
-      const sortedServicos = [...servicos].sort((a: any, b: any) => {
-        const dateA = new Date(a.updated_at || a.created_at).getTime()
-        const dateB = new Date(b.updated_at || b.created_at).getTime()
-        return dateB - dateA
-      })
-      
-      const recent = sortedServicos.slice(0, 5).map((s: any) => ({
-        id: s.id,
-        user: s.cliente_nome || "Cliente",
-        action: `Processo de ${s.tipo_servico}`,
-        time: s.updated_at || s.created_at ? new Date(s.updated_at || s.created_at).toLocaleDateString('pt-BR') : "Recentemente",
-        status: s.status === "Concluído" ? "success" : s.status === "Cancelado" ? "warning" : "info"
-      }))
-      setActivities(recent)
-    } else {
-      setActivities([
-        { id: 'welcome', user: "Bem-vindo", action: "Comece adicionando clientes e serviços", time: "Hoje", status: "info" },
-      ])
     }
   }, [servicos, clientes, mounted, loadingServicos, loadingClientes])
 
@@ -150,7 +131,7 @@ export default function Dashboard() {
           transition={{ delay: 0.05, duration: 0.2 }}
           className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium max-w-2xl"
         >
-          Sua central de <span className="text-slate-900 font-bold">Gestão Inteligente</span>. Acompanhe seus serviços e clientes com precisão.
+          Sua central de <span className="text-slate-900 font-bold">Gestão Inteligente</span>. Acompanhe suas habilitações e clientes com precisão.
         </motion.p>
       </div>
 
@@ -206,7 +187,7 @@ export default function Dashboard() {
               </div>
               
               <div className="mt-4 sm:mt-5">
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight group-hover:text-emerald-600 transition-colors">Serviços V</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight group-hover:text-emerald-600 transition-colors">Veículos</h3>
                 <p className="text-slate-500 text-xs font-medium mt-1 leading-relaxed">
                   Transferência, Licenciamento e Vistoria
                 </p>
@@ -258,43 +239,6 @@ export default function Dashboard() {
           transition={{ delay: 0.2 }}
           className="xl:col-span-2 space-y-3 sm:space-y-4 order-2 xl:order-1"
         >
-          <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Atividades Recentes</h2>
-            <Link href="/servicos" className="text-[10px] sm:text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors flex items-center gap-1">
-              Ver tudo <ArrowUpRight className="w-3 h-3" />
-            </Link>
-          </div>
-          
-          <div className="grid gap-2 sm:gap-3">
-            {activities.map((activity, index) => (
-              <motion.div 
-                key={activity.id}
-                initial={{ opacity: 0, x: -5 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.25 + index * 0.05 }}
-                className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 hover:shadow-sm transition-all duration-200 group"
-              >
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300",
-                  activity.status === 'success' ? 'bg-emerald-50 text-emerald-500 group-hover:bg-emerald-100/50' : 
-                  activity.status === 'warning' ? 'bg-amber-50 text-amber-500 group-hover:bg-amber-100/50' : 
-                  'bg-orange-50 text-orange-500 group-hover:bg-orange-100/50'
-                )}>
-                  {activity.status === 'success' ? <CheckCircle2 className="w-5 h-5" /> : 
-                   activity.status === 'warning' ? <AlertCircle className="w-5 h-5" /> : 
-                   <Clock className="w-5 h-5" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-slate-800 text-sm truncate">{activity.user}</h4>
-                  <p className="text-xs text-slate-500 truncate">{activity.action}</p>
-                </div>
-                <div className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2.5 py-1 rounded-md shrink-0 hidden xs:block">
-                  {activity.time}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -324,7 +268,7 @@ export default function Dashboard() {
           <div className="grid gap-3">
             <Button asChild variant="premium" className="h-auto p-0 border-none shadow-none hover:shadow-none hover:scale-100 ring-0 focus-visible:ring-0 justify-between overflow-hidden">
               <Link href="/servicos" className="flex items-center justify-between w-full p-4 px-5 rounded-xl">
-                <span className="text-sm font-bold uppercase tracking-wider text-white">Novo Serviço</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-white">Nova Habilitação</span>
                 <div className="bg-white/20 p-2 rounded-full transition-colors shadow-sm shrink-0 ml-4">
                   <IdCard className="w-4 h-4 text-white shadow-glow" />
                 </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase, isConfigured } from '@/lib/supabase';
-import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+
+const STORAGE_EVENT_PREFIX = "azevedo_storage_"
 
 export function useRealtime<T extends { id: string | number }>(
   table: string,
@@ -11,9 +12,45 @@ export function useRealtime<T extends { id: string | number }>(
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Sincronização entre páginas via evento customizado (mesma aba)
+    const handleCustomEvent = (e: Event) => {
+      const customEvent = e as CustomEvent
+      if (customEvent.detail) {
+        setData(customEvent.detail);
+      }
+    };
+
+    // Sincronização entre abas via StorageEvent
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === `azevedo_${table}` && e.newValue) {
+        try {
+          setData(JSON.parse(e.newValue));
+        } catch (err) {
+          console.error(`Erro ao sincronizar aba para ${table}:`, err);
+        }
+      }
+    };
+
+    window.addEventListener(STORAGE_EVENT_PREFIX + table, handleCustomEvent);
+    window.addEventListener('storage', handleStorageChange);
+
     if (!isConfigured) {
+      // Carregar dados do localStorage
+      if (typeof window !== "undefined") {
+        const localData = localStorage.getItem(`azevedo_${table}`);
+        if (localData) {
+          try {
+            setData(JSON.parse(localData));
+          } catch (err) {
+            console.error(`Erro ao carregar dados locais para ${table}:`, err);
+          }
+        }
+      }
       setLoading(false);
-      return;
+      return () => {
+        window.removeEventListener(STORAGE_EVENT_PREFIX + table, handleCustomEvent);
+        window.removeEventListener('storage', handleStorageChange);
+      };
     }
 
     // 1. Fetch inicial
@@ -60,21 +97,9 @@ export function useRealtime<T extends { id: string | number }>(
       )
       .subscribe();
 
-    // 3. Sincronização entre abas em modo Local (localStorage)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `azevedo_${table}` && e.newValue) {
-        try {
-          setData(JSON.parse(e.newValue));
-        } catch (err) {
-          console.error(`Erro ao sincronizar aba para ${table}:`, err);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener(STORAGE_EVENT_PREFIX + table, handleCustomEvent);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [table]);

@@ -214,7 +214,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <div className="absolute bottom-[10%] left-[20%] w-[35%] h-[35%] bg-emerald-100/20 rounded-full blur-[110px] animate-pulse" style={{ animationDuration: '10s' }}></div>
       </div>
 
-      {!isLoggedIn && <HeaderContent pathname={pathname} />}
+      <HeaderContent pathname={pathname} />
 
       <main className="flex-1 w-full px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-5 pb-20 lg:pb-5 relative">
         <AnimatePresence mode="wait">
@@ -231,33 +231,31 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </AnimatePresence>
       </main>
 
-      {!isLoggedIn && (
-        <footer className="hidden lg:block border-t border-slate-200 bg-white py-4 sm:py-6 transition-colors duration-300">
-          <div className="w-full px-4 md:px-6">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="relative w-16 h-16 sm:w-24 sm:h-24 drop-shadow-2xl transition-transform duration-300 hover:scale-105">
-                  <Image 
-                    src={FOOTER_LOGO_URL}
-                    alt="Azevedos Logo"
-                    fill
-                    className="object-contain filter brightness-110 contrast-110 transition-all"
-                  />
-                </div>
-                <span className="font-black text-sm sm:text-base text-slate-900">SERVICOS <span className="text-orange-500">AZEVEDO</span></span>
+      <footer className="hidden lg:block border-t border-slate-200 bg-white py-4 sm:py-6 transition-colors duration-300">
+        <div className="w-full px-4 md:px-6">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="relative w-16 h-16 sm:w-24 sm:h-24 drop-shadow-2xl transition-transform duration-300 hover:scale-105">
+                <Image 
+                  src={FOOTER_LOGO_URL}
+                  alt="Azevedos Logo"
+                  fill
+                  className="object-contain filter brightness-110 contrast-110 transition-all"
+                />
               </div>
-              <div className="text-xs text-slate-500">
-                &copy; {new Date().getFullYear()} Todos os direitos reservados.
-              </div>
-              <div className="flex gap-4 sm:gap-6 text-xs text-slate-400">
-                <Link href="#" className="hover:text-orange-500 transition-colors font-medium">Privacidade</Link>
-                <Link href="#" className="hover:text-orange-500 transition-colors font-medium">Termos</Link>
-                <Link href="#" className="hover:text-orange-500 transition-colors font-medium">Suporte</Link>
-              </div>
+              <span className="font-black text-sm sm:text-base text-slate-900">SERVICOS <span className="text-orange-500">AZEVEDO</span></span>
+            </div>
+            <div className="text-xs text-slate-500">
+              &copy; {new Date().getFullYear()} Todos os direitos reservados.
+            </div>
+            <div className="flex gap-4 sm:gap-6 text-xs text-slate-400">
+              <Link href="#" className="hover:text-orange-500 transition-colors font-medium">Privacidade</Link>
+              <Link href="#" className="hover:text-orange-500 transition-colors font-medium">Termos</Link>
+              <Link href="#" className="hover:text-orange-500 transition-colors font-medium">Suporte</Link>
             </div>
           </div>
-        </footer>
-      )}
+        </div>
+      </footer>
 
 
 

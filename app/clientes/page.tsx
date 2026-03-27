@@ -287,7 +287,7 @@ export default function ClientesPage() {
         // Delete related transactions
         if (clientName) {
           const transacoes = getStorageData("transacoes", [])
-          const updatedTransacoes = transacoes.filter((t: any) => t.cliente === clientName)
+          const updatedTransacoes = transacoes.filter((t: any) => (t.cliente_nome || t.cliente) !== clientName)
           setStorageData("transacoes", updatedTransacoes)
         }
       }

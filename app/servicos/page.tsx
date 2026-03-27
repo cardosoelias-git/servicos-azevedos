@@ -240,14 +240,16 @@ export default function ServicosPage() {
         created_at: new Date().toISOString()
       }
       
-      const updatedData = addStorageItem("servicos", newServico)
+      addStorageItem("servicos", newServico)
+      setLocalServicos(prev => [newServico, ...prev])
       
       if (vPago > 0) {
         addStorageItem("transacoes", {
-          id: Math.random().toString(),
+          id: Math.random().toString(36).substr(2, 9),
           data: new Date().toISOString(),
-          cliente: newServico.cliente_nome,
-          servico: tipoServico,
+          cliente_nome: newServico.cliente_nome,
+          servico_nome: tipoServico,
+          servico_id: newServico.id,
           tipo: "Entrada",
           valor: vPago,
           status: "Pago"
@@ -255,10 +257,11 @@ export default function ServicosPage() {
       }
       if (vTotal - vPago > 0) {
         addStorageItem("transacoes", {
-          id: Math.random().toString(),
+          id: Math.random().toString(36).substr(2, 9),
           data: new Date().toISOString(),
-          cliente: newServico.cliente_nome,
-          servico: tipoServico,
+          cliente_nome: newServico.cliente_nome,
+          servico_nome: tipoServico,
+          servico_id: newServico.id,
           tipo: "A Receber",
           valor: vTotal - vPago,
           status: "Pendente"
@@ -287,8 +290,8 @@ export default function ServicosPage() {
       // Also cascade delete related transactions from Supabase
       if (clientName && serviceType) {
         await supabase.from("transacoes").delete()
-          .eq("cliente", clientName)
-          .eq("servico", serviceType)
+          .eq("cliente_nome", clientName)
+          .eq("servico_nome", serviceType)
       }
 
       toast({ title: "Sucesso", description: "✅ Serviço excluído com sucesso!" })
@@ -305,7 +308,7 @@ export default function ServicosPage() {
         if (clientName && serviceType) {
           const transacoes = getStorageData("transacoes", [])
           const updatedTransacoes = transacoes.filter((t: any) => 
-            !(t.cliente === clientName && t.servico === serviceType)
+            !((t.cliente_nome || t.cliente) === clientName && (t.servico_nome || t.servico) === serviceType)
           )
           setStorageData("transacoes", updatedTransacoes)
         }

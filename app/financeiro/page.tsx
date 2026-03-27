@@ -33,14 +33,6 @@ import { useRouter } from "next/navigation"
 import { useRealtime } from "@/hooks/useRealtime"
 import { isConfigured } from "@/lib/supabase"
 
-const mockTransacoes = [
-  { id: "1", data: "2023-10-25", cliente: "João Silva", servico: "Habilitação", tipo: "Entrada", valor: 500, status: "Pago" },
-  { id: "2", data: "2023-10-26", cliente: "Maria Oliveira", servico: "Renovação", tipo: "Entrada", valor: 350, status: "Pago" },
-  { id: "3", data: "2023-10-27", cliente: "Pedro Santos", servico: "Adição de Categoria", tipo: "A Receber", valor: 800, status: "Pendente" },
-  { id: "4", data: "2023-10-28", cliente: "Ana Costa", servico: "Mudança de Categoria", tipo: "Entrada", valor: 200, status: "Pago" },
-  { id: "5", data: "2023-10-29", cliente: "Carlos Souza", servico: "Habilitação", tipo: "A Receber", valor: 1000, status: "Pendente" },
-]
-
 export default function FinanceiroPage() {
   const { data: realtimeTransacoes, loading: realtimeLoading } = useRealtime<any>("transacoes")
   const { data: realtimeServicos, loading: realtimeServicosLoading } = useRealtime<any>("servicos")
@@ -68,7 +60,7 @@ export default function FinanceiroPage() {
 
   useEffect(() => {
     if (!isConfigured) {
-      const localData = getStorageData("transacoes", mockTransacoes)
+      const localData = getStorageData("transacoes", [])
       localData.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime())
       setLocalTransacoes(localData)
       
@@ -85,9 +77,74 @@ export default function FinanceiroPage() {
     }
   }, [realtimeTransacoes, realtimeLoading, realtimeServicos, realtimeServicosLoading])
 
+  // Sincronizar status das transações com os serviços e limpar transações inválidas
+  useEffect(() => {
+    if (loading) return
+
+    const syncAndClean = () => {
+      const currentTransacoes = isLocalMode ? localTransacoes : realtimeTransacoes
+      if (currentTransacoes.length === 0) return
+
+      let updated = false
+      
+      // Filtrar transações inválidas (sem cliente ou serviço)
+      let validTransacoes = currentTransacoes.filter((t: any) => {
+        const hasCliente = (t.cliente_nome || t.cliente) && (t.cliente_nome || t.cliente).trim() !== ""
+        const hasServico = (t.servico_nome || t.servico) && (t.servico_nome || t.servico).trim() !== ""
+        return hasCliente && hasServico
+      })
+
+      if (validTransacoes.length !== currentTransacoes.length) {
+        updated = true
+      }
+
+      // Sincronizar status com serviços
+      if (servicos.length > 0) {
+        validTransacoes = validTransacoes.map((t: any) => {
+          const matchedServico = servicos.find((s: any) => 
+            (s.id === t.servico_id) || 
+            (s.cliente_nome === (t.cliente_nome || t.cliente) && s.tipo_servico === (t.servico_nome || t.servico))
+          )
+
+          if (!matchedServico) return t
+
+          // Transação de "A Receber" - verificar se serviço foi concluído ou saldo zerado
+          if (t.tipo === "A Receber") {
+            const valorReceber = parseFloat(matchedServico.valor_receber || 0)
+            const servicoConcluido = matchedServico.status === "Concluído"
+            
+            if ((valorReceber === 0 || servicoConcluido) && t.status !== "Pago") {
+              updated = true
+              return { ...t, status: "Pago" }
+            }
+          }
+
+          // Transação de "Entrada" - garantir que status seja "Pago"
+          if (t.tipo === "Entrada" && t.status !== "Pago") {
+            updated = true
+            return { ...t, status: "Pago" }
+          }
+
+          return t
+        })
+      }
+
+      if (updated) {
+        if (isLocalMode) {
+          setLocalTransacoes(validTransacoes)
+          if (typeof window !== "undefined") {
+            localStorage.setItem("azevedo_transacoes", JSON.stringify(validTransacoes))
+          }
+        }
+      }
+    }
+
+    syncAndClean()
+  }, [servicos, loading])
+
   const fetchTransacoes = async () => {
     if (!isConfigured) {
-      const localData = getStorageData("transacoes", mockTransacoes)
+      const localData = getStorageData("transacoes", [])
       setLocalTransacoes(localData)
       const localServicosData = getStorageData("servicos", [])
       setLocalServicos(localServicosData)
@@ -141,26 +198,9 @@ export default function FinanceiroPage() {
     return matchesSearch && matchesFilter
   })
 
-  // Improved calculation logic:
-  // totalRecebido: Sum of all valor_pago from the services table (canonical source)
-  const totalRecebidoFromServicos = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_pago || 0)), 0)
-  
-  // totalRecebido manual: Sum of all manual "Entrada" transactions without a servico_id
-  const manualEntradas = transacoes
-    .filter(t => t.tipo === "Entrada" && t.status === "Pago" && !t.servico_id)
-    .reduce((acc, curr) => acc + (parseFloat(curr.valor || 0)), 0)
-
-  const totalRecebido = totalRecebidoFromServicos + manualEntradas
-
-  // totalReceber: Sum of actual remaining balances from the services table
-  const totalReceberFromServicos = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_receber || 0)), 0)
-  
-  // Fallback for totalReceber if there are manual "A Receber" entries in transacoes (not linked to servicos)
-  const manualAReceber = transacoes
-    .filter(t => t.tipo === "A Receber" && !t.servico_id)
-    .reduce((acc, curr) => acc + (parseFloat(curr.valor || 0)), 0)
-
-  const totalReceber = totalReceberFromServicos + manualAReceber
+  // Cálculo de valores financeiros - usar serviços como fonte principal
+  const totalRecebido = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_pago || 0)), 0)
+  const totalReceber = servicos.reduce((acc, curr) => acc + (parseFloat(curr.valor_receber || 0)), 0)
 
   const handleAdicionarTransacao = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -185,8 +225,11 @@ export default function FinanceiroPage() {
       status: novoStatus
     }
 
-    const updatedData = addStorageItem("transacoes", novaTransacao)
+    addStorageItem("transacoes", novaTransacao)
     
+    // Atualizar estado local imediatamente
+    setLocalTransacoes(prev => [novaTransacao, ...prev])
+
     // Sync with Supabase
     try {
       const { supabase } = await import("@/lib/supabase")

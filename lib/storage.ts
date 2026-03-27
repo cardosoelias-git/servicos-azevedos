@@ -1,3 +1,5 @@
+const STORAGE_EVENT_PREFIX = "azevedo_storage_"
+
 export const getStorageData = (key: string, initialData: any[]) => {
   if (typeof window === "undefined") return initialData;
   const data = localStorage.getItem(`azevedo_${key}`);
@@ -9,14 +11,20 @@ export const getStorageData = (key: string, initialData: any[]) => {
     }
   }
   
-  // Initialize with initialData if empty
   localStorage.setItem(`azevedo_${key}`, JSON.stringify(initialData));
   return initialData;
 };
 
 export const setStorageData = (key: string, data: any[]) => {
   if (typeof window === "undefined") return;
-  localStorage.setItem(`azevedo_${key}`, JSON.stringify(data));
+  const storageKey = `azevedo_${key}`
+  localStorage.setItem(storageKey, JSON.stringify(data));
+  
+  // Dispara evento customizado para a mesma aba
+  window.dispatchEvent(new CustomEvent(STORAGE_EVENT_PREFIX + key, { detail: data }));
+  
+  // Dispara StorageEvent para outras abas
+  window.dispatchEvent(new StorageEvent('storage', { key: storageKey, newValue: JSON.stringify(data) }));
 };
 
 export const addStorageItem = (key: string, item: any) => {

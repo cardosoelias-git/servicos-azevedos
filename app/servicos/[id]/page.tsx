@@ -154,20 +154,42 @@ export default function ServicoDetailsPage() {
       return
     }
 
-    const novoValorPago = servico.valor_pago + valor
-    const novoValorReceber = servico.valor_total - novoValorPago
+    // Distribuir o pagamento entre as etapas para manter consistência
+    let valorRestante = valor
+    const novasEtapas = etapas.map(etapa => {
+      if (valorRestante <= 0) return etapa
+      if (!etapa.concluido) {
+        const novoValorEtapa = (Number(etapa.valor_pago_etapa) || 0) + valorRestante
+        valorRestante = 0
+        return { ...etapa, valor_pago_etapa: novoValorEtapa }
+      }
+      return etapa
+    })
+
+    // Caso todas as etapas já estejam "concluídas", adiciona na última
+    if (valorRestante > 0 && novasEtapas.length > 0) {
+      const lastIdx = novasEtapas.length - 1
+      novasEtapas[lastIdx].valor_pago_etapa = (Number(novasEtapas[lastIdx].valor_pago_etapa) || 0) + valorRestante
+    }
+
+    const novoValorPago = novasEtapas.reduce((acc, e) => acc + (Number(e.valor_pago_etapa) || 0), 0)
+    const novoValorReceber = Math.max(0, (servico.valor_total || 0) - novoValorPago)
     
     const updatedServico = {
       ...servico,
+      etapas: novasEtapas,
       valor_pago: novoValorPago,
-      valor_receber: Math.max(0, novoValorReceber)
+      valor_receber: novoValorReceber
     }
     
+    // Atualiza storage local
     updateStorageItem("servicos", servico.id, updatedServico)
     
     addStorageItem("transacoes", {
       id: Math.random().toString(36).substr(2, 9),
       data: new Date().toISOString(),
+      cliente_id: servico.cliente_id,
+      servico_id: servico.id,
       cliente_nome: servico.cliente_nome,
       servico_nome: servico.tipo_servico,
       tipo: "Entrada",
@@ -175,21 +197,27 @@ export default function ServicoDetailsPage() {
       status: "Pago"
     })
     
-    // Sync with Supabase
+    // Sincroniza com Supabase
     try {
       const { supabase } = await import("@/lib/supabase")
+      
+      // Atualiza o serviço com as novas etapas e valores
       await supabase
         .from("servicos")
         .update({
+          etapas: novasEtapas,
           valor_pago: novoValorPago,
-          valor_receber: Math.max(0, novoValorReceber)
+          valor_receber: novoValorReceber
         })
         .eq("id", servico.id)
         
+      // Insere a transação com IDs vinculados
       await supabase
         .from("transacoes")
         .insert([{
-          data: new Date().toISOString(),
+          data: new Date().toISOString().split('T')[0],
+          cliente_id: servico.cliente_id,
+          servico_id: servico.id,
           cliente_nome: servico.cliente_nome,
           servico_nome: servico.tipo_servico,
           tipo: "Entrada",
@@ -200,21 +228,24 @@ export default function ServicoDetailsPage() {
       console.error("Erro banco sync transação:", err)
     }
     
+    setEtapas(novasEtapas)
     setServico(updatedServico)
     setIsPagamentoModalOpen(false)
     setValorPagamento("")
     
     toast({
       title: "Sucesso",
-      description: `✅ Pagamento de R$ ${valor.toFixed(2).replace(".", ",")} registrado no banco!`,
+      description: `✅ Pagamento de R$ ${valor.toFixed(2).replace(".", ",")} registrado e distribuído nas etapas!`,
     })
   }
 
   const handleConcluirServico = async () => {
+    const novasEtapas = etapas.map(e => ({ ...e, concluido: true }))
     const updatedServico = {
       ...servico,
       status: "Concluído",
-      etapas_completas: etapas.length,
+      etapas: novasEtapas,
+      etapas_completas: novasEtapas.length,
       valor_pago: servico.valor_total,
       valor_receber: 0
     }
@@ -227,7 +258,8 @@ export default function ServicoDetailsPage() {
         .from("servicos")
         .update({
           status: "Concluído",
-          etapas_completas: etapas.length,
+          etapas: novasEtapas,
+          etapas_completas: novasEtapas.length,
           valor_pago: servico.valor_total,
           valor_receber: 0
         })
@@ -236,11 +268,12 @@ export default function ServicoDetailsPage() {
       console.error(err)
     }
 
+    setEtapas(novasEtapas)
     setServico(updatedServico)
     
     toast({
       title: "Sucesso",
-      description: "✅ Serviço concluído no banco!",
+      description: "✅ Serviço concluído e todas as etapas marcadas!",
     })
   }
 
