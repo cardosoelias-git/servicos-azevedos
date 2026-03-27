@@ -16,6 +16,7 @@ const DASHBOARD_LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/
 export default function Dashboard() {
   const { data: servicosGerais, loading: loadingServicos } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'geral' })
   const { data: clientesGerais, loading: loadingClientes } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'geral' })
+  const { data: transacoesGerais, loading: loadingTransacoes } = useRealtime<any>("transacoes", [], { column: 'contexto', value: 'geral' })
   
   const [dashboardStats, setDashboardStats] = useState([
     {
@@ -59,7 +60,15 @@ export default function Dashboard() {
 
     const hAtivas = servicosGerais.filter((s: any) => s.status === "Em Andamento").length
     const totalClientes = clientesGerais.length
-    const totalReceber = servicosGerais.reduce((acc: number, curr: any) => acc + (parseFloat(curr.valor_total || 0) - parseFloat(curr.valor_pago || 0)), 0)
+    
+    // Cálculo de valores a receber baseado nos serviços
+    const totalReceberServicos = servicosGerais.reduce((acc: number, curr: any) => acc + (parseFloat(curr.valor_total || 0) - parseFloat(curr.valor_pago || 0)), 0)
+    
+    // Podemos também calcular o total recebido hoje via transações para dar um feedback visual de movimento
+    const hoje = new Date().toISOString().split('T')[0]
+    const totalRecebidoHoje = transacoesGerais
+      .filter((t: any) => t.data === hoje && t.tipo === 'Entrada' && t.status === 'Pago')
+      .reduce((acc: number, curr: any) => acc + parseFloat(curr.valor || 0), 0)
     
     setDashboardStats([
       {
@@ -82,8 +91,10 @@ export default function Dashboard() {
       },
       {
         title: "Valores a Receber",
-        value: `R$ ${totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        description: "De serviços ativos",
+        value: `R$ ${totalReceberServicos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        description: totalRecebidoHoje > 0 
+          ? `+ R$ ${totalRecebidoHoje.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} recebidos hoje` 
+          : "De serviços ativos",
         icon: DollarSign,
         color: "text-emerald-700",
         bg: "bg-emerald-50",
@@ -95,7 +106,7 @@ export default function Dashboard() {
     if (allServicos.length > 0) {
       // Sort by updated_at or created_at if possible, otherwise just take latest
     }
-  }, [servicosGerais, clientesGerais, mounted, loadingServicos, loadingClientes])
+  }, [servicosGerais, clientesGerais, transacoesGerais, mounted, loadingServicos, loadingClientes, loadingTransacoes])
 
   if (!mounted) {
     return (

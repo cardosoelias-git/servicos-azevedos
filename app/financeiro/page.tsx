@@ -18,7 +18,7 @@ import { DollarSign, ArrowUpRight, ArrowDownRight, Search, Filter, TrendingUp, W
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { getStorageData, addStorageItem, deleteStorageItem } from "@/lib/storage"
+import { getStorageData, addStorageItem, deleteStorageItem, updateStorageItem } from "@/lib/storage"
 import { useToast } from "@/components/ui/use-toast"
 import {
   Dialog,
@@ -215,10 +215,16 @@ export default function FinanceiroPage() {
       return
     }
 
+    // Tentar encontrar o serviço correspondente para atualizar o saldo
+    const matchedServico = servicos.find(s => 
+      s.cliente_nome === novoCliente && s.tipo_servico === novoServico
+    )
+
     const novaTransacao = {
       id: Math.random().toString(36).substr(2, 9),
-      data: new Date().toISOString(),
+      data: new Date().toISOString().split('T')[0],
       cliente_nome: novoCliente,
+      servico_id: matchedServico?.id || null,
       servico_nome: novoServico,
       tipo: novoTipo,
       valor: valor,
@@ -226,23 +232,49 @@ export default function FinanceiroPage() {
       contexto: 'geral'
     }
 
-    addStorageItem("transacoes", novaTransacao)
-    
-    // Atualizar estado local imediatamente
-    setLocalTransacoes(prev => [novaTransacao, ...prev])
-
-    // Sync with Supabase
     try {
+      if (!isConfigured) throw new Error("Local mode")
       const { supabase } = await import("@/lib/supabase")
-      await supabase.from("transacoes").insert([novaTransacao])
-    } catch(err) {
+      
+      // 1. Inserir a transação
+      const { error: transError } = await supabase.from("transacoes").insert([novaTransacao])
+      if (transError) throw transError
+
+      // 2. Se for uma Entrada vinculada a um serviço, atualizar o serviço
+      if (matchedServico && novoTipo === "Entrada" && novoStatus === "Pago") {
+        const novoValorPago = (parseFloat(matchedServico.valor_pago || 0)) + valor
+        const novoValorReceber = Math.max(0, (parseFloat(matchedServico.valor_total || 0)) - novoValorPago)
+        
+        await supabase.from("servicos").update({
+          valor_pago: novoValorPago,
+          valor_receber: novoValorReceber
+        }).eq("id", matchedServico.id)
+      }
+
+      toast({ title: "Sucesso", description: `✅ Transação registrada e saldo do serviço atualizado!` })
+    } catch(err: any) {
       console.error(err)
+      if (isConfigured) {
+        toast({ variant: "destructive", title: "Erro no Servidor", description: err.message })
+        return
+      }
+      
+      // Fallback Local
+      addStorageItem("transacoes", novaTransacao)
+      setLocalTransacoes(prev => [novaTransacao, ...prev])
+      
+      if (matchedServico && novoTipo === "Entrada" && novoStatus === "Pago") {
+        const updatedServico = {
+          ...matchedServico,
+          valor_pago: (parseFloat(matchedServico.valor_pago || 0)) + valor,
+          valor_receber: Math.max(0, (parseFloat(matchedServico.valor_total || 0)) - ((parseFloat(matchedServico.valor_pago || 0)) + valor))
+        }
+        updateStorageItem("servicos", matchedServico.id, updatedServico)
+      }
+      
+      toast({ title: "Sucesso (Local)", description: `✅ Transação registrada localmente!` })
     }
 
-    toast({
-      title: "Sucesso",
-      description: `✅ Transação adicionada com sucesso!`,
-    })
     setIsModalOpen(false)
     setNovoCliente("")
     setNovoServico("")
@@ -335,23 +367,41 @@ export default function FinanceiroPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label className="font-semibold text-slate-700">Cliente</Label>
-                  <Input 
-                    placeholder="Nome do cliente" 
-                    className="rounded-xl h-12 border-slate-200 focus:ring-orange-500"
-                    value={novoCliente}
-                    onChange={(e) => setNovoCliente(e.target.value)}
-                    required
-                  />
+                  <Select value={novoCliente} onValueChange={(val) => {
+                    setNovoCliente(val)
+                    setNovoServico("") // Resetar serviço ao trocar cliente
+                  }}>
+                    <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-orange-500">
+                      <SelectValue placeholder="Selecione o cliente" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      {Array.from(new Set(servicos.map(s => s.cliente_nome))).map(nome => (
+                        <SelectItem key={nome} value={nome || ""}>
+                          {nome}
+                        </SelectItem>
+                      ))}
+                      {servicos.length === 0 && <div className="p-2 text-xs text-slate-500">Nenhum cliente com serviço ativo</div>}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label className="font-semibold text-slate-700">Serviço</Label>
-                  <Input 
-                    placeholder="Tipo de serviço" 
-                    className="rounded-xl h-12 border-slate-200 focus:ring-orange-500"
-                    value={novoServico}
-                    onChange={(e) => setNovoServico(e.target.value)}
-                    required
-                  />
+                  <Select value={novoServico} onValueChange={setNovoServico}>
+                    <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-orange-500">
+                      <SelectValue placeholder="Selecione o serviço" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      {servicos
+                        .filter(s => !novoCliente || s.cliente_nome === novoCliente)
+                        .map(s => (
+                          <SelectItem key={s.id} value={s.tipo_servico}>
+                            {s.tipo_servico} ({s.cliente_nome})
+                          </SelectItem>
+                        ))
+                      }
+                      {servicos.length === 0 && <div className="p-2 text-xs text-slate-500">Nenhum serviço ativo</div>}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label className="font-semibold text-slate-700">Valor (R$)</Label>
