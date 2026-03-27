@@ -196,7 +196,8 @@ export default function ServicoDetailsPage() {
       servico_nome: servico.tipo_servico,
       tipo: "Entrada",
       valor: valor,
-      status: "Pago"
+      status: "Pago",
+      contexto: servico.contexto
     })
     
     // Sincroniza com Supabase
@@ -224,7 +225,8 @@ export default function ServicoDetailsPage() {
           servico_nome: servico.tipo_servico,
           tipo: "Entrada",
           valor: valor,
-          status: "Pago"
+          status: "Pago",
+          contexto: servico.contexto
         }])
     } catch(err) {
       console.error("Erro banco sync transação:", err)

@@ -45,7 +45,7 @@ const mockClientes = [
 ]
 
 export default function ClientesPage() {
-  const { data: realtimeClientes, loading: realtimeLoading } = useRealtime<any>("clientes")
+  const { data: realtimeClientes, loading: realtimeLoading } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'geral' })
   const [localClientes, setLocalClientes] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
@@ -150,7 +150,7 @@ export default function ClientesPage() {
       }
       const { error } = await (await import("@/lib/supabase")).supabase
         .from("clientes")
-        .insert([{ nome, cpf, telefone, renach, data_inicio: dataInicio }])
+        .insert([{ nome, cpf, telefone, renach, data_inicio: dataInicio, contexto: 'geral' }])
       if (error) throw error
       
       toast({ title: "Sucesso", description: "✅ Cliente criado com sucesso!" })
@@ -218,7 +218,7 @@ export default function ClientesPage() {
       }
       const { error } = await (await import("@/lib/supabase")).supabase
         .from("clientes")
-        .update({ nome, cpf, telefone, renach, data_inicio: dataInicio })
+        .update({ nome, cpf, telefone, renach, data_inicio: dataInicio, contexto: 'geral' })
         .eq("id", selectedCliente.id)
 
       if (error) throw error

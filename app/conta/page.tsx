@@ -28,8 +28,8 @@ export default function ContaPage() {
   const { toast } = useToast()
   const { isLoggedIn, login, logout } = useAuth()
   const router = useRouter()
-  const { data: realtimeVeiculos, loading: veiculosLoading } = useRealtime<any>("veiculos")
-  const { data: realtimeClientes, loading: clientesLoading } = useRealtime<any>("clientes")
+  const { data: realtimeVeiculos, loading: veiculosLoading } = useRealtime<any>("veiculos", [], { column: 'contexto', value: 'habilitacao' })
+  const { data: realtimeClientes, loading: clientesLoading } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'habilitacao' })
   const [localVeiculos, setLocalVeiculos] = useState<any[]>([])
   const [localClientes, setLocalClientes] = useState<any[]>([])
   const [isLocalMode, setIsLocalMode] = useState(false)
@@ -106,6 +106,7 @@ export default function ContaPage() {
       contato: veiculoForm.contato,
       servicos: veiculoForm.servicos,
       documentos: veiculoForm.documentos,
+      contexto: 'habilitacao'
     }
 
     try {
@@ -293,6 +294,7 @@ export default function ContaPage() {
         servicos: clienteForm.servicos,
         servicos_status: servicosStatus,
         documentos: clienteForm.documentos,
+        contexto: 'habilitacao'
       }
       
       try {

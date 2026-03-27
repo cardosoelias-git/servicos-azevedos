@@ -55,8 +55,8 @@ const mockServicos = [
 ]
 
 export default function ServicosPage() {
-  const { data: realtimeServicos, loading: servicosLoading } = useRealtime<any>("servicos")
-  const { data: realtimeClientes, loading: clientesLoading } = useRealtime<any>("clientes")
+  const { data: realtimeServicos, loading: servicosLoading } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'geral' })
+  const { data: realtimeClientes, loading: clientesLoading } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'geral' })
   
   const [localServicos, setLocalServicos] = useState<any[]>([])
   const [localClientes, setLocalClientes] = useState<any[]>([])
@@ -163,7 +163,8 @@ export default function ServicosPage() {
           valor_total: vTotal,
           valor_pago: vPago,
           valor_receber: Math.max(0, vTotal - vPago),
-          status: "Em Andamento"
+          status: "Em Andamento",
+          contexto: 'geral'
         }])
         .select()
         .single()

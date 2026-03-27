@@ -6,6 +6,7 @@ const STORAGE_EVENT_PREFIX = "azevedo_storage_"
 export function useRealtime<T extends { id: string | number }>(
   table: string,
   initialData: T[] = [],
+  filter?: { column: string; value: any },
   callback?: (payload: any) => void
 ) {
   const [data, setData] = useState<T[]>(initialData);
@@ -56,10 +57,16 @@ export function useRealtime<T extends { id: string | number }>(
     // 1. Fetch inicial
     const fetchData = async () => {
       setLoading(true);
-      const { data: result, error } = await supabase
+      let query = supabase
         .from(table)
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (filter) {
+        query = query.eq(filter.column, filter.value);
+      }
+
+      const { data: result, error } = await query;
 
       if (!error && result) {
         setData(result);
@@ -71,10 +78,15 @@ export function useRealtime<T extends { id: string | number }>(
 
     // 2. Inscrição Realtime
     const channel = supabase
-      .channel(`public:${table}`)
+      .channel(`public:${table}${filter ? `:${filter.value}` : ''}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: table },
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: table,
+          ...(filter ? { filter: `${filter.column}=eq.${filter.value}` } : {})
+        },
         (payload) => {
           console.log(`Realtime change in ${table}:`, payload);
           
@@ -102,7 +114,7 @@ export function useRealtime<T extends { id: string | number }>(
       window.removeEventListener(STORAGE_EVENT_PREFIX + table, handleCustomEvent);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [table]);
+  }, [table, filter?.column, filter?.value]);
 
   return { data, setData, loading };
 }

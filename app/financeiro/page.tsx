@@ -34,8 +34,8 @@ import { useRealtime } from "@/hooks/useRealtime"
 import { isConfigured } from "@/lib/supabase"
 
 export default function FinanceiroPage() {
-  const { data: realtimeTransacoes, loading: realtimeLoading } = useRealtime<any>("transacoes")
-  const { data: realtimeServicos, loading: realtimeServicosLoading } = useRealtime<any>("servicos")
+  const { data: realtimeTransacoes, loading: realtimeLoading } = useRealtime<any>("transacoes", [], { column: 'contexto', value: 'geral' })
+  const { data: realtimeServicos, loading: realtimeServicosLoading } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'geral' })
   const [localTransacoes, setLocalTransacoes] = useState<any[]>([])
   const [localServicos, setLocalServicos] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
@@ -222,7 +222,8 @@ export default function FinanceiroPage() {
       servico_nome: novoServico,
       tipo: novoTipo,
       valor: valor,
-      status: novoStatus
+      status: novoStatus,
+      contexto: 'geral'
     }
 
     addStorageItem("transacoes", novaTransacao)

@@ -14,8 +14,8 @@ import Image from "next/image"
 const DASHBOARD_LOGO_URL = "https://vfbcboddmqcgzpyyscjs.supabase.co/storage/v1/object/sign/imagens_site/logo_azevedos.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZWViNzU4Yy0zNjYxLTQ0MTEtYmNiNS1hMGM4NmYxYTZkZWYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZW5zX3NpdGUvbG9nb19hemV2ZWRvcy5wbmciLCJpYXQiOjE3NzQxNDQzNDIsImV4cCI6MTgwNTY4MDM0Mn0.OsaN0CzHn_bEC-_d1_yvLABS5gjBxQ6pAoNu3JKlk5U";
 
 export default function Dashboard() {
-  const { data: servicos, loading: loadingServicos } = useRealtime<any>("servicos")
-  const { data: clientes, loading: loadingClientes } = useRealtime<any>("clientes")
+  const { data: servicos, loading: loadingServicos } = useRealtime<any>("servicos", [], { column: 'contexto', value: 'geral' })
+  const { data: clientes, loading: loadingClientes } = useRealtime<any>("clientes", [], { column: 'contexto', value: 'geral' })
   
   const [dashboardStats, setDashboardStats] = useState([
     {
